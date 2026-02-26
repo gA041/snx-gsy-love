@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    title>Together - 一起听</title>
+    <title>snx gsy 永远在一起</title>
     <style>
         * {
             margin: 0;
@@ -23,6 +23,7 @@
             padding-bottom: 80px;
         }
 
+        /* 顶部导航 */
         .top-bar {
             display: flex;
             justify-content: space-between;
@@ -32,47 +33,64 @@
             backdrop-filter: blur(10px);
         }
         .top-bar .title {
+            font-family: 'Georgia', serif;
             font-size: 1.3rem;
             color: #f8c8d8;
+            letter-spacing: 1px;
         }
         .top-bar .info {
             font-size: 0.8rem;
             color: #ddd;
         }
 
+        /* 歌曲信息区 */
         .song-info {
             text-align: center;
-            padding: 1rem;
+            padding: 1rem 1rem;
         }
         .song-title {
             font-size: 1.5rem;
             color: #f8c8d8;
+            margin-bottom: 0.5rem;
         }
         .song-artist {
             font-size: 1rem;
             color: #ccc;
         }
 
-        .title-2021 {
+        /* 2021 4ever 标题 */
+        .extra-title {
             text-align: center;
             font-size: 1.8rem;
-            font-weight: bold;
             color: #f8c8d8;
             margin: 0.5rem 0;
+            font-weight: bold;
         }
 
+        /* 进度条 */
         .progress {
             width: 80%;
             margin: 0 auto 1rem;
             height: 6px;
             background: rgba(255,255,255,0.2);
             border-radius: 3px;
+            position: relative;
         }
         .progress-bar {
             width: 35%;
             height: 100%;
             background: #f8c8d8;
             border-radius: 3px;
+        }
+        .progress-dot {
+            position: absolute;
+            top: 50%;
+            left: 35%;
+            transform: translate(-50%, -50%);
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #f8c8d8;
         }
         .time {
             display: flex;
@@ -83,12 +101,14 @@
             color: #ccc;
         }
 
+        /* 头像框缩小 */
         .listen-together {
             display: flex;
             justify-content: center;
             align-items: center;
             gap: 0.8rem;
             margin: 1.5rem 0;
+            position: relative;
         }
         .avatar {
             width: 70px;
@@ -96,16 +116,28 @@
             border-radius: 50%;
             background: rgba(255,255,255,0.1);
             display: flex;
-            align-items: center;
             justify-content: center;
+            align-items: center;
             font-size: 1.6rem;
             border: 2px solid #f8c8d8;
         }
         .heart {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             color: #f8c8d8;
-            font-size: 1.4rem;
+            font-size: 1.3rem;
+        }
+        .headphone-icon {
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1rem;
         }
 
+        /* 按钮区 —— 完全不改 */
         .buttons {
             display: flex;
             gap: 1.5rem;
@@ -117,122 +149,156 @@
             font-size: 1.2rem;
             border: none;
             border-radius: 12px;
-            background: #f8c8d8;
+            background-color: #f8c8d8;
             color: #222;
             font-weight: bold;
             cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover {
+            background-color: #f5a7bc;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(248, 200, 216, 0.3);
         }
 
+        /* 聊天区 —— 无蒙版 + 滚动条 + 默认隐藏 */
         .chat {
             width: 90%;
             max-width: 600px;
-            margin: 0 auto;
-            max-height: 450px;
-            overflow-y: auto;
-            display: none;
-            padding: 1rem;
+            margin: 2rem auto;
+            max-height: 420px;
+            overflow-y: auto;    /* 滚动条 */
+            display: none;      /* 默认隐藏 */
+            background: transparent;
+            padding: 0.5rem;
         }
         .bubble {
+            width: 100%;
+            padding: 1rem;
             font-size: 1rem;
-            line-height: 1.8;
+            line-height: 1.7;
             color: #fff;
-            text-shadow: 0 0 3px rgba(0,0,0,0.5);
+            text-shadow: 0 0 4px #000;
         }
 
+        /* 滚动条样式 */
+        .chat::-webkit-scrollbar {
+            width: 6px;
+        }
+        .chat::-webkit-scrollbar-thumb {
+            background: #f8c8d8;
+            border-radius: 3px;
+        }
+
+        /* 底部输入栏 */
         .input-bar {
             position: fixed;
             bottom: 0;
             left: 0;
             width: 100%;
+            display: flex;
+            align-items: center;
             padding: 0.8rem 1rem;
             background: rgba(0,0,0,0.5);
             backdrop-filter: blur(10px);
             z-index: 99;
-            display: flex;
-            align-items: center;
         }
         .input-bar input {
             flex: 1;
-            padding: 0.8rem 1rem;
+            padding: 0.8rem 1.2rem;
             border-radius: 20px;
             border: none;
             background: rgba(255,255,255,0.1);
             color: #fff;
+            font-size: 1rem;
+        }
+        .input-bar input::placeholder {
+            color: #999;
         }
         .input-bar .icons {
             display: flex;
-            gap: 1rem;
+            gap: 1.5rem;
             margin-left: 1rem;
-            color: #fff;
+            font-size: 1.2rem;
         }
     </style>
 </head>
 <body>
 
-<div class="top-bar">
-    <div>🐾 ✨</div>
-    <div class="title">Together 🎧</div>
-    <div class="info">一起听 ♡ 20:21</div>
-</div>
-
-<div class="song-info">
-    <div class="song-title">可爱女人</div>
-    <div class="song-artist">周杰伦</div>
-</div>
-
-<div class="title-2021">2021 4ever</div>
-
-<div class="progress">
-    <div class="progress-bar"></div>
-</div>
-<div class="time">
-    <span>00:20</span>
-    <span>00:21</span>
-</div>
-
-<div class="listen-together">
-    <div class="avatar">🐾</div>
-    <div class="heart">💍</div>
-    <div class="avatar">🐈</div>
-</div>
-
-<div class="buttons">
-    <button id="yesBtn">yes</button>
-    <button id="noBtn">no</button>
-</div>
-
-<div class="chat" id="chat">
-    <div class="bubble">
-        宝宝 和你在一起的日子总是这么幸福且短暂 和你见面很开心又很难过 每次洗漱完出来看到你都在我睡的那一边放好水 
-        我就拿起手机边看日历边想 还有多少天就又要和你分开 我父母总是告诉我我长大了不可以再那么依赖别人 要独立 
-        直到你告诉我我可以去依赖你 信任你 我见众生皆草木 唯独见你是青山 
-        谢谢你的存在 有你在我总会很安心
-
-        山高路远 一路平安 一个人在国外照顾好自己 
-        小心不要烫到 慢慢走 多喝热水 不要生病 
-        我爱你 要多多想我 不可以哭哭 多笑笑
+    <!-- 顶部导航 -->
+    <div class="top-bar">
+        <div>
+            <span>🐾</span>
+            <span style="margin-left: 1rem;">✨</span>
+        </div>
+        <div class="title">Together 🎧</div>
+        <div class="info">一起听 ♡ 时长: 20:21</div>
     </div>
-</div>
 
-<div class="input-bar">
-    <input type="text" placeholder="说点什么...">
-    <div class="icons">
-        <span>yeobo</span>
-        <span>i</span>
-        <span>xin</span>
+    <!-- 歌曲信息 -->
+    <div class="song-info">
+        <div class="song-title">可爱女人</div>
+        <div class="song-artist">周杰伦</div>
     </div>
-</div>
+
+    <!-- 你要的标题 -->
+    <div class="extra-title">2021 4ever</div>
+
+    <!-- 进度条 -->
+    <div class="progress">
+        <div class="progress-bar"></div>
+        <div class="progress-dot"></div>
+    </div>
+    <div class="time">
+        <span>00:20</span>
+        <span>00:21</span>
+    </div>
+
+    <!-- 缩小后的头像 -->
+    <div class="listen-together">
+        <div class="headphone-icon">🎧</div>
+        <div class="avatar">🐾</div>
+        <div class="heart">💍</div>
+        <div class="avatar">🐈</div>
+    </div>
+
+    <!-- 按钮区 完全不变 -->
+    <div class="buttons">
+        <button id="yesBtn">yes</button>
+        <button id="noBtn">no</button>
+    </div>
+
+    <!-- 你的原文 一字不动 -->
+    <div class="chat" id="chat">
+        <div class="bubble">
+宝宝 和你在一起的日子总是这么幸福且短暂 和你见面很开心又很难过 每次洗漱完出来看到你都在我睡的那一边放好水 我就拿起手机边看日历边想 还有多少天就又要和你分开 我父母总是告诉我我长大了不可以再那么依赖别人 要独立 也不会怎么和我表达感情 交流也是越来越少 让我一直都认为人是漂泊的候鸟 直到你告诉我我可以去依赖你 信任你 多和你表达感受 我又觉得爱是可以宜居的小岛 有一种 我见众生皆草木 唯独见你是青山的感觉 你也总是很照顾我 虽然我会莫名其妙跟你生一些小气 但你都会说是 your fault 包容我 这些都是我从未体验过的 我总说我不信任你 不是你做的不够好 是我怕信任你依赖你之后如果你不喜欢我了我又要变回原来的样子 那我要怎么习惯 但你好像拥有什么魔法 让我可以一点点向你摊呈自己 也让你看到我的脆弱 眼泪 还有一些不完美的那面 但真诚的 谢谢你的存在 有你在我总会很安心  送你去高铁站我想让你快点进去 这样我就不会那么舍不得你 而我现在能给你的又太少 再给我一点时间 以后一定能给你 我发誓 我不是很会表达这些情情话话的东西 但真心希望你好 我们互相加油变成更好的自己
+
+山高路远 一路平安  一个人在国外照顾好自己 虽然每次我说这句话 你都说你已经会很好的照顾自己了 但想到你一个人面对那些  一个人拖行李 落地要从机场坐那么久的车才能到家 也很不容易 我心疼你 做饭的时候小心不要烫到 走路要慢慢走 小心不要磕磕碰碰 多喝热水 要少吃褪黑素  不要着凉不要生病！我爱你 要多多想我 不可以哭哭噢  多笑笑
+        </div>
+    </div>
+
+    <!-- 底部输入栏 -->
+    <div class="input-bar">
+        <input type="text" placeholder="说点什么...">
+        <div class="icons">
+            <span>yeobo</span>
+            <span>i</span>
+            <span>xin</span>
+        </div>
+    </div>
 
 <script>
     const chat = document.getElementById('chat');
     const yesBtn = document.getElementById('yesBtn');
     const noBtn = document.getElementById('noBtn');
 
-    yesBtn.onclick = () => {
+    // 点击 yes 显示文字
+    yesBtn.onclick = function() {
         chat.style.display = 'block';
     };
 
-    noBtn.onclick = () => {
+    // 点击 no 隐藏文字
+    noBtn.onclick = function() {
         chat.style.display = 'none';
     };
 </script>
