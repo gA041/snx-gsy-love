@@ -12,7 +12,9 @@
             font-family: "Microsoft YaHei", "Segoe UI", sans-serif;
         }
 
+        /* 背景容器 */
         body {
+            position: relative;
             background-image: url("gsy666.jpg");
             background-size: cover;
             background-position: center;
@@ -21,6 +23,18 @@
             color: #fff;
             overflow-x: hidden;
             padding-bottom: 80px;
+        }
+
+        /* 全屏半透明蒙版 */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+            z-index: -1;
         }
 
         /* 顶部导航 */
@@ -221,30 +235,47 @@
             margin-left: 1rem;
             font-size: 1.2rem;
         }
+
+        /* 弹窗样式 */
+        .modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #fff;
+            padding: 2rem 3rem;
+            border-radius: 16px;
+            z-index: 1000;
+            color: #222;
+            text-align: center;
+        }
+        .overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
     </style>
 </head>
 <body>
 
-    <!-- 顶部导航 -->
     <div class="top-bar">
         <div>
             <span>🐾</span>
             <span style="margin-left: 1rem;">✨</span>
         </div>
-        <div class="title">Together 🎧</div>
+        <div class="title">we got one love</div>
         <div class="info">一起听 ♡ 时长: 20:21</div>
     </div>
 
-    <!-- 歌曲信息 -->
     <div class="song-info">
         <div class="song-title">可爱女人</div>
         <div class="song-artist">周杰伦</div>
     </div>
 
-    <!-- 你要的标题 -->
     <div class="extra-title">2021 4ever</div>
 
-    <!-- 进度条 -->
     <div class="progress">
         <div class="progress-bar"></div>
         <div class="progress-dot"></div>
@@ -254,7 +285,6 @@
         <span>00:21</span>
     </div>
 
-    <!-- 缩小后的头像 -->
     <div class="listen-together">
         <div class="headphone-icon">🎧</div>
         <div class="avatar">🐾</div>
@@ -262,13 +292,11 @@
         <div class="avatar">🐈</div>
     </div>
 
-    <!-- 按钮区 完全不变 -->
     <div class="buttons">
         <button id="yesBtn">yes</button>
         <button id="noBtn">no</button>
     </div>
 
-    <!-- 你的原文 一字不动 -->
     <div class="chat" id="chat">
         <div class="bubble">
 宝宝 和你在一起的日子总是这么幸福且短暂 和你见面很开心又很难过 每次洗漱完出来看到你都在我睡的那一边放好水 我就拿起手机边看日历边想 还有多少天就又要和你分开 我父母总是告诉我我长大了不可以再那么依赖别人 要独立 也不会怎么和我表达感情 交流也是越来越少 让我一直都认为人是漂泊的候鸟 直到你告诉我我可以去依赖你 信任你 多和你表达感受 我又觉得爱是可以宜居的小岛 有一种 我见众生皆草木 唯独见你是青山的感觉 你也总是很照顾我 虽然我会莫名其妙跟你生一些小气 但你都会说是 your fault 包容我 这些都是我从未体验过的 我总说我不信任你 不是你做的不够好 是我怕信任你依赖你之后如果你不喜欢我了我又要变回原来的样子 那我要怎么习惯 但你好像拥有什么魔法 让我可以一点点向你摊呈自己 也让你看到我的脆弱 眼泪 还有一些不完美的那面 但真诚的 谢谢你的存在 有你在我总会很安心  送你去高铁站我想让你快点进去 这样我就不会那么舍不得你 而我现在能给你的又太少 再给我一点时间 以后一定能给你 我发誓 我不是很会表达这些情情话话的东西 但真心希望你好 我们互相加油变成更好的自己
@@ -277,7 +305,6 @@
         </div>
     </div>
 
-    <!-- 底部输入栏 -->
     <div class="input-bar">
         <input type="text" placeholder="说点什么...">
         <div class="icons">
@@ -292,15 +319,56 @@
     const yesBtn = document.getElementById('yesBtn');
     const noBtn = document.getElementById('noBtn');
 
-    // 点击 yes 显示文字
     yesBtn.onclick = function() {
         chat.style.display = 'block';
     };
 
-    // 点击 no 隐藏文字
     noBtn.onclick = function() {
         chat.style.display = 'none';
+        showModal('没有选no的机会哦 ♾️', true);
     };
+
+    function showModal(message, showButtons) {
+        const overlay = document.createElement('div');
+        overlay.className = 'overlay';
+        document.body.appendChild(overlay);
+
+        const modal = document.createElement('div');
+        modal.className = 'modal';
+        modal.innerHTML = `<p>${message}</p>`;
+
+        if (showButtons) {
+            const btnContainer = document.createElement('div');
+            btnContainer.style.display = 'flex';
+            btnContainer.style.gap = '1rem';
+            btnContainer.style.justifyContent = 'center';
+            btnContainer.style.marginTop = '1rem';
+
+            const btn1 = document.createElement('button');
+            btn1.innerText = 'yes';
+            const btn2 = document.createElement('button');
+            btn2.innerText = 'yes';
+
+            const handleBtnClick = () => {
+                alert('恭喜snx永远爱我 💍');
+                clearModals();
+            };
+
+            btn1.onclick = handleBtnClick;
+            btn2.onclick = handleBtnClick;
+
+            btnContainer.appendChild(btn1);
+            btnContainer.appendChild(btn2);
+            modal.appendChild(btnContainer);
+        }
+
+        document.body.appendChild(modal);
+    }
+
+    function clearModals() {
+        document.querySelectorAll('.overlay').forEach(el => el.remove());
+        document.querySelectorAll('.modal').forEach(el => el.remove());
+    }
 </script>
 
 </body>
