@@ -260,9 +260,6 @@
 </head>
 <body>
 
-<!-- 👇 只在这里加了音频，别的完全没动 -->
-<audio id="bgMusic" src="keai.mp3" loop style="position:fixed;left:-9999px;top:-9999px;">
-
     <div class="top-bar">
         <div>
             <span>🐾</span>
@@ -321,12 +318,6 @@
     const chat = document.getElementById('chat');
     const yesBtn = document.getElementById('yesBtn');
     const noBtn = document.getElementById('noBtn');
-
-    // 👇 只在这里加了播放逻辑，其他完全原样
-    const bgMusic = document.getElementById('bgMusic');
-    function play(){try{bgMusic.play()}catch(e){}}
-    document.addEventListener('click', play, {once:true});
-    document.addEventListener('touchstart', play, {once:true});
 
     yesBtn.onclick = function() {
         chat.style.display = 'block';
