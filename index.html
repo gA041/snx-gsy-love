@@ -260,6 +260,10 @@
 </head>
 <body>
 
+    <audio id="bgm" loop autoplay playsinline webkit-playsinline>
+        <source src="keai.mp3" type="audio/mpeg">
+    </audio>
+
     <div class="top-bar">
         <div>
             <span>🐾</span>
@@ -315,6 +319,7 @@
     </div>
 
 <script>
+    // 原有的 js 功能 —— 完全保留未改动
     const chat = document.getElementById('chat');
     const yesBtn = document.getElementById('yesBtn');
     const noBtn = document.getElementById('noBtn');
@@ -369,7 +374,48 @@
         document.querySelectorAll('.overlay').forEach(el => el.remove());
         document.querySelectorAll('.modal').forEach(el => el.remove());
     }
+
+    // ===== 背景音乐自动播放兼容代码（完全不影响原有功能） =====
+    const audio = document.getElementById('bgm');
+    
+    // ⚠️ 重要：请在这里把音频链接改为您自己的《可爱女人》MP3文件地址！
+    // 示例：audio.src = "可爱女人.mp3";  或 完整URL
+    audio.src = "keai.mp3";  // 替换成您的可爱女人.mp3链接
+
+    let played = false;
+    function playAudio() {
+        if (played) return;
+        audio.play()
+            .then(() => {
+                played = true;
+                document.removeEventListener('touchstart', playAudio);
+                document.removeEventListener('click', playAudio);
+            })
+            .catch(() => {});
+    }
+
+    // 监听用户首次交互 (移动端和PC)
+    document.addEventListener('touchstart', playAudio, { once: true });
+    document.addEventListener('click', playAudio, { once: true });
+
+    // 在原有按钮逻辑中加入播放尝试（确保点击按钮时音乐响起）
+    const originalYes = yesBtn.onclick;
+    yesBtn.onclick = function(e) {
+        originalYes.call(this, e);
+        playAudio();
+    };
+
+    const originalNo = noBtn.onclick;
+    noBtn.onclick = function(e) {
+        originalNo.call(this, e);
+        playAudio();
+    };
+
+    // 预加载音频
+    audio.load();
+    // ===================================================
 </script>
+
 
 </body>
 </html>
