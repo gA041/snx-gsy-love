@@ -9,21 +9,17 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: "Microsoft YaHei", "Segoe UI", sans-serif;
         }
 
         body {
-            background-image: url('gsy666.jpg');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
+            /* 淡紫色背景 */
+            background-color: #f3e5f5;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
-            font-family: "Microsoft YaHei", "Segoe UI", sans-serif;
-            background-color: rgba(0,0,0,0.3);
-            background-blend-mode: darken;
+            padding: 2rem 1rem;
             overflow-x: hidden;
         }
 
@@ -131,96 +127,126 @@
             50% { transform: rotate(15deg); }
         }
 
-        .container {
-            text-align: center;
-            padding: 2rem;
-            width: 90%;
-            max-width: 600px;
+        /* 顶部小羊头像 */
+        .avatar {
+            width: 70px;
+            height: 70px;
+            background-color: #e1bee7;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 36px;
+            color: #9c27b0;
+            margin-bottom: 1rem;
             position: relative;
             z-index: 1;
         }
 
-        /* 标题只改小一点 */
+        /* 主卡片容器 */
+        .main-card {
+            background-color: #ffffff;
+            width: 100%;
+            max-width: 600px;
+            padding: 2.5rem 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(156, 39, 176, 0.2);
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
         h1 {
-            font-size: 2.6rem;
-            color: #ffffff;
-            text-shadow: 0 0 15px rgba(255,255,255,0.8), 2px 2px 4px rgba(0,0,0,0.5);
-            margin-bottom: 3rem;
-            letter-spacing: 4px;
+            color: #9c27b0;
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            letter-spacing: 2px;
         }
 
         .buttons {
             display: flex;
-            gap: 2rem;
-            margin-bottom: 2rem;
+            gap: 1.5rem;
             justify-content: center;
+            margin-bottom: 2rem;
         }
 
         button {
             padding: 0.8rem 2.5rem;
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             border: none;
-            border-radius: 50px;
-            background-color: #ffffff;
-            color: #333333;
+            border-radius: 12px;
+            background-color: #ce93d8;
+            color: #ffffff;
             font-weight: bold;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            transition: transform 0.2s;
+            transition: 0.3s;
         }
 
         button:hover {
-            transform: scale(1.05);
+            background-color: #ba68c8;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(156, 39, 176, 0.3);
         }
 
+        /* 爱心内容区 */
         #content {
             margin-top: 2rem;
             padding: 2rem;
-            background-color: rgba(255,255,255,0.9);
-            border-radius: 20px;
+            background-color: #faf4fc;
+            border-radius: 12px;
             color: #333;
-            font-size: 1.1rem;
+            font-size: 1rem;
             line-height: 1.8;
             text-align: left;
             max-height: 400px;
             overflow-y: auto;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-            position: relative;
+            border: 1px solid #e1bee7;
         }
 
-        /* 小贴士区域 很小很轻 */
+        /* 滚动条美化 */
+        #content::-webkit-scrollbar {
+            width: 6px;
+        }
+        #content::-webkit-scrollbar-thumb {
+            background: #ce93d8;
+            border-radius: 3px;
+        }
+
+        /* 小贴士 */
         .tips {
-            margin-top: 1.2rem;
-            font-size: 0.75rem;
-            color: #fff;
-            opacity: 0.8;
-            line-height: 1.5;
+            margin-top: 1.5rem;
+            font-size: 0.8rem;
+            color: #9575cd;
+            text-align: center;
         }
         .tips a {
-            color: #fff;
+            color: #9c27b0;
+            text-decoration: none;
+            margin: 0 0.3rem;
+        }
+        .tips a:hover {
             text-decoration: underline;
-            margin: 0 4px;
         }
 
+        /* 模态框 */
         .modal {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background-color: white;
+            background-color: #ffffff;
             padding: 2rem 3rem;
             border-radius: 20px;
-            box-shadow: 0 0 30px rgba(0,0,0,0.3);
+            box-shadow: 0 0 30px rgba(156, 39, 176, 0.3);
             text-align: center;
             z-index: 1000;
         }
-
         .modal p {
             font-size: 1.2rem;
             margin-bottom: 1.5rem;
-            color: #333;
+            color: #9c27b0;
+            font-weight: bold;
         }
-
         .overlay {
             position: fixed;
             top: 0;
@@ -232,9 +258,7 @@
         }
     </style>
 </head>
-
 <body>
-
     <!-- 小猫挂件 -->
     <div class="cat">
         <div class="cat-ear left"></div>
@@ -245,7 +269,9 @@
         <div class="cat-tail"></div>
     </div>
 
-    <div class="container">
+    <div class="avatar">🐑</div>
+
+    <div class="main-card">
         <h1>2021 4ever吗？🐈🐾</h1>
         
         <div class="buttons">
@@ -255,7 +281,6 @@
 
         <div id="content"></div>
 
-        <!-- 超小巧小贴士 -->
         <div class="tips">
             小贴士：
             <a href="https://www.baidu.com/s?wd=嗓子痛怎么办" target="_blank">嗓子痛</a>
@@ -265,18 +290,12 @@
         </div>
     </div>
 
-<script>
-// 🔥 强制登录：没登录立刻跳转，绝对拦死
-(function checkLogin() {
-  var logined = sessionStorage.getItem('logined');
-  if (!logined) {
-    window.location.replace('login.html');
-    return;
-  }
-})();
-</script>
-
     <script>
+        // 登录验证：没登录自动跳回登录页
+        if (!sessionStorage.getItem('logined')) {
+            location.href = 'login.html';
+        }
+
         // 飘落元素：🐈♾️✨💍🐾
         const emojis = ["🐈","♾️","✨","💍","🐾"];
         function createFalling() {
@@ -285,15 +304,13 @@
             div.innerText = emojis[Math.floor(Math.random() * emojis.length)];
             div.style.left = Math.random() * 100 + "%";
             div.style.animationDuration = (Math.random() * 4 + 8) + "s";
-            div.style.fontSize = (Math.random() * 10 + 14) + "px";
+            div.style.fontSize = (Math.random() * 10 + 16) + "px";
             document.body.appendChild(div);
             setTimeout(() => div.remove(), 10000);
         }
         setInterval(createFalling, 1200);
-    </script>
 
-    <script>
-        const loveText = `宝宝 和你在一起的日子总是这么幸福且短暂 和你见面很开心又很难过 每次洗漱完出来看到你都在我睡的那一边放好水 我就拿起手机边看日历边想 还有多少天就又要和你分开 我父母总是告诉我我长大了不可以再那么依赖别人 要独立 也不会怎么和我表达感情 交流也是越来越少 让我一直都认为人是漂泊的候鸟 直到你告诉我我可以去依赖你 信任你 多和你表达感受 我又觉得爱是可以宜居的小岛 有一种 我见众生皆草木 唯独见你是青山的感觉 你也总是很照顾我 虽然我会莫名其妙跟你生一些小气 但你都会说是 your fault 包容我 这些都是我从未体验过的 我总说我不信任你 不是你做的不够好 是我怕信任你依赖你之后如果你不喜欢我了我又要变回原来的样子 那我要怎么习惯 但你好像拥有什么魔法 让我可以一点点向你摊呈自己 也让你看到我的脆弱 眼泪 还有一些不完美的那面 但真诚的 谢谢你的存在 有你在我总会很安心  送你去高铁站我想让你快点进去 这样我就不会那么舍不得你 而我现在能给你的又太少 再给我一点时间 以后一定能给你 我发誓 我不是很会表达这些情情话话的东西 但真心希望你好 我们互相加油变成更好的自己
+        const loveText = `宝宝 和你在一起的日子总是这么幸福且短暂 和你见面很开心又很难过 每次洗漱完出来看到你都在我睡的那一边放好水 我就拿起手机边看日历边想 还有多少天就又要和你分开 我父母总是告诉我我长大了不可以再那么依赖别人 要独立 也不会怎么和我表达感情 交流也是越来越少 让我一直都认为人是漂泊的候鸟 直到你告诉我我可以去依赖你 信任你 多和你表达感受 我又觉得爱是可以宜居的小岛 有一种 我见众生皆草木 唯独见你是青山的感觉 你也总是很照顾我 虽然我会莫名其妙跟你生一些小气 但你都会说是你的错 包容我 这些都是我从未体验过的 我总说我不信任你 不是你做的不够好 是我怕信任你依赖你之后如果你不喜欢我了我又要变回原来的样子 那我要怎么习惯 但你好像拥有什么魔法 让我可以一点点向你摊呈自己 也让你看到我的脆弱 眼泪 还有一些不完美的那面 但真诚的 谢谢你的存在 有你在我总会很安心  送你去高铁站我想让你快点进去 这样我就不会那么舍不得你 而我现在能给你的又太少 再给我一点时间 以后一定能给你 我发誓 我不是很会表达这些情情话话的东西 但真心希望你好 我们互相加油变成更好的自己
 
 山高路远 一路平安  一个人在国外照顾好自己 虽然每次我说这句话 你都说你已经会很好的照顾自己了 但想到你一个人面对那些  一个人拖行李 落地要从机场坐那么久的车才能到家 也很不容易 我心疼你 做饭的时候小心不要烫到 走路要慢慢走 小心不要磕磕碰碰 多喝热水 要少吃褪黑素  不要着凉不要生病！我爱你 要多多想我 不可以哭哭噢  多笑笑`;
 
