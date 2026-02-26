@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>xin🐱亲启- 登录</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", "Segoe UI", sans-serif;
+        }
+
+        body {
+            background-color: #ffeef4;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-card {
+            background-color: #ffffff;
+            width: 90%;
+            max-width: 420px;
+            padding: 2.5rem 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(255, 182, 193, 0.3);
+            text-align: center;
+            position: relative;
+        }
+
+        .avatar {
+            width: 70px;
+            height: 70px;
+            background-color: #ffd6e0;
+            border-radius: 50%;
+            margin: -55px auto 1.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 36px;
+            color: #ff8da1;
+        }
+
+        h1 {
+            color: #ff8da1;
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: #b88b94;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            padding-left: 0.5rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.9rem 1.2rem;
+            border: 1px solid #e0c8d0;
+            border-radius: 12px;
+            background-color: #f5f8ff;
+            font-size: 1rem;
+            color: #333;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #ff8da1;
+            box-shadow: 0 0 0 3px rgba(255, 141, 161, 0.1);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 1rem;
+            background-color: #ffb6c1;
+            color: #ffffff;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: 0.3s;
+        }
+
+        .login-btn:hover {
+            background-color: #ff8da1;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 141, 161, 0.3);
+        }
+
+        .footer-links {
+            margin-top: 1.5rem;
+            font-size: 0.85rem;
+            color: #b88b94;
+        }
+
+        .footer-links a {
+            color: #ff8da1;
+            text-decoration: none;
+            margin: 0 0.3rem;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <div class="avatar">🐑</div>
+        <h1>欣🐱专属网站</h1>
+        <p class="subtitle">和小猫一起猜密码</p>
+
+        <div class="form-group">
+            <label for="username">用户名</label>
+            <input type="text" id="username" value="snxgsy99" readonly>
+        </div>
+
+        <div class="form-group">
+            <label for="password">密码</label>
+            <input type="password" id="password" value="2021">
+        </div>
+
+        <button class="login-btn" id="loginBtn">🐾 we got one love!</button>
+
+        <div class="footer-links">
+            <a href="#">注册账号</a> | <a href="#">忘记密码？</a>
+        </div>
+    </div>
+
+    <script>
+        const loginBtn = document.getElementById('loginBtn');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+
+        loginBtn.addEventListener('click', () => {
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value.trim();
+
+            if (username === 'snxgsy99' && password === '2021') {
+                alert('登录成功！正在跳转...');
+                // 这里可以把下面的路径改成你之前纪念网页的文件名，比如 'index.html'
+                window.location.href = 'index.html';
+            } else {
+                alert('账号或密码错误，请重试！');
+            }
+        });
+    </script>
+</body>
+</html>

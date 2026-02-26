@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>snx gsy 永远在一起</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-image: url('gsy666.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-family: "Microsoft YaHei", "Segoe UI", sans-serif;
+            background-color: rgba(0,0,0,0.3);
+            background-blend-mode: darken;
+            overflow-x: hidden;
+        }
+
+        /* 飘落动画 */
+        .falling {
+            position: fixed;
+            top: -10vh;
+            z-index: 0;
+            user-select: none;
+            pointer-events: none;
+            animation: fall linear infinite;
+        }
+        @keyframes fall {
+            0% {
+                transform: translateX(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(100px) rotate(360deg);
+                top: 105vh;
+                opacity: 0;
+            }
+        }
+
+        /* 纯CSS小猫挂件 */
+        .cat {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            width: 60px;
+            height: 50px;
+            z-index: 99;
+            animation: catSwing 4s ease-in-out infinite;
+        }
+        @keyframes catSwing {
+            0%,100% { transform: rotate(0deg); }
+            50% { transform: rotate(-5deg); }
+        }
+        .cat::before {
+            content: "";
+            position: absolute;
+            width: 30px;
+            height: 25px;
+            background: #fff;
+            border-radius: 50%;
+            top: 0;
+            left: 15px;
+        }
+        .cat-ear {
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 16px solid #fff;
+        }
+        .cat-ear.left {
+            top: -8px;
+            left: 16px;
+            transform: rotate(-20deg);
+        }
+        .cat-ear.right {
+            top: -8px;
+            right: 16px;
+            transform: rotate(20deg);
+        }
+        .cat-eye {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #333;
+            border-radius: 50%;
+            top: 8px;
+        }
+        .cat-eye.left { left: 22px; }
+        .cat-eye.right { right: 22px; }
+        .cat-body {
+            position: absolute;
+            width: 36px;
+            height: 28px;
+            background: #fff;
+            border-radius: 50% 50% 30% 30%;
+            bottom: 0;
+            left: 12px;
+        }
+        .cat-tail {
+            position: absolute;
+            width: 25px;
+            height: 8px;
+            background: #fff;
+            border-radius: 4px;
+            bottom: 5px;
+            right: -10px;
+            transform-origin: left center;
+            animation: tail 2s linear infinite;
+        }
+        @keyframes tail {
+            0%,100% { transform: rotate(0deg); }
+            50% { transform: rotate(15deg); }
+        }
+
+        .container {
+            text-align: center;
+            padding: 2rem;
+            width: 90%;
+            max-width: 600px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 标题只改小一点 */
+        h1 {
+            font-size: 2.6rem;
+            color: #ffffff;
+            text-shadow: 0 0 15px rgba(255,255,255,0.8), 2px 2px 4px rgba(0,0,0,0.5);
+            margin-bottom: 3rem;
+            letter-spacing: 4px;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            justify-content: center;
+        }
+
+        button {
+            padding: 0.8rem 2.5rem;
+            font-size: 1.5rem;
+            border: none;
+            border-radius: 50px;
+            background-color: #ffffff;
+            color: #333333;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: transform 0.2s;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+        }
+
+        #content {
+            margin-top: 2rem;
+            padding: 2rem;
+            background-color: rgba(255,255,255,0.9);
+            border-radius: 20px;
+            color: #333;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            text-align: left;
+            max-height: 400px;
+            overflow-y: auto;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            position: relative;
+        }
+
+        /* 小贴士区域 很小很轻 */
+        .tips {
+            margin-top: 1.2rem;
+            font-size: 0.75rem;
+            color: #fff;
+            opacity: 0.8;
+            line-height: 1.5;
+        }
+        .tips a {
+            color: #fff;
+            text-decoration: underline;
+            margin: 0 4px;
+        }
+
+        .modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 2rem 3rem;
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.3);
+            text-align: center;
+            z-index: 1000;
+        }
+
+        .modal p {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            color: #333;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- 小猫挂件 -->
+    <div class="cat">
+        <div class="cat-ear left"></div>
+        <div class="cat-ear right"></div>
+        <div class="cat-eye left"></div>
+        <div class="cat-eye right"></div>
+        <div class="cat-body"></div>
+        <div class="cat-tail"></div>
+    </div>
+
+    <div class="container">
+        <h1>2021 4ever吗？🐈🐾</h1>
+        
+        <div class="buttons">
+            <button id="yesBtn">yes</button>
+            <button id="noBtn">no</button>
+        </div>
+
+        <div id="content"></div>
+
+        <!-- 超小巧小贴士 -->
+        <div class="tips">
+            小贴士：
+            <a href="https://www.baidu.com/s?wd=嗓子痛怎么办" target="_blank">嗓子痛</a>
+            <a href="https://www.baidu.com/s?wd=如何保护嗓子" target="_blank">护嗓</a>
+            <a href="https://www.baidu.com/s?wd=日常保养身体" target="_blank">身体保养</a>
+            仅供参考
+        </div>
+    </div>
+
+    <script>
+        // 飘落元素：🐈♾️✨💍🐾
+        const emojis = ["🐈","♾️","✨","💍","🐾"];
+        function createFalling() {
+            const div = document.createElement("div");
+            div.classList.add("falling");
+            div.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+            div.style.left = Math.random() * 100 + "%";
+            div.style.animationDuration = (Math.random() * 4 + 8) + "s";
+            div.style.fontSize = (Math.random() * 10 + 14) + "px";
+            document.body.appendChild(div);
+            setTimeout(() => div.remove(), 10000);
+        }
+        setInterval(createFalling, 1200);
+    </script>
+
+    <script>
+        const loveText = `宝宝 和你在一起的日子总是这么幸福且短暂 和你见面很开心又很难过 每次洗漱完出来看到你都在我睡的那一边放好水 我就拿起手机边看日历边想 还有多少天就又要和你分开 我父母总是告诉我我长大了不可以再那么依赖别人 要独立 也不会怎么和我表达感情 交流也是越来越少 让我一直都认为人是漂泊的候鸟 直到你告诉我我可以去依赖你 信任你 多和你表达感受 我又觉得爱是可以宜居的小岛 有一种 我见众生皆草木 唯独见你是青山的感觉 你也总是很照顾我 虽然我会莫名其妙跟你生一些小气 但你都会说是你的错 包容我 这些都是我从未体验过的 我总说我不信任你 不是你做的不够好 是我怕信任你依赖你之后如果你不喜欢我了我又要变回原来的样子 那我要怎么习惯 但你好像拥有什么魔法 让我可以一点点向你摊呈自己 也让你看到我的脆弱 眼泪 还有一些不完美的那面 但真诚的 谢谢你的存在 有你在我总会很安心  送你去高铁站我想让你快点进去 这样我就不会那么舍不得你 而我现在能给你的又太少 再给我一点时间 以后一定能给你 我发誓 我不是很会表达这些情情话话的东西 但真心希望你好 我们互相加油变成更好的自己
+
+山高路远 一路平安  一个人在国外照顾好自己 虽然每次我说这句话 你都说你已经会很好的照顾自己了 但想到你一个人面对那些  一个人拖行李 落地要从机场坐那么久的车才能到家 也很不容易 我心疼你 做饭的时候小心不要烫到 走路要慢慢走 小心不要磕磕碰碰 多喝热水 要少吃褪黑素  不要着凉不要生病！我爱你 要多多想我 不可以哭哭噢  多笑笑`;
+
+        const yesBtn = document.getElementById('yesBtn');
+        const noBtn = document.getElementById('noBtn');
+        const content = document.getElementById('content');
+
+        yesBtn.addEventListener('click', () => {
+            clearModals();
+            content.innerText = loveText;
+        });
+
+        noBtn.addEventListener('click', () => {
+            content.innerText = '';
+            showModal('不再仔细想想了吗，确定吗 🐈', false);
+            setTimeout(() => {
+                clearModals();
+                showModal('没有选no的机会哦 ♾️', true);
+            }, 3000);
+        });
+
+        function showModal(message, showButtons) {
+            const overlay = document.createElement('div');
+            overlay.className = 'overlay';
+            document.body.appendChild(overlay);
+
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `<p>${message}</p>`;
+
+            if (showButtons) {
+                const btnContainer = document.createElement('div');
+                btnContainer.style.display = 'flex';
+                btnContainer.style.gap = '1rem';
+                btnContainer.style.justifyContent = 'center';
+
+                const btn1 = document.createElement('button');
+                btn1.innerText = 'yes';
+                const btn2 = document.createElement('button');
+                btn2.innerText = 'yes';
+
+                const handleBtnClick = () => {
+                    alert('恭喜snx永远爱我 💍');
+                    clearModals();
+                };
+
+                btn1.onclick = handleBtnClick;
+                btn2.onclick = handleBtnClick;
+
+                btnContainer.appendChild(btn1);
+                btnContainer.appendChild(btn2);
+                modal.appendChild(btnContainer);
+            }
+
+            document.body.appendChild(modal);
+        }
+
+        function clearModals() {
+            document.querySelectorAll('.overlay').forEach(el => el.remove());
+            document.querySelectorAll('.modal').forEach(el => el.remove());
+        }
+    </script>
+</body>
+</html>
