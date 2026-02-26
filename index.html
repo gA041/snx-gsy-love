@@ -17,7 +17,7 @@
             min-height: 100vh;
             color: #fff;
             overflow-x: hidden;
-            padding-bottom: 80px; /* 给底部输入栏留空间，避免文字被遮挡 */
+            padding-bottom: 80px;
         }
 
         /* 顶部导航（已调小） */
@@ -25,22 +25,19 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0.8rem 1.2rem; /* 缩小内边距 */
+            padding: 0.7rem 1rem;
             background: rgba(0,0,0,0.3);
             backdrop-filter: blur(10px);
         }
         .top-bar .title {
             font-family: 'Georgia', serif;
-            font-size: 1.4rem; /* 缩小标题字号 */
+            font-size: 1.3rem;
             color: #f8c8d8;
             letter-spacing: 1px;
         }
         .top-bar .info {
-            font-size: 0.8rem; /* 缩小信息字号 */
+            font-size: 0.8rem;
             color: #ddd;
-        }
-        .top-bar > div:first-child span {
-            font-size: 1.1rem; /* 缩小图标字号 */
         }
 
         /* 歌曲信息区 */
@@ -56,35 +53,6 @@
         .song-artist {
             font-size: 1rem;
             color: #ccc;
-        }
-
-        /* 播放器控制区 */
-        .player-controls {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 2rem;
-            margin: 2rem 0;
-        }
-        .control-btn {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.1);
-            border: none;
-            color: #fff;
-            font-size: 1.5rem;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .control-btn:hover {
-            background: rgba(255,255,255,0.2);
-        }
-        .control-btn.play {
-            width: 70px;
-            height: 70px;
-            background: #f8c8d8;
-            color: #222;
         }
 
         /* 进度条 */
@@ -142,7 +110,7 @@
             border: 2px solid #f8c8d8;
         }
         .heart {
-            position: absolute;
+            the position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
@@ -181,31 +149,31 @@
             box-shadow: 0 5px 15px rgba(248, 200, 216, 0.3);
         }
 
-        /* 聊天区 - 修复文字显示 */
+        /* 聊天区 —— 默认隐藏！*/
         .chat {
             width: 90%;
-            max-width: 600px; /* 加宽聊天区 */
+            max-width: 600px;
             margin: 2rem auto;
-            max-height: 450px; /* 提高高度 */
+            max-height: 450px;
             overflow-y: auto;
-            display: block; /* 改为默认显示，也可改回none按需触发 */
-            background: rgba(0,0,0,0.2); /* 增加背景，提升文字对比度 */
+            display: none; /* 这里改成默认不显示 */
+            background: rgba(0,0,0,0.2);
             padding: 1rem;
             border-radius: 12px;
         }
         .bubble {
-            width: 100%; /* 气泡占满宽度，避免文字挤压 */
+            width: 100%;
             padding: 1rem 1.2rem;
             border-radius: 18px;
             margin: 1rem 0;
-            font-size: 1.1rem; /* 放大字号 */
-            line-height: 1.8; /* 增加行间距 */
-            color: #fff; /* 统一文字颜色为白色，提高辨识度 */
-            background: rgba(248, 200, 216, 0.15); /* 气泡背景增强对比 */
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #fff;
+            background: rgba(248, 200, 216, 0.15);
         }
         .bubble.left {
             background: rgba(248, 200, 216, 0.3);
-            color: #222; /* 浅色背景配深色字，更清晰 */
+            color: #222;
         }
 
         /* 滚动条美化 */
@@ -295,6 +263,7 @@
     </style>
 </head>
 <body>
+
     <!-- 星星装饰 -->
     <div class="star s1">★</div>
     <div class="star s2">★</div>
@@ -316,13 +285,6 @@
     <div class="song-info">
         <div class="song-title">可爱女人</div>
         <div class="song-artist">周杰伦</div>
-    </div>
-
-    <!-- 播放器控制 -->
-    <div class="player-controls">
-        <button class="control-btn">2021</button>
-        <button class="control-btn play">4ever</button>
-        <button class="control-btn">？</button>
     </div>
 
     <!-- 进度条 -->
@@ -349,7 +311,7 @@
         <button id="noBtn">no</button>
     </div>
 
-    <!-- 聊天区（你的文字）- 修复闭合标签 -->
+    <!-- 聊天区（你的文字） -->
     <div class="chat" id="chat">
         <div class="bubble left">宝宝 和你在一起的日子总是这么幸福且短暂 和你见面很开心又很难过 每次洗漱完出来看到你都在我睡的那一边放好水 我就拿起手机边看日历边想 还有多少天就又要和你分开 我父母总是告诉我我长大了不可以再那么依赖别人 要独立 也不会怎么和我表达感情 交流也是越来越少 让我一直都认为人是漂泊的候鸟 直到你告诉我我可以去依赖你 信任你 多和你表达感受 我又觉得爱是可以宜居的小岛 有一种 我见众生皆草木 唯独见你是青山的感觉 你也总是很照顾我 虽然我会莫名其妙跟你生一些小气 但你都会说是 your fault 包容我 这些都是我从未体验过的 我总说我不信任你 不是你做的不够好 是我怕信任你依赖你之后如果你不喜欢我了我又要变回原来的样子 那我要怎么习惯 但你好像拥有什么魔法 让我可以一点点向你摊呈自己 也让你看到我的脆弱 眼泪 还有一些不完美的那面 但真诚的 谢谢你的存在 有你在我总会很安心  送你去高铁站我想让你快点进去 这样我就不会那么舍不得你 而我现在能给你的又太少 再给我一点时间 以后一定能给你 我发誓 我不是很会表达这些情情话话的东西 但真心希望你好 我们互相加油变成更好的自己
 
@@ -367,41 +329,34 @@
     </div>
 
     <script>
-        // 修复JS语法错误（闭合字符串）
         const loveText = `宝宝 和你在一起的日子总是这么幸福且短暂 和你见面很开心又很难过 每次洗漱完出来看到你都在我睡的那一边放好水 我就拿起手机边看日历边想 还有多少天就又要和你分开 我父母总是告诉我我长大了不可以再那么依赖别人 要独立 也不会怎么和我表达感情 交流也是越来越少 让我一直都认为人是漂泊的候鸟 直到你告诉我我可以去依赖你 信任你 多和你表达感受 我又觉得爱是可以宜居的小岛 有一种 我见众生皆草木 唯独见你是青山的感觉 你也总是很照顾我 虽然我会莫名其妙跟你生一些小气 但你都会说是你的错 包容我 这些都是我从未体验过的 我总说我不信任你 不是你做的不够好 是我怕信任你依赖你之后如果你不喜欢我了我又要变回原来的样子 那我要怎么习惯 但你好像拥有什么魔法 让我可以一点点向你摊呈自己 也让你看到我的脆弱 眼泪 还有一些不完美的那面 但真诚的 谢谢你的存在 有你在我总会很安心  送你去高铁站我想让你快点进去 这样我就不会那么舍不得你 而我现在能给你的又太少 再给我一点时间 以后一定能给你 我发誓 我不是很会表达这些情情话话的东西 但真心希望你好 我们互相加油变成更好的自己
 
 山高路远 一路平安  一个人在国外照顾好自己 虽然每次我说这句话 你都说你已经会很好的照顾自己了 但想到你一个人面对那些  一个人拖行李 落地要从机场坐那么久的车才能到家 也很不容易 我心疼你 做饭的时候小心不要烫到 走路要慢慢走 小心不要磕磕碰碰 多喝热水 要少吃褪黑素  不要着凉不要生病！我爱你 要多多想我 不可以哭哭噢  多笑笑`;
 
-        // 登录验证：没登录自动跳回登录页
         if (!sessionStorage.getItem('logined')) {
             location.href = 'login.html';
         }
 
-        // 确保页面加载完成后再执行脚本
         document.addEventListener('DOMContentLoaded', function() {
             const yesBtn = document.getElementById('yesBtn');
             const noBtn = document.getElementById('noBtn');
             const chat = document.getElementById('chat');
 
-            if (yesBtn && chat) {
-                yesBtn.addEventListener('click', () => {
-                    clearModals();
-                    chat.style.display = 'block'; 
-                    // 可选：点击后替换为完整文字
-                    chat.innerHTML = `<div class="bubble left">${loveText}</div>`;
-                });
-            }
+            // 点击 yes → 显示文字
+            yesBtn.addEventListener('click', () => {
+                clearModals();
+                chat.style.display = 'block';
+            });
 
-            if (noBtn) {
-                noBtn.addEventListener('click', () => {
-                    if (chat) chat.style.display = 'none'; 
-                    showModal('不再仔细想想了吗，确定吗 🐈', false);
-                    setTimeout(() => {
-                        clearModals();
-                        showModal('没有选no的机会哦 ♾️', true);
-                    }, 3000);
-                });
-            }
+            // 点击 no → 隐藏文字
+            noBtn.addEventListener('click', () => {
+                chat.style.display = 'none';
+                showModal('不再仔细想想了吗，确定吗 🐈', false);
+                setTimeout(() => {
+                    clearModals();
+                    showModal('没有选no的机会哦 ♾️', true);
+                }, 3000);
+            });
         });
 
         function showModal(message, showButtons) {
