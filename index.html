@@ -17,6 +17,7 @@
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
+            background-repeat: no-repeat;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -145,14 +146,14 @@
             z-index: 1;
         }
 
-        /* 主卡片容器 */
+        /* 主卡片容器 —— 完全不挡背景 */
         .main-card {
-            background-color: rgba(255, 255, 255, 0.92);
+            background-color: #ffffff;
             width: 100%;
             max-width: 600px;
             padding: 2.5rem 2rem;
             border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             text-align: center;
             position: relative;
             z-index: 1;
