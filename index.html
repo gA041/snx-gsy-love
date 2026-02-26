@@ -175,7 +175,7 @@
             box-shadow: 0 5px 15px rgba(248, 200, 216, 0.3);
         }
 
-        /* 聊天区 —— 仅文字区域有蒙版 + 滚动条 + 默认隐藏 */
+        /* 聊天区 —— 无蒙版 + 滚动条 + 默认隐藏 */
         .chat {
             width: 90%;
             max-width: 600px;
@@ -183,9 +183,8 @@
             max-height: 420px;
             overflow-y: auto;    /* 滚动条 */
             display: none;      /* 默认隐藏 */
-            background: rgba(0, 0, 0, 0.35); /* 只有文字这里有蒙版 */
-            border-radius: 16px;
-            padding: 1rem;
+            background: transparent;
+            padding: 0.5rem;
         }
         .bubble {
             width: 100%;
@@ -257,17 +256,9 @@
             background: rgba(0,0,0,0.5);
             z-index: 999;
         }
-
-        /* 隐藏音频播放器 */
-        audio {
-            display: none;
-        }
     </style>
 </head>
 <body>
-
-    <!-- 自动播放音频：keai.mp3，循环播放，隐藏播放器 -->
-    <audio id="bgMusic" src="keai.mp3" autoplay loop preload="auto">
 
     <div class="top-bar">
         <div>
@@ -327,7 +318,6 @@
     const chat = document.getElementById('chat');
     const yesBtn = document.getElementById('yesBtn');
     const noBtn = document.getElementById('noBtn');
-    const bgMusic = document.getElementById('bgMusic');
 
     yesBtn.onclick = function() {
         chat.style.display = 'block';
@@ -379,13 +369,6 @@
         document.querySelectorAll('.overlay').forEach(el => el.remove());
         document.querySelectorAll('.modal').forEach(el => el.remove());
     }
-
-    // 兼容自动播放：用户首次交互后确保播放
-    document.addEventListener('click', () => {
-        if (bgMusic.paused) {
-            bgMusic.play().catch(err => console.log('音频播放失败', err));
-        }
-    }, { once: true });
 </script>
 
 </body>
