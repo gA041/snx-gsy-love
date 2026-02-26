@@ -13,13 +13,10 @@
         }
 
         body {
-            /* 保留你的背景图，同时叠加淡紫色滤镜 */
             background-image: url('gsy666.jpg');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
-            background-color: rgba(156, 39, 176, 0.2); /* 淡紫色滤镜 */
-            background-blend-mode: soft-light;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -150,16 +147,15 @@
 
         /* 主卡片容器 */
         .main-card {
-            background-color: rgba(255, 255, 255, 0.9); /* 半透明白色，透出背景图 */
+            background-color: rgba(255, 255, 255, 0.92);
             width: 100%;
             max-width: 600px;
             padding: 2.5rem 2rem;
             border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(156, 39, 176, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
             text-align: center;
             position: relative;
             z-index: 1;
-            backdrop-filter: blur(8px); /* 毛玻璃效果 */
         }
 
         h1 {
@@ -167,7 +163,6 @@
             font-size: 2rem;
             margin-bottom: 2rem;
             letter-spacing: 2px;
-            text-shadow: 0 0 10px rgba(255,255,255,0.8);
         }
 
         .buttons {
@@ -199,7 +194,7 @@
         #content {
             margin-top: 2rem;
             padding: 2rem;
-            background-color: rgba(250, 244, 252, 0.9);
+            background-color: #faf4fc;
             border-radius: 12px;
             color: #333;
             font-size: 1rem;
@@ -210,30 +205,42 @@
             border: 1px solid #e1bee7;
         }
 
-        /* 滚动条美化 */
+        /* 滚动条美化 —— 小羊 🐑 样式 */
         #content::-webkit-scrollbar {
-            width: 6px;
+            width: 12px;
+        }
+        #content::-webkit-scrollbar-track {
+            background: #f3e5f5;
+            border-radius: 6px;
         }
         #content::-webkit-scrollbar-thumb {
             background: #ce93d8;
-            border-radius: 3px;
+            border-radius: 6px;
+            position: relative;
+        }
+        #content::-webkit-scrollbar-thumb::after {
+            content: "🐑";
+            font-size: 10px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
 
         /* 小贴士 */
         .tips {
             margin-top: 1.5rem;
             font-size: 0.8rem;
-            color: #fff;
+            color: #9575cd;
             text-align: center;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
         }
         .tips a {
-            color: #fff;
-            text-decoration: underline;
+            color: #9c27b0;
+            text-decoration: none;
             margin: 0 0.3rem;
         }
         .tips a:hover {
-            color: #e1bee7;
+            text-decoration: underline;
         }
 
         /* 模态框 */
@@ -267,6 +274,7 @@
     </style>
 </head>
 <body>
+
     <!-- 小猫挂件 -->
     <div class="cat">
         <div class="cat-ear left"></div>
@@ -353,7 +361,7 @@
                 const btnContainer = document.createElement('div');
                 btnContainer.style.display = 'flex';
                 btnContainer.style.gap = '1rem';
-                btnContainer.style.justifyContent = 'center';
+                btnContainer.style.justifyContent: 'center';
 
                 const btn1 = document.createElement('button');
                 btn1.innerText = 'yes';
