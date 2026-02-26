@@ -135,7 +135,7 @@
 
         <div class="form-group">
             <label for="password">密码</label>
-            <input type="password" id="password" value="2021">
+            <input type="password" id="password" placeholder="请输入密码">
         </div>
 
         <button class="login-btn" id="loginBtn">🐾 we got one love!</button>
@@ -155,12 +155,19 @@
             const password = passwordInput.value.trim();
 
             if (username === 'snxgsy99' && password === '2021') {
+                sessionStorage.setItem('logined','yes');
                 alert('登录成功！正在跳转...');
-                // 这里可以把下面的路径改成你之前纪念网页的文件名，比如 'index.html'
                 window.location.href = 'index.html';
             } else {
                 alert('账号或密码错误，请重试！');
+                passwordInput.value = '';
+                passwordInput.focus();
             }
+        });
+
+        // 回车也能登录
+        passwordInput.addEventListener('keydown', function(e){
+            if(e.key === 'Enter') loginBtn.click();
         });
     </script>
 </body>
