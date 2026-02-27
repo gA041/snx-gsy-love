@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>snx gsy 永远在一起</title>
     <style>
+        /* 您的所有样式都原封不动 */
         * {
             margin: 0;
             padding: 0;
@@ -570,7 +571,8 @@
     </div>
 
 <script>
-    // ===== 长文字通过yes按钮切换显示/隐藏 =====
+    // ===== 您的原有代码全部保留 =====
+    // 长文字通过yes按钮切换显示/隐藏
     const longMsg = document.getElementById('longMessage');
     const yesBtn = document.getElementById('yesBtn');
     const noBtn = document.getElementById('noBtn');
@@ -631,7 +633,7 @@
         document.querySelectorAll('.modal').forEach(el => el.remove());
     }
 
-    // ===== 背景音乐自动播放兼容代码 =====
+    // 背景音乐自动播放兼容代码
     const audio = document.getElementById('bgm');
     audio.src = "https://music.163.com/song/media/outer/url?id=209397.mp3";
 
@@ -652,7 +654,7 @@
 
     audio.load();
 
-    // ===== 数独游戏逻辑 =====
+    // 数独游戏逻辑
     const PUZZLE_EASY = [
         [5,3,0,0,7,0,0,0,0],
         [6,0,0,1,9,5,0,0,0],
@@ -840,47 +842,150 @@
         });
     });
 
-    // ===== 消息发送与历史记录功能 - 添加localStorage持久化 =====
+    // ===== 只修改了这部分：消息发送与历史记录功能 =====
+    // 改为使用 WebRTC 实现共享聊天
     const messageInput = document.getElementById('messageInput');
     const sendBtn = document.getElementById('sendMsgBtn');
     const messageHistoryDiv = document.getElementById('messageHistory');
     const historyToggleBtn = document.getElementById('historyToggleBtn');
 
-    // 从localStorage加载历史消息
-    let messages = [];
-    try {
-        const saved = localStorage.getItem('snx_chat_messages');
-        if (saved) {
-            messages = JSON.parse(saved);
-        }
-    } catch (e) {
-        console.log('加载历史消息失败', e);
+    let historyVisible = false;
+    
+    // WebRTC 相关变量
+    const configuration = {
+        iceServers: [
+            { urls: 'stun:stun.l.google.com:19302' },
+            { urls: 'stun:stun1.l.google.com:19302' }
+        ]
+    };
+    
+    // 生成唯一的用户ID
+    const userId = 'user_' + Math.random().toString(36).substr(2, 9);
+    let peerConnection = null;
+    let dataChannel = null;
+    let isConnected = false;
+    
+    // 创建连接
+    function createConnection() {
+        peerConnection = new RTCPeerConnection(configuration);
+        
+        // 创建数据通道
+        dataChannel = peerConnection.createDataChannel('chat');
+        setupDataChannel();
+        
+        // 处理ICE候选
+        peerConnection.onicecandidate = (event) => {
+            if (event.candidate) {
+                // 通过localStorage传递ICE候选（简单版信令）
+                localStorage.setItem('ice_' + userId, JSON.stringify({
+                    candidate: event.candidate,
+                    from: userId
+                }));
+            }
+        };
+        
+        // 创建Offer
+        peerConnection.createOffer()
+            .then(offer => peerConnection.setLocalDescription(offer))
+            .then(() => {
+                localStorage.setItem('offer_' + userId, JSON.stringify({
+                    offer: peerConnection.localDescription,
+                    from: userId
+                }));
+            });
     }
-
-    let historyVisible = false; // 初始隐藏
-
-    // 保存消息到localStorage
-    function saveMessages() {
-        try {
-            localStorage.setItem('snx_chat_messages', JSON.stringify(messages));
-        } catch (e) {
-            console.log('保存历史消息失败', e);
-        }
+    
+    // 设置数据通道
+    function setupDataChannel() {
+        if (!dataChannel) return;
+        
+        dataChannel.onopen = () => {
+            console.log('连接成功！');
+            isConnected = true;
+        };
+        
+        dataChannel.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            displayMessage(data.text, data.time, '对方');
+        };
     }
-
-    function renderMessages() {
-        messageHistoryDiv.innerHTML = '';
-        messages.forEach(msg => {
-            const msgDiv = document.createElement('div');
-            msgDiv.className = 'message-item own';
-            msgDiv.innerHTML = `${msg.text} <small>${msg.time}</small>`;
-            messageHistoryDiv.appendChild(msgDiv);
-        });
-        // 滚动到底部
+    
+    // 监听其他用户的连接请求
+    window.addEventListener('storage', (e) => {
+        if (e.key && e.key.startsWith('offer_') && !e.key.includes(userId)) {
+            try {
+                const data = JSON.parse(e.newValue);
+                if (data.offer && !peerConnection) {
+                    // 接收到Offer，创建Answer
+                    peerConnection = new RTCPeerConnection(configuration);
+                    
+                    peerConnection.ondatachannel = (event) => {
+                        dataChannel = event.channel;
+                        setupDataChannel();
+                    };
+                    
+                    peerConnection.onicecandidate = (event) => {
+                        if (event.candidate) {
+                            localStorage.setItem('ice_' + userId, JSON.stringify({
+                                candidate: event.candidate,
+                                from: userId,
+                                target: data.from
+                            }));
+                        }
+                    };
+                    
+                    peerConnection.setRemoteDescription(new RTCSessionDescription(data.offer))
+                        .then(() => peerConnection.createAnswer())
+                        .then(answer => peerConnection.setLocalDescription(answer))
+                        .then(() => {
+                            localStorage.setItem('answer_' + userId, JSON.stringify({
+                                answer: peerConnection.localDescription,
+                                from: userId,
+                                target: data.from
+                            }));
+                        });
+                }
+            } catch (err) {
+                console.log('处理Offer出错:', err);
+            }
+        }
+        
+        if (e.key && e.key.startsWith('answer_') && e.key.includes(userId)) {
+            try {
+                const data = JSON.parse(e.newValue);
+                if (data.answer && peerConnection) {
+                    peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer));
+                }
+            } catch (err) {
+                console.log('处理Answer出错:', err);
+            }
+        }
+        
+        if (e.key && e.key.startsWith('ice_') && !e.key.includes(userId)) {
+            try {
+                const data = JSON.parse(e.newValue);
+                if (data.candidate && peerConnection) {
+                    peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate));
+                }
+            } catch (err) {
+                console.log('处理ICE出错:', err);
+            }
+        }
+    });
+    
+    // 显示消息
+    function displayMessage(text, time, sender = '我') {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'message-item own';
+        msgDiv.innerHTML = `${sender === '我' ? '' : '👤 '}${text} <small>${time}</small>`;
+        messageHistoryDiv.appendChild(msgDiv);
+        
+        // 自动滚动到底部
         const chat = document.getElementById('chat');
         chat.scrollTop = chat.scrollHeight;
     }
-
+    
+    // 发送消息
     function sendMessage() {
         const text = messageInput.value.trim();
         if (text === '') return;
@@ -888,12 +993,28 @@
         const now = new Date();
         const timeStr = now.toLocaleTimeString('zh-CN', { hour12: false, hour: '2-digit', minute: '2-digit' });
 
-        messages.push({ text, time: timeStr });
+        // 显示自己的消息
+        displayMessage(text, timeStr, '我');
         
-        // 保存到localStorage
-        saveMessages();
-        
-        renderMessages();
+        // 如果有连接，发送给对方
+        if (dataChannel && dataChannel.readyState === 'open') {
+            dataChannel.send(JSON.stringify({
+                text: text,
+                time: timeStr
+            }));
+        } else {
+            // 如果没有连接，尝试创建连接
+            createConnection();
+            // 稍后发送（等连接建立）
+            setTimeout(() => {
+                if (dataChannel && dataChannel.readyState === 'open') {
+                    dataChannel.send(JSON.stringify({
+                        text: text,
+                        time: timeStr
+                    }));
+                }
+            }, 2000);
+        }
 
         // 如果历史是隐藏的，发送消息后自动显示
         if (!historyVisible) {
@@ -903,10 +1024,6 @@
         }
 
         messageInput.value = '';
-        
-        // 自动滚动
-        const chat = document.getElementById('chat');
-        chat.scrollTop = chat.scrollHeight;
     }
 
     sendBtn.addEventListener('click', function(e) {
@@ -933,16 +1050,15 @@
             messageHistoryDiv.classList.remove('hidden');
             historyToggleBtn.textContent = '知道啦';
             historyVisible = true;
-            // 显示时滚动到底部
             const chat = document.getElementById('chat');
             chat.scrollTop = chat.scrollHeight;
         }
     });
 
-    // 如果有历史消息，初始时渲染但不显示（保持隐藏）
-    renderMessages();
+    // 自动尝试连接
+    setTimeout(createConnection, 1000);
 
-    // ===== 数独显示/隐藏控制 (每日一练按钮) =====
+    // 数独显示/隐藏控制 (每日一练按钮)
     const sudokuSection = document.getElementById('sudokuSection');
     const sudokuToggleBtn = document.getElementById('sudokuToggleBtn');
     let sudokuVisible = false;
