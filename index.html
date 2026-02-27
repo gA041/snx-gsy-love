@@ -12,14 +12,15 @@
             font-family: "Microsoft YaHei", "Segoe UI", sans-serif;
         }
 
-        /* 背景容器 —— 完全保留原始格式，同时优化清晰度 */
+        /* 背景容器 —— 缩小图片并居中，确保不被遮挡 */
         body {
             position: relative;
+            /* 将背景图设置为不重复，并缩小到原始尺寸的80%左右，同时居中 */
             background-image: url("gsy666.jpg");
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            background-repeat: no-repeat;
+            background-size: 80% auto;  /* 宽度缩小到80%，高度自适应，保持比例 */
+            background-position: center center;  /* 严格居中 */
+            background-attachment: fixed;  /* 保持固定，避免滚动遮挡 */
+            background-repeat: no-repeat;  /* 不重复显示 */
             /* 保持原始背景格式，仅添加清晰度优化 */
             image-rendering: -webkit-optimize-contrast;  /* 针对Webkit浏览器优化清晰度 */
             image-rendering: crisp-edges;                /* 针对其他浏览器 */
@@ -30,7 +31,7 @@
             padding-bottom: 80px;
         }
 
-        /* 全屏半透明蒙版 */
+        /* 全屏半透明蒙版 —— 覆盖整个视口，确保不被背景图大小影响 */
         body::before {
             content: '';
             position: fixed;
