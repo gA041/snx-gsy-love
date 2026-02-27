@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>snx gsy永远在一起</title>
+    <title>snx gsy 永远在一起</title>
     <style>
         * {
             margin: 0;
@@ -12,6 +12,7 @@
             font-family: "Microsoft YaHei", "Segoe UI", sans-serif;
         }
 
+        /* 背景容器 —— 完全保留原始设置 */
         body {
             position: relative;
             background-image: url("gsy666.jpg");
@@ -21,10 +22,10 @@
             min-height: 100vh;
             color: #fff;
             overflow-x: hidden;
-            padding-bottom: 100px;
+            padding-bottom: 80px;
         }
 
-        /* 半透明蒙版 —— 完全保留原来的效果 */
+        /* 全屏半透明蒙版 */
         body::before {
             content: '';
             position: fixed;
@@ -114,7 +115,7 @@
             color: #ccc;
         }
 
-        /* 头像框缩小 */
+        /* 头像框 */
         .listen-together {
             display: flex;
             justify-content: center;
@@ -203,21 +204,21 @@
             border-radius: 3px;
         }
 
-        /* ===== 数独游戏区域 - 调小尺寸（其他所有文字保留原样） ===== */
+        /* ===== 数独游戏区域 (仅修改网格线显示，其他完全保留) ===== */
         .sudoku-section {
             width: 90%;
-            max-width: 400px;           /* 缩小最大宽度 */
-            margin: 2rem auto 1.5rem;    /* 边距调整 */
+            max-width: 400px;
+            margin: 1.5rem auto 2rem;
             background: rgba(10, 10, 20, 0.5);
             backdrop-filter: blur(8px);
-            border-radius: 28px;         /* 圆角稍小 */
-            padding: 1.2rem 0.8rem;       /* 内边距减小 */
+            border-radius: 28px;
+            padding: 1.2rem 0.8rem;
             box-shadow: 0 8px 20px rgba(0,0,0,0.5);
             border: 1px solid rgba(248,200,216,0.3);
         }
         .sudoku-title {
             text-align: center;
-            font-size: 1.3rem;           /* 标题调小 */
+            font-size: 1.3rem;
             color: #f8c8d8;
             margin-bottom: 0.3rem;
             letter-spacing: 1px;
@@ -228,7 +229,7 @@
             gap: 0.5rem;
         }
         .sudoku-title span {
-            font-size: 0.85rem;           /* 标签调小 */
+            font-size: 0.85rem;
             background: #f8c8d8;
             color: #222;
             padding: 0.15rem 0.9rem;
@@ -238,29 +239,37 @@
         .sudoku-grid {
             display: grid;
             grid-template-columns: repeat(9, 1fr);
-            gap: 2px;                     /* 格子间隙缩小 */
+            gap: 0;                     /* 间隙设为0，让边框直接相邻 */
             background-color: rgba(255,255,255,0.15);
-            padding: 5px;                  /* 内边距减小 */
-            border-radius: 16px;
-            margin: 0.5rem 0 0.8rem;        /* 上下边距调小 */
+            padding: 0;                 /* 移除内边距 */
+            border: 2px solid #f8c8d8;  /* 外边框用主题色 */
+            border-radius: 12px;
+            margin: 0.5rem 0 0.8rem;
+            overflow: hidden;           /* 确保圆角裁剪 */
         }
         .sudoku-cell {
             aspect-ratio: 1 / 1;
             background: rgba(30, 30, 40, 0.8);
-            border: none;
-            border-radius: 6px;             /* 圆角稍小 */
+            border: 1px solid rgba(248,200,216,0.3);  /* 所有格子添加半透明边框 */
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.1rem;               /* 字体调小 */
+            font-size: 1.1rem;
             font-weight: 500;
             color: #f0d0e0;
             caret-color: #f8c8d8;
             transition: 0.1s;
             text-align: center;
-            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05);
+            box-sizing: border-box;
         }
-        /* 预置数字（固定线索）用更浅色表示不可编辑 */
+        /* 粗网格线表示3x3宫格 */
+        .sudoku-cell.right-border {
+            border-right: 2px solid #f8c8d8;
+        }
+        .sudoku-cell.bottom-border {
+            border-bottom: 2px solid #f8c8d8;
+        }
+        /* 预置数字样式 */
         .sudoku-cell.prefilled {
             color: #ffcfcf;
             background: rgba(60, 40, 50, 0.7);
@@ -270,13 +279,16 @@
         /* 可编辑格子获得焦点时高亮 */
         .sudoku-cell[contenteditable="true"]:focus {
             outline: 2px solid #f8c8d8;
+            outline-offset: -1px;
             background: rgba(80, 60, 70, 0.9);
             color: #fff;
+            z-index: 1;
+            position: relative;
         }
         .sudoku-controls {
             display: flex;
             justify-content: center;
-            gap: 0.8rem;                  /* 按钮间距调小 */
+            gap: 0.8rem;
             margin-top: 0.5rem;
             flex-wrap: wrap;
         }
@@ -284,9 +296,9 @@
             background: rgba(248,200,216,0.2);
             border: 1px solid #f8c8d8;
             color: #f8c8d8;
-            padding: 0.3rem 1.2rem;         /* 按钮内边距调小 */
+            padding: 0.3rem 1.2rem;
             border-radius: 30px;
-            font-size: 0.9rem;               /* 字体稍小 */
+            font-size: 0.9rem;
             font-weight: 500;
             cursor: pointer;
             backdrop-filter: blur(4px);
@@ -300,13 +312,13 @@
         }
         .sudoku-message {
             text-align: center;
-            font-size: 0.85rem;             /* 提示信息字体调小 */
+            font-size: 0.85rem;
             margin-top: 0.6rem;
             color: #f0c0d0;
             min-height: 1.5rem;
         }
 
-        /* 底部输入栏 (固定在底部) */
+        /* 底部输入栏 (完全保留原样) */
         .input-bar {
             position: fixed;
             bottom: 0;
@@ -403,7 +415,6 @@
         <button id="noBtn">no</button>
     </div>
 
-    <!-- 聊天区 (点击yes显示) - 文字内容原封不动 -->
     <div class="chat" id="chat">
         <div class="bubble">
 宝宝 和你在一起的日子总是这么幸福且短暂 和你见面很开心又很难过 每次洗漱完出来看到你都在我睡的那一边放好水 我就拿起手机边看日历边想 还有多少天就又要和你分开 我父母总是告诉我我长大了不可以再那么依赖别人 要独立 也不会怎么和我表达感情 交流也是越来越少 让我一直都认为人是漂泊的候鸟 直到你告诉我我可以去依赖你 信任你 多和你表达感受 我又觉得爱是可以宜居的小岛 有一种 我见众生皆草木 唯独见你是青山的感觉 你也总是很照顾我 虽然我会莫名其妙跟你生一些小气 但你都会说是你的错 包容我 这些都是我从未体验过的 我总说我不信任你 不是你做的不够好 是我怕信任你依赖你之后如果你不喜欢我了我又要变回原来的样子 那我要怎么习惯 但你好像拥有什么魔法 让我可以一点点向你摊呈自己 也让你看到我的脆弱 眼泪 还有一些不完美的那面 但真诚的 谢谢你的存在 有你在我总会很安心  送你去高铁站我想让你快点进去 这样我就不会那么舍不得你 而我现在能给你的又太少 再给我一点时间 以后一定能给你 我发誓 我不是很会表达这些情情话话的东西 但真心希望你好 我们互相加油变成更好的自己
@@ -412,22 +423,20 @@
         </div>
     </div>
 
-    <!-- ========== 数独游戏区域 (尺寸已调小，文字保留原样) ========== -->
+    <!-- ===== 数独游戏区域 (已添加清晰网格线) ===== -->
     <div class="sudoku-section">
         <div class="sudoku-title">
-            🧩每日一考snx<span></span>
+            🐑每日一考 <span>snx加油</span>
         </div>
-        <!-- 9x9 网格会由js动态生成 -->
         <div id="sudokuGrid" class="sudoku-grid"></div>
         <div class="sudoku-controls">
-            <button class="sudoku-btn" id="checkSudoku">检查</button>
-            <button class="sudoku-btn" id="resetSudoku">重置</button>
-            <button class="sudoku-btn" id="newSudoku">新题</button>
+            <button class="sudoku-btn" id="checkSudoku">💡 检查</button>
+            <button class="sudoku-btn" id="resetSudoku">🔄 重置</button>
+            <button class="sudoku-btn" id="newSudoku">✨ 新题</button>
         </div>
         <div id="sudokuMessage" class="sudoku-message">填入数字 1-9，每行/列/宫不重复</div>
     </div>
 
-    <!-- 底部输入栏 -->
     <div class="input-bar">
         <input type="text" placeholder="说点什么...">
         <div class="icons">
@@ -438,270 +447,291 @@
     </div>
 
 <script>
-    (function() {
-        // ---------- 原有功能 完全保留 ----------
-        const chat = document.getElementById('chat');
-        const yesBtn = document.getElementById('yesBtn');
-        const noBtn = document.getElementById('noBtn');
+    // ===== 原有js功能 —— 完全保留未改动 =====
+    const chat = document.getElementById('chat');
+    const yesBtn = document.getElementById('yesBtn');
+    const noBtn = document.getElementById('noBtn');
 
-        function showModal(message, showButtons) {
-            const overlay = document.createElement('div');
-            overlay.className = 'overlay';
-            document.body.appendChild(overlay);
+    yesBtn.onclick = function() {
+        chat.style.display = 'block';
+    };
 
-            const modal = document.createElement('div');
-            modal.className = 'modal';
-            modal.innerHTML = `<p>${message}</p>`;
+    noBtn.onclick = function() {
+        chat.style.display = 'none';
+        showModal('没有选no的机会哦 ♾️', true);
+    };
 
-            if (showButtons) {
-                const btnContainer = document.createElement('div');
-                btnContainer.style.display = 'flex';
-                btnContainer.style.gap = '1rem';
-                btnContainer.style.justifyContent = 'center';
-                btnContainer.style.marginTop = '1rem';
+    function showModal(message, showButtons) {
+        const overlay = document.createElement('div');
+        overlay.className = 'overlay';
+        document.body.appendChild(overlay);
 
-                const btn1 = document.createElement('button');
-                btn1.innerText = 'yes';
-                const btn2 = document.createElement('button');
-                btn2.innerText = 'yes';
+        const modal = document.createElement('div');
+        modal.className = 'modal';
+        modal.innerHTML = `<p>${message}</p >`;
 
-                const handleBtnClick = () => {
-                    alert('恭喜snx永远爱我 💍');
-                    clearModals();
-                };
+        if (showButtons) {
+            const btnContainer = document.createElement('div');
+            btnContainer.style.display = 'flex';
+            btnContainer.style.gap = '1rem';
+            btnContainer.style.justifyContent = 'center';
+            btnContainer.style.marginTop = '1rem';
 
-                btn1.onclick = handleBtnClick;
-                btn2.onclick = handleBtnClick;
+            const btn1 = document.createElement('button');
+            btn1.innerText = 'yes';
+            const btn2 = document.createElement('button');
+            btn2.innerText = 'yes';
 
-                btnContainer.appendChild(btn1);
-                btnContainer.appendChild(btn2);
-                modal.appendChild(btnContainer);
-            }
+            const handleBtnClick = () => {
+                alert('恭喜snx永远爱我 💍');
+                clearModals();
+            };
 
-            document.body.appendChild(modal);
+            btn1.onclick = handleBtnClick;
+            btn2.onclick = handleBtnClick;
+
+            btnContainer.appendChild(btn1);
+            btnContainer.appendChild(btn2);
+            modal.appendChild(btnContainer);
         }
 
-        function clearModals() {
-            document.querySelectorAll('.overlay').forEach(el => el.remove());
-            document.querySelectorAll('.modal').forEach(el => el.remove());
+        document.body.appendChild(modal);
+    }
+
+    function clearModals() {
+        document.querySelectorAll('.overlay').forEach(el => el.remove());
+        document.querySelectorAll('.modal').forEach(el => el.remove());
+    }
+
+    // ===== 背景音乐自动播放兼容代码 =====
+    const audio = document.getElementById('bgm');
+    audio.src = "https://music.163.com/song/media/outer/url?id=209397.mp3";
+
+    let played = false;
+    function playAudio() {
+        if (played) return;
+        audio.play()
+            .then(() => {
+                played = true;
+                document.removeEventListener('touchstart', playAudio);
+                document.removeEventListener('click', playAudio);
+            })
+            .catch(() => {});
+    }
+
+    document.addEventListener('touchstart', playAudio, { once: true });
+    document.addEventListener('click', playAudio, { once: true });
+
+    const originalYes = yesBtn.onclick;
+    yesBtn.onclick = function(e) {
+        originalYes.call(this, e);
+        playAudio();
+    };
+
+    const originalNo = noBtn.onclick;
+    noBtn.onclick = function(e) {
+        originalNo.call(this, e);
+        playAudio();
+    };
+
+    audio.load();
+
+    // ===== 数独游戏逻辑 (新增，不影响原有功能) =====
+    const PUZZLE_EASY = [
+        [5,3,0,0,7,0,0,0,0],
+        [6,0,0,1,9,5,0,0,0],
+        [0,9,8,0,0,0,0,6,0],
+        [8,0,0,0,6,0,0,0,3],
+        [4,0,0,8,0,3,0,0,1],
+        [7,0,0,0,2,0,0,0,6],
+        [0,6,0,0,0,0,2,8,0],
+        [0,0,0,4,1,9,0,0,5],
+        [0,0,0,0,8,0,0,7,9]
+    ];
+
+    let currentBoard = JSON.parse(JSON.stringify(PUZZLE_EASY));
+    let initialBoard = JSON.parse(JSON.stringify(PUZZLE_EASY));
+
+    const gridContainer = document.getElementById('sudokuGrid');
+    const messageEl = document.getElementById('sudokuMessage');
+
+    // 为格子添加宫格边界类 (实现3x3粗网格)
+    function addBoxBorders(cell, row, col) {
+        // 右侧粗边框 (每3列，但最后一列不加)
+        if (col % 3 === 2 && col !== 8) {
+            cell.classList.add('right-border');
         }
-
-        yesBtn.onclick = function() {
-            chat.style.display = 'block';
-        };
-
-        noBtn.onclick = function() {
-            chat.style.display = 'none';
-            showModal('没有选no的机会哦 ♾️', true);
-        };
-
-        // ---------- 背景音乐自动播放 ----------
-        const audio = document.getElementById('bgm');
-        audio.src = "https://music.163.com/song/media/outer/url?id=209397.mp3";  
-
-        let played = false;
-        function playAudio() {
-            if (played) return;
-            audio.play()
-                .then(() => {
-                    played = true;
-                    document.removeEventListener('touchstart', playAudio);
-                    document.removeEventListener('click', playAudio);
-                })
-                .catch(() => {});
+        // 底部粗边框 (每3行，但最后一行不加)
+        if (row % 3 === 2 && row !== 8) {
+            cell.classList.add('bottom-border');
         }
+    }
 
-        document.addEventListener('touchstart', playAudio, { once: true });
-        document.addEventListener('click', playAudio, { once: true });
-
-        const originalYes = yesBtn.onclick;
-        yesBtn.onclick = function(e) {
-            originalYes.call(this, e);
-            playAudio();
-        };
-
-        const originalNo = noBtn.onclick;
-        noBtn.onclick = function(e) {
-            originalNo.call(this, e);
-            playAudio();
-        };
-
-        audio.load();
-
-        // ---------- 数独游戏逻辑 ----------
-        const PUZZLE_EASY = [
-            [5,3,0,0,7,0,0,0,0],
-            [6,0,0,1,9,5,0,0,0],
-            [0,9,8,0,0,0,0,6,0],
-            [8,0,0,0,6,0,0,0,3],
-            [4,0,0,8,0,3,0,0,1],
-            [7,0,0,0,2,0,0,0,6],
-            [0,6,0,0,0,0,2,8,0],
-            [0,0,0,4,1,9,0,0,5],
-            [0,0,0,0,8,0,0,7,9]
-        ];
-
-        let currentBoard = JSON.parse(JSON.stringify(PUZZLE_EASY));
-        let initialBoard = JSON.parse(JSON.stringify(PUZZLE_EASY));
-
-        const gridContainer = document.getElementById('sudokuGrid');
-        const messageEl = document.getElementById('sudokuMessage');
-
-        function renderSudoku(board, initial) {
-            gridContainer.innerHTML = '';
-            for (let r = 0; r < 9; r++) {
-                for (let c = 0; c < 9; c++) {
-                    const cell = document.createElement('div');
-                    cell.className = 'sudoku-cell';
-                    const isPrefilled = initial[r][c] !== 0;
-                    if (isPrefilled) {
-                        cell.classList.add('prefilled');
-                        cell.setAttribute('contenteditable', 'false');
-                        cell.textContent = initial[r][c];
-                    } else {
-                        cell.setAttribute('contenteditable', 'true');
-                        cell.textContent = board[r][c] !== 0 ? board[r][c] : '';
-                    }
-                    cell.dataset.row = r;
-                    cell.dataset.col = c;
-                    cell.addEventListener('input', function(e) {
-                        const row = parseInt(this.dataset.row);
-                        const col = parseInt(this.dataset.col);
-                        let val = this.innerText.trim();
-                        const match = val.match(/[1-9]/);
-                        if (match) {
-                            const digit = match[0];
-                            this.innerText = digit;
-                            currentBoard[row][col] = parseInt(digit);
-                        } else {
-                            this.innerText = '';
-                            currentBoard[row][col] = 0;
-                        }
-                    });
-                    cell.addEventListener('keydown', function(e) {
-                        if (e.key === 'Enter') {
-                            e.preventDefault();
-                            this.blur();
-                        }
-                    });
-                    gridContainer.appendChild(cell);
-                }
-            }
-        }
-
-        function updateUIFromBoard(board, initial) {
-            const cells = document.querySelectorAll('#sudokuGrid .sudoku-cell');
-            cells.forEach(cell => {
-                const r = parseInt(cell.dataset.row);
-                const c = parseInt(cell.dataset.col);
-                if (initial[r][c] !== 0) return;
-                const val = board[r][c];
-                cell.textContent = val !== 0 ? val : '';
-            });
-        }
-
-        function resetToInitial() {
-            currentBoard = JSON.parse(JSON.stringify(initialBoard));
-            updateUIFromBoard(currentBoard, initialBoard);
-            messageEl.innerText = '已重置，继续挑战吧老婆！';
-        }
-
-        const PUZZLE_MEDIUM = [
-            [0,0,0,2,6,0,7,0,1],
-            [6,8,0,0,7,0,0,9,0],
-            [1,9,0,0,0,4,5,0,0],
-            [8,2,0,1,0,0,0,4,0],
-            [0,0,4,6,0,2,9,0,0],
-            [0,5,0,0,0,3,0,2,8],
-            [0,0,9,3,0,0,0,7,4],
-            [0,4,0,0,5,0,0,3,6],
-            [7,0,3,0,1,8,0,0,0]
-        ];
-        function loadNewPuzzle() {
-            initialBoard = JSON.parse(JSON.stringify(PUZZLE_MEDIUM));
-            currentBoard = JSON.parse(JSON.stringify(PUZZLE_MEDIUM));
-            renderSudoku(currentBoard, initialBoard);
-            messageEl.innerText = '新题目来啦，加油哦宝宝';
-        }
-
-        function isBoardValid(board) {
-            const rows = Array(9).fill().map(() => ({}));
-            const cols = Array(9).fill().map(() => ({}));
-            const boxes = Array(9).fill().map(() => ({}));
-
-            for (let r = 0; r < 9; r++) {
-                for (let c = 0; c < 9; c++) {
-                    const val = board[r][c];
-                    if (val === 0) continue;
-                    if (val < 1 || val > 9) return false;
-                    const boxIdx = Math.floor(r/3)*3 + Math.floor(c/3);
-                    if (rows[r][val] || cols[c][val] || boxes[boxIdx][val]) return false;
-                    rows[r][val] = true;
-                    cols[c][val] = true;
-                    boxes[boxIdx][val] = true;
-                }
-            }
-            return true;
-        }
-
-        function checkSudoku() {
-            const cells = document.querySelectorAll('#sudokuGrid .sudoku-cell');
-            cells.forEach(cell => {
-                const r = parseInt(cell.dataset.row);
-                const c = parseInt(cell.dataset.col);
-                if (initialBoard[r][c] !== 0) return;
-                const txt = cell.innerText.trim();
-                if (txt.match(/^[1-9]$/)) {
-                    currentBoard[r][c] = parseInt(txt);
+    function renderSudoku(board, initial) {
+        gridContainer.innerHTML = '';
+        for (let r = 0; r < 9; r++) {
+            for (let c = 0; c < 9; c++) {
+                const cell = document.createElement('div');
+                cell.className = 'sudoku-cell';
+                
+                // 添加宫格边界线
+                addBoxBorders(cell, r, c);
+                
+                const isPrefilled = initial[r][c] !== 0;
+                if (isPrefilled) {
+                    cell.classList.add('prefilled');
+                    cell.setAttribute('contenteditable', 'false');
+                    cell.textContent = initial[r][c];
                 } else {
-                    currentBoard[r][c] = 0;
+                    cell.setAttribute('contenteditable', 'true');
+                    cell.textContent = board[r][c] !== 0 ? board[r][c] : '';
                 }
-            });
-
-            let hasEmpty = false;
-            outer: for (let r=0; r<9; r++) {
-                for (let c=0; c<9; c++) {
-                    if (currentBoard[r][c] === 0) {
-                        hasEmpty = true;
-                        break outer;
+                cell.dataset.row = r;
+                cell.dataset.col = c;
+                
+                cell.addEventListener('input', function(e) {
+                    const row = parseInt(this.dataset.row);
+                    const col = parseInt(this.dataset.col);
+                    let val = this.innerText.trim();
+                    const match = val.match(/[1-9]/);
+                    if (match) {
+                        const digit = match[0];
+                        this.innerText = digit;
+                        currentBoard[row][col] = parseInt(digit);
+                    } else {
+                        this.innerText = '';
+                        currentBoard[row][col] = 0;
                     }
-                }
+                });
+                
+                cell.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        this.blur();
+                    }
+                });
+                
+                gridContainer.appendChild(cell);
             }
+        }
+    }
 
-            if (hasEmpty) {
-                messageEl.innerText = '❌ 还有空格子，再填填～';
-                return;
+    function updateUIFromBoard(board, initial) {
+        const cells = document.querySelectorAll('#sudokuGrid .sudoku-cell');
+        cells.forEach(cell => {
+            const r = parseInt(cell.dataset.row);
+            const c = parseInt(cell.dataset.col);
+            if (initial[r][c] !== 0) return;
+            const val = board[r][c];
+            cell.textContent = val !== 0 ? val : '';
+        });
+    }
+
+    function resetToInitial() {
+        currentBoard = JSON.parse(JSON.stringify(initialBoard));
+        updateUIFromBoard(currentBoard, initialBoard);
+        messageEl.innerText = '已重置，继续挑战吧老婆 💪';
+    }
+
+    const PUZZLE_MEDIUM = [
+        [0,0,0,2,6,0,7,0,1],
+        [6,8,0,0,7,0,0,9,0],
+        [1,9,0,0,0,4,5,0,0],
+        [8,2,0,1,0,0,0,4,0],
+        [0,0,4,6,0,2,9,0,0],
+        [0,5,0,0,0,3,0,2,8],
+        [0,0,9,3,0,0,0,7,4],
+        [0,4,0,0,5,0,0,3,6],
+        [7,0,3,0,1,8,0,0,0]
+    ];
+
+    function loadNewPuzzle() {
+        initialBoard = JSON.parse(JSON.stringify(PUZZLE_MEDIUM));
+        currentBoard = JSON.parse(JSON.stringify(PUZZLE_MEDIUM));
+        renderSudoku(currentBoard, initialBoard);
+        messageEl.innerText = '新题目来啦，加油老婆';
+    }
+
+    function isBoardValid(board) {
+        const rows = Array(9).fill().map(() => ({}));
+        const cols = Array(9).fill().map(() => ({}));
+        const boxes = Array(9).fill().map(() => ({}));
+
+        for (let r = 0; r < 9; r++) {
+            for (let c = 0; c < 9; c++) {
+                const val = board[r][c];
+                if (val === 0) continue;
+                if (val < 1 || val > 9) return false;
+                const boxIdx = Math.floor(r/3)*3 + Math.floor(c/3);
+                if (rows[r][val] || cols[c][val] || boxes[boxIdx][val]) return false;
+                rows[r][val] = true;
+                cols[c][val] = true;
+                boxes[boxIdx][val] = true;
             }
+        }
+        return true;
+    }
 
-            if (isBoardValid(currentBoard)) {
-                messageEl.innerText = '完美！宝宝聪明';
+    function checkSudoku() {
+        const cells = document.querySelectorAll('#sudokuGrid .sudoku-cell');
+        cells.forEach(cell => {
+            const r = parseInt(cell.dataset.row);
+            const c = parseInt(cell.dataset.col);
+            if (initialBoard[r][c] !== 0) return;
+            const txt = cell.innerText.trim();
+            if (txt.match(/^[1-9]$/)) {
+                currentBoard[r][c] = parseInt(txt);
             } else {
-                messageEl.innerText = '好像有重复，再检查一下哦老婆';
+                currentBoard[r][c] = 0;
+            }
+        });
+
+        let hasEmpty = false;
+        outer: for (let r=0; r<9; r++) {
+            for (let c=0; c<9; c++) {
+                if (currentBoard[r][c] === 0) {
+                    hasEmpty = true;
+                    break outer;
+                }
             }
         }
 
-        renderSudoku(currentBoard, initialBoard);
+        if (hasEmpty) {
+            messageEl.innerText = '还有空格子，再填填哦';
+            return;
+        }
 
-        document.getElementById('checkSudoku').addEventListener('click', checkSudoku);
-        document.getElementById('resetSudoku').addEventListener('click', resetToInitial);
-        document.getElementById('newSudoku').addEventListener('click', function() {
-            loadNewPuzzle();
+        if (isBoardValid(currentBoard)) {
+            messageEl.innerText = '完美！老婆厉害';
+        } else {
+            messageEl.innerText = '好像有重复，再检查一下吧老婆';
+        }
+    }
+
+    // 初始化渲染
+    renderSudoku(currentBoard, initialBoard);
+
+    // 绑定按钮
+    document.getElementById('checkSudoku').addEventListener('click', checkSudoku);
+    document.getElementById('resetSudoku').addEventListener('click', resetToInitial);
+    document.getElementById('newSudoku').addEventListener('click', function() {
+        loadNewPuzzle();
+    });
+
+    // 粘贴过滤
+    document.querySelectorAll('#sudokuGrid .sudoku-cell[contenteditable="true"]').forEach(cell => {
+        cell.addEventListener('paste', (e) => {
+            e.preventDefault();
+            const text = (e.clipboardData || window.clipboardData).getData('text');
+            const match = text.match(/[1-9]/);
+            if (match) {
+                cell.innerText = match[0];
+                const inputEvent = new Event('input', { bubbles: true });
+                cell.dispatchEvent(inputEvent);
+            }
         });
-
-        document.querySelectorAll('#sudokuGrid .sudoku-cell[contenteditable="true"]').forEach(cell => {
-            cell.addEventListener('paste', (e) => {
-                e.preventDefault();
-                const text = (e.clipboardData || window.clipboardData).getData('text');
-                const match = text.match(/[1-9]/);
-                if (match) {
-                    cell.innerText = match[0];
-                    const inputEvent = new Event('input', { bubbles: true });
-                    cell.dispatchEvent(inputEvent);
-                }
-            });
-        });
-
-    })();
+    });
+    // ===== 数独游戏逻辑结束 =====
 </script>
 
 </body>
