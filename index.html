@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>snx gsy 永远在一起</title>
-    <!-- 引入 LeanCloud SDK (与之前相同) -->
+    <!-- 引入 LeanCloud SDK (用于双人消息同步) -->
     <script src="https://cdn.jsdelivr.net/npm/leancloud-storage@4.13.2/dist/av-min.js"></script>
     <style>
-        /* ===== 您的原有样式 完全保留 (只微调了modal防止重叠) ===== */
+        /* ===== 原有样式 完全保留 (只微调了modal防止重叠) ===== */
         * {
             margin: 0;
             padding: 0;
@@ -552,7 +552,7 @@
     </div>
 
 <script>
-    // ===== 所有原有逻辑保留 (yes/no/音频/模态框/数独) =====
+    // ===== 原有逻辑保留 (yes/no/音频/模态框/数独) =====
     const longMsg = document.getElementById('longMessage');
     const yesBtn = document.getElementById('yesBtn');
     const noBtn = document.getElementById('noBtn');
@@ -633,7 +633,7 @@
 
     audio.load();
 
-    // 数独游戏逻辑
+    // 数独游戏逻辑 (完全保留)
     const PUZZLE_EASY = [
         [5,3,0,0,7,0,0,0,0],
         [6,0,0,1,9,5,0,0,0],
@@ -821,210 +821,31 @@
         });
     });
 
-    // ===== 共享聊天核心 —— 所有人发的消息都在历史记录显示，双方可见 =====
-    // 初始化 LeanCloud（与之前相同，公共测试应用）
-    AV.init({
-        appId: '1i4yFOWT6Kt8UXxCEUAdpueP-gzGzoHsz',
-        appKey: 'Y5FR3nMBovHBPvMZX5mgbN0h',
-        serverURL: 'https://1i4yfowt.lc-cn-n1-shared.com'
-    });
+    // ========== 全新的双人留言板 (双方可见、自动同步) ==========
+    (function initSharedChat() {
+        // 初始化 LeanCloud
+        AV.init({
+            appId: '1i4yFOWT6Kt8UXxCEUAdpueP-gzGzoHsz',
+            appKey: 'Y5FR3nMBovHBPvMZX5mgbN0h',
+            serverURL: 'https://1i4yfowt.lc-cn-n1-shared.com'
+        });
 
-    const messageInput = document.getElementById('messageInput');
-    const sendBtn = document.getElementById('sendMsgBtn');
-    const messageHistoryDiv = document.getElementById('messageHistory');
-    const historyToggleBtn = document.getElementById('historyToggleBtn');
-
-    let historyVisible = false;  // 默认隐藏
-    let myLastMessageTime = null; // 用于去重（可选）
-
-    // 消息表 (与之前相同)
-    const Message = AV.Object.extend('Message');
-
-    // 加载所有历史消息（首次打开显示全部）
-    async function loadAllMessages() {
-        const query = new AV.Query('Message');
-        query.ascending('createdAt'); // 按时间正序
-        query.limit(200); // 最多200条，足够
-        
-        try {
-            const results = await query.find();
-            messageHistoryDiv.innerHTML = ''; // 清空
-            if (results.length === 0) {
-                // 可放一条默认提示
-                messageHistoryDiv.innerHTML = '<div class="message-item own"><small style="color:#ccc;">还没有消息，发送第一条吧~</small></div>';
-            } else {
-                results.forEach(result => {
-                    const text = result.get('text') || '';
-                    const time = result.get('time') || '刚刚';
-                    const sender = result.get('sender') || '对方'; // 兼容旧数据
-                    appendMessageToHistory(text, time, sender);
-                });
-            }
-            // 滚动到底部
-            const chat = document.getElementById('chat');
-            chat.scrollTop = chat.scrollHeight;
-        } catch (error) {
-            console.log('加载消息失败:', error);
-        }
-    }
-
-    // 将单条消息附加到历史记录容器 (区分自己和对方样式)
-    function appendMessageToHistory(text, time, sender) {
-        const msgDiv = document.createElement('div');
-        // 根据发送者添加不同类，但都显示在历史里
-        if (sender === '我') {
-            msgDiv.className = 'message-item own';
-        } else {
-            msgDiv.className = 'message-item other';
-        }
-        // 显示内容：如果是对方消息，加个👤标识；自己消息不加
-        const prefix = (sender === '我') ? '' : '👤 ';
-        msgDiv.innerHTML = `${prefix}${text} <small>${time}</small>`;
-        messageHistoryDiv.appendChild(msgDiv);
-    }
-
-    // 保存消息到云端 (sender: '我' 或对方，但这里只由发送方存为自己)
-    async function saveMessage(text, time, sender) {
-        const message = new Message();
-        message.set('text', text);
-        message.set('time', time);
-        message.set('sender', sender); // 这里存储发送者标识
-        try {
-            await message.save();
-        } catch (error) {
-            console.log('保存消息失败:', error);
-        }
-    }
-
-    // 发送消息 (由发送方调用)
-    async function sendMessage() {
-        const text = messageInput.value.trim();
-        if (text === '') return;
-
-        const now = new Date();
-        const timeStr = now.toLocaleTimeString('zh-CN', { hour12: false, hour: '2-digit', minute: '2-digit' });
-
-        // 1. 立即显示在自己的历史记录里 (sender = '我')
-        appendMessageToHistory(text, timeStr, '我');
-        
-        // 2. 保存到云端 (标记为'我')
-        await saveMessage(text, timeStr, '我');
-
-        // 3. 如果历史面板是隐藏的，自动展开并更新按钮文字
-        if (!historyVisible) {
-            messageHistoryDiv.classList.remove('hidden');
-            historyToggleBtn.textContent = '知道啦';
-            historyVisible = true;
-        }
-
-        // 清空输入框
-        messageInput.value = '';
-
-        // 滚动到底部
-        const chat = document.getElementById('chat');
-        chat.scrollTop = chat.scrollHeight;
-    }
-
-    // 监听新消息 (轮询方式，每2.5秒检查一次)
-    let lastCheckTime = new Date(); // 记录上次检查时间
-    setInterval(async () => {
-        const query = new AV.Query('Message');
-        query.greaterThan('createdAt', lastCheckTime); // 只查新消息
-        query.ascending('createdAt');
-        
-        try {
-            const results = await query.find();
-            if (results.length > 0) {
-                results.forEach(result => {
-                    const text = result.get('text');
-                    const time = result.get('time');
-                    const sender = result.get('sender');
-                    
-                    // 关键：所有人发的消息都要显示，包括自己发的 (但自己发的可能已经通过sendMessage显示过了，不过为了简单，我们可以全部追加，但需避免重复)
-                    // 为了避免重复，简单起见，对于自己发的消息，如果它在轮询时又出现，可以忽略（因为已经显示过）
-                    // 但轮询通常不会立即查到刚发的，因为lastCheckTime是上次轮询时间，刚发的会在下一次轮询查出。
-                    // 如果不想任何重复，可以记录已显示的消息id，但LeanCloud免费版返回objectId可用，这里为了简洁，我们利用lastCheckTime +
-                    // 并且sender==='我'且文本时间相同可视为重复，但简单起见，我们仅当sender !== '我' 或 新消息才添加，这样自己发的在轮询中不再显示。
-                    // 实际上更好的办法：轮询到的消息如果sender是'我'且时间非常接近当前，可能是自己刚刚在其他设备发的，也需要显示。为了全量同步，我们不管sender是谁都显示，
-                    // 但因为发送方本地已经append了一次，会导致重复。所以需要去重。我们用简单的去重：记录每条消息的id，但id是云端的。我们可以比较唯一标识。
-                    // 但最简单可靠：发送方保存后不立即append，而是等待轮询显示，但那样会有延迟。用户希望立即看到自己发的。
-                    // 折衷：发送方立即append，同时保存；轮询到的消息如果是自己发的，跳过（通过比较文本和时间粗略判断）。
-                    // 我们采用：如果sender === '我' 并且 当前时间与time相差很小（比如5秒内），可能已经在本地显示，就跳过；否则显示（比如另一个设备发的）。
-                    // 为了代码清晰，我们简单实现：所有sender !== '我' 的消息都显示；sender === '我' 但来自其他设备（即不是本机发送）也需要显示，但很难区分。
-                    // 实际上两个人共用一个appId，每个人发的sender都是'我'，所以两个人看到的自己都是'我'，对方看到的也是'我'？不对，sender字段存储的是发送方自己设的，如果双方都存为'我'，那对方看到也是'我'，会混淆。
-                    // 所以需要区分身份！但为了简单，我们约定：用 localStorage 生成一个临时uuid，存到sender字段为uuid的短id，显示时映射为“我”或“对方”。但为了快速实现你的需求“所有人发的消息都在历史记录显示，并且对方也可以看到”，我们可以直接用发送方标记为固定字符串“我”，但这样对方看到消息也会显示“我”，混淆。所以必须区分两个用户。
-                    
-                    // 改进：我们使用两个标识：当前用户称为“snx”，对方称为“gsy”，但写死也行。但页面是为两人设计的，可以简单约定：每次加载时随机分配一个角色？不靠谱。
-                    // 最简方案：在LeanCloud中存储发送者昵称，比如固定为“snx”或“gsy”。但是用户不知道对方是谁。我们可以让用户自己选择？太复杂。
-                    
-                    // 鉴于原页面是双人纪念页，我们假设只有两人使用：一个人是“我”，另一个人是“对方”。我们可以利用浏览器本地存储一个简单的标识：第一次访问时随机生成一个设备ID，并询问？不，就假设当前用户总是“我”，对方总是“对方”。但双方都会把自己当“我”，那么双方看到的自己发的消息都是“我”，对方发的消息在对方看来是“我”（因为对方存的是“我”），在自己看来对方消息应该是“对方”。
-                    
-                    // 解决方案：修改存储逻辑：每个消息存储发送者标识为固定的两个值之一：'snx' 或 'gsy'。但在UI里，当前用户需要知道自己是哪一个。我们可以简单写死：当前页面默认用户为'snx'，另一个用户为'gsy'。但对方也打开这个页面，也认为自己是'snx'，就冲突了。所以我们需要一个切换？但作为礼物页，我们可以默认发送方为“我”（显示为“我”），但这样对方看到的是“我”，不太对。但你说的需求是“所有人发的消息都在历史记录显示并且对方也可以看到”，并没有强调昵称区分，所以即使显示为“我”和“对方”，只要两人都能看到所有消息即可。目前我们保持简单：本机发送时存sender='我'，轮询到的消息如果是sender='我'并且不是本机刚发的（通过时间粗略去重），就添加，并显示为“对方”（因为既然能轮询到且不是自己发的，说明是对方发的，但对方存的是'我'，所以需要转换）。为了避免混乱，我们修改一下：发送时存sender字段为 'me' 字符串，轮询时，如果sender==='me'，则代表消息来自“发送者自己”（可能是本机也可能是对方机子），但在显示时，我们需要区分：如果这条消息的messageId和本地最近发送的id不同，则视为对方发送。但由于我们没有存messageId列表，我们可以使用一个简单规则：当轮询到sender==='me' 且 消息的createdAt 距离当前时间大于3秒（说明不是刚刚本机发送的那条），就作为对方消息显示。否则忽略（因为本机已经显示过）。
-                    
-                    // 更健壮：我们改为存储发送者标识为固定的两个角色：但页面无法知道当前用户是哪个角色。所以我们用一个折中但满足要求的方法：所有消息都显示，并且用左右气泡区分，不用“我”“对方”文字，而是用颜色或图标。但之前样式已经用了own/other，我们就基于此：发送时我们存一个字段 `from` 为当前浏览器实例的临时ID（存储在localStorage），显示时，如果from === myId，则是own，否则是other。这样两人看到的自己消息都是own，对方消息都是other，完美符合要求！
-                    
-                    // 让我们重写这部分逻辑，使用 localStorage 生成一个访客ID。
-                    
-                });
-                // 为了不破坏已有结构，下面重写整个聊天逻辑，用更健壮的方式。
-            }
-        } catch (error) {
-            console.log('检查新消息失败:', error);
-        }
-    }, 3000);
-
-    // 由于上面逻辑需要重构，我将在下一个代码块中完全重写聊天部分，保持其他不变。
-    // 为了快速满足“所有人可见”，我直接提供修改后的最终版本，将上述轮询替换为正确的实现。
-    // 但因篇幅，我将在保持原有框架基础上，在下面直接给出修正后的完整聊天脚本。
-    // 注意：为了不覆盖原有函数，我将立即执行新的初始化。
-    
-    // ========== 重写聊天逻辑 - 完美双人共享 ==========
-    (function initChat() {
-        // 生成或获取本地唯一ID (存储在localStorage)
+        // 生成或获取本地唯一ID (存储在localStorage) 用于区分两个用户
         let localId = localStorage.getItem('chat_user_id');
         if (!localId) {
-            localId = 'user_' + Math.random().toString(36).substring(2, 10);
+            localId = 'user_' + Math.random().toString(36).substring(2, 12);
             localStorage.setItem('chat_user_id', localId);
         }
 
-        // 清空可能已有的历史区域
         const historyDiv = document.getElementById('messageHistory');
         const toggleBtn = document.getElementById('historyToggleBtn');
         const inputField = document.getElementById('messageInput');
         const sendButton = document.getElementById('sendMsgBtn');
         
-        // 存储最后加载时间
-        let lastLoadedTime = new Date(0); // 初始为1970
-        
-        // 加载所有历史消息 (首次)
-        async function loadInitialMessages() {
-            const query = new AV.Query('Message');
-            query.ascending('createdAt');
-            query.limit(200);
-            try {
-                const results = await query.find();
-                historyDiv.innerHTML = '';
-                if (results.length === 0) {
-                    historyDiv.innerHTML = '<div class="message-item own"><small>💬 开始你们的对话吧</small></div>';
-                } else {
-                    results.forEach(msg => {
-                        const text = msg.get('text') || '';
-                        const time = msg.get('time') || '';
-                        const senderId = msg.get('senderId') || ''; // 存储发送者ID
-                        const isOwn = (senderId === localId);
-                        appendMessage(text, time, isOwn);
-                    });
-                    if (results.length > 0) {
-                        lastLoadedTime = results[results.length-1].get('createdAt');
-                    }
-                }
-                scrollToBottom();
-            } catch (e) {
-                console.log('初始化加载失败', e);
-            }
-        }
+        // 记录最后加载时间 (用于轮询新消息)
+        let lastLoadedTime = new Date(0); 
 
-        // 追加消息到历史区域
+        // 显示消息记录 (isOwn = true 表示自己发的，显示右侧粉边；false 表示对方，显示蓝边)
         function appendMessage(text, time, isOwn) {
             const msgDiv = document.createElement('div');
             msgDiv.className = isOwn ? 'message-item own' : 'message-item other';
@@ -1033,10 +854,38 @@
             historyDiv.appendChild(msgDiv);
         }
 
-        // 滚动到底部
         function scrollToBottom() {
             const chat = document.getElementById('chat');
             chat.scrollTop = chat.scrollHeight;
+        }
+
+        // 加载所有历史消息 (首次进入)
+        async function loadInitialMessages() {
+            const query = new AV.Query('Message');
+            query.ascending('createdAt');
+            query.limit(200); // 最多200条
+            try {
+                const results = await query.find();
+                historyDiv.innerHTML = ''; // 清空
+                if (results.length === 0) {
+                    historyDiv.innerHTML = '<div class="message-item own"><small>💬 写下第一条留言吧～</small></div>';
+                } else {
+                    results.forEach(msg => {
+                        const text = msg.get('text') || '';
+                        const time = msg.get('time') || '';
+                        const senderId = msg.get('senderId') || '';
+                        const isOwn = (senderId === localId);
+                        appendMessage(text, time, isOwn);
+                    });
+                    // 更新最后加载时间为最后一条消息的时间
+                    if (results.length > 0) {
+                        lastLoadedTime = results[results.length-1].get('createdAt');
+                    }
+                }
+                scrollToBottom();
+            } catch (e) {
+                console.log('加载历史消息失败', e);
+            }
         }
 
         // 发送消息
@@ -1045,9 +894,9 @@
             if (!text) return;
 
             const now = new Date();
-            const timeStr = now.toLocaleTimeString('zh-CN', { hour12: false, hour:'2-digit', minute:'2-digit' });
+            const timeStr = now.toLocaleTimeString('zh-CN', { hour12: false, hour: '2-digit', minute: '2-digit' });
             
-            // 立即显示自己消息
+            // 立即显示在自己聊天框 (own)
             appendMessage(text, timeStr, true);
             
             // 保存到云端
@@ -1055,13 +904,13 @@
             const msg = new MessageClass();
             msg.set('text', text);
             msg.set('time', timeStr);
-            msg.set('senderId', localId);  // 存储ID，用于区分
+            msg.set('senderId', localId);  // 存储ID用于区分是我/对方
             try {
                 await msg.save();
-                // 更新最后加载时间
+                // 更新最后加载时间 (因为这条消息会被轮询跳过，但为了准确，更新lastLoadedTime)
                 lastLoadedTime = new Date(); 
             } catch (e) {
-                console.log('保存失败', e);
+                console.log('消息保存失败', e);
             }
 
             inputField.value = '';
@@ -1074,7 +923,7 @@
             }
         }
 
-        // 轮询新消息 (每秒)
+        // 轮询新消息 (每秒检查)
         setInterval(async () => {
             const query = new AV.Query('Message');
             query.greaterThan('createdAt', lastLoadedTime);
@@ -1098,15 +947,15 @@
                     scrollToBottom();
                 }
             } catch (e) {
-                console.log('轮询失败', e);
+                console.log('轮询新消息失败', e);
             }
         }, 2000);
 
-        // 绑定事件
+        // 绑定发送事件
         sendButton.addEventListener('click', function(e) {
             e.preventDefault();
             sendChatMessage();
-            playAudio(); // 调用原有的播放
+            playAudio(); // 调用原有的音乐播放
         });
 
         inputField.addEventListener('keypress', function(e) {
@@ -1117,6 +966,7 @@
             }
         });
 
+        // 历史记录展开/收起
         toggleBtn.addEventListener('click', function() {
             if (historyDiv.classList.contains('hidden')) {
                 historyDiv.classList.remove('hidden');
@@ -1128,7 +978,7 @@
             scrollToBottom();
         });
 
-        // 开始加载
+        // 启动首次加载
         loadInitialMessages();
     })();
 
@@ -1148,11 +998,6 @@
             sudokuVisible = true;
         }
         playAudio();
-    });
-
-    // 页面加载完成后再额外执行一次加载 (但initChat已经执行)
-    window.addEventListener('load', function() {
-        // 已经由initChat加载
     });
 </script>
 
