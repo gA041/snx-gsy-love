@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>snx gsy 永远在一起</title>
+    <title>snx gsy 永远在一起 · 历史记录永久保存</title>
     <style>
         * {
             margin: 0;
@@ -840,14 +840,33 @@
         });
     });
 
-    // ===== 消息发送与历史记录功能 =====
+    // ===== 消息发送与历史记录功能 - 添加localStorage持久化 =====
     const messageInput = document.getElementById('messageInput');
     const sendBtn = document.getElementById('sendMsgBtn');
     const messageHistoryDiv = document.getElementById('messageHistory');
     const historyToggleBtn = document.getElementById('historyToggleBtn');
 
+    // 从localStorage加载历史消息
     let messages = [];
+    try {
+        const saved = localStorage.getItem('snx_chat_messages');
+        if (saved) {
+            messages = JSON.parse(saved);
+        }
+    } catch (e) {
+        console.log('加载历史消息失败', e);
+    }
+
     let historyVisible = false; // 初始隐藏
+
+    // 保存消息到localStorage
+    function saveMessages() {
+        try {
+            localStorage.setItem('snx_chat_messages', JSON.stringify(messages));
+        } catch (e) {
+            console.log('保存历史消息失败', e);
+        }
+    }
 
     function renderMessages() {
         messageHistoryDiv.innerHTML = '';
@@ -870,6 +889,10 @@
         const timeStr = now.toLocaleTimeString('zh-CN', { hour12: false, hour: '2-digit', minute: '2-digit' });
 
         messages.push({ text, time: timeStr });
+        
+        // 保存到localStorage
+        saveMessages();
+        
         renderMessages();
 
         // 如果历史是隐藏的，发送消息后自动显示
@@ -915,6 +938,9 @@
             chat.scrollTop = chat.scrollHeight;
         }
     });
+
+    // 如果有历史消息，初始时渲染但不显示（保持隐藏）
+    renderMessages();
 
     // ===== 数独显示/隐藏控制 (每日一练按钮) =====
     const sudokuSection = document.getElementById('sudokuSection');
