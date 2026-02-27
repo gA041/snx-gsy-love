@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>snx gsy 永远在一起 · 可发送消息</title>
+    <title>snx gsy 永远在一起</title>
     <style>
         * {
             margin: 0;
@@ -15,23 +15,20 @@
         /* 背景容器 —— 缩小图片并居中，确保不被遮挡 */
         body {
             position: relative;
-            /* 将背景图设置为不重复，并缩小到原始尺寸的80%左右，同时居中 */
             background-image: url("gsy666.jpg");
-            background-size: 80% auto;  /* 宽度缩小到80%，高度自适应，保持比例 */
-            background-position: center center;  /* 严格居中 */
-            background-attachment: fixed;  /* 保持固定，避免滚动遮挡 */
-            background-repeat: no-repeat;  /* 不重复显示 */
-            /* 保持原始背景格式，仅添加清晰度优化 */
-            image-rendering: -webkit-optimize-contrast;  /* 针对Webkit浏览器优化清晰度 */
-            image-rendering: crisp-edges;                /* 针对其他浏览器 */
-            -webkit-backface-visibility: hidden;         /* 启用硬件加速 */
+            background-size: 80% auto;
+            background-position: center center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
+            -webkit-backface-visibility: hidden;
             min-height: 100vh;
             color: #fff;
             overflow-x: hidden;
             padding-bottom: 80px;
         }
 
-        /* 全屏半透明蒙版 —— 设置为完全透明，不遮住背景图 */
         body::before {
             content: '';
             position: fixed;
@@ -39,7 +36,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0);  /* 完全透明，背景图清晰可见 */
+            background-color: rgba(0, 0, 0, 0);
             z-index: -1;
         }
 
@@ -78,7 +75,6 @@
             color: #ccc;
         }
 
-        /* 2021 4ever 标题 */
         .extra-title {
             text-align: center;
             font-size: 1.8rem;
@@ -157,7 +153,6 @@
             font-size: 1rem;
         }
 
-        /* 按钮区 —— 完全不改 */
         .buttons {
             display: flex;
             gap: 1.5rem;
@@ -181,7 +176,7 @@
             box-shadow: 0 5px 15px rgba(248, 200, 216, 0.3);
         }
 
-        /* 聊天区 —— 无蒙版 + 滚动条 + 默认隐藏，现增加历史消息容器 */
+        /* 聊天区样式 */
         .chat {
             width: 90%;
             max-width: 600px;
@@ -191,7 +186,6 @@
             display: none;
             background: transparent;
             padding: 0.5rem;
-            /* 增加子元素样式 */
         }
         .bubble {
             width: 100%;
@@ -201,7 +195,6 @@
             color: #fff;
             text-shadow: 0 0 4px #000;
         }
-        /* 新增历史消息气泡样式 (与原有bubble类似，但区分一下) */
         .message-item {
             background: rgba(0, 0, 0, 0.4);
             backdrop-filter: blur(4px);
@@ -221,12 +214,33 @@
             margin-top: 0.3rem;
             opacity: 0.8;
         }
-        /* 自己发的轻微右对齐装饰 */
         .message-item.own {
             border-left: 3px solid #f8c8d8;
         }
 
-        /* 滚动条样式 */
+        /* 历史记录隐藏按钮 */
+        .toggle-history-btn {
+            background: rgba(248,200,216,0.2);
+            border: 1px solid #f8c8d8;
+            color: #f8c8d8;
+            padding: 0.3rem 1rem;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            backdrop-filter: blur(4px);
+            transition: 0.2s;
+            margin-bottom: 0.8rem;
+            display: inline-block;
+            width: auto;
+        }
+        .toggle-history-btn:hover {
+            background: #f8c8d8;
+            color: #222;
+        }
+        #messageHistory.hidden {
+            display: none;
+        }
+
         .chat::-webkit-scrollbar {
             width: 6px;
         }
@@ -235,21 +249,28 @@
             border-radius: 3px;
         }
 
-        /* ===== 数独游戏区域 (调小尺寸，居中显示，网格线清晰) ===== */
+        /* ===== 数独游戏区域 (添加隐藏功能相关样式) ===== */
         .sudoku-section {
             width: 90%;
-            max-width: 340px;           /* 调小尺寸，更紧凑 */
-            margin: 1.5rem auto 2rem;    /* 上下边距，左右auto实现完美居中 */
+            max-width: 340px;
+            margin: 1.5rem auto 2rem;
             background: rgba(10, 10, 20, 0.5);
             backdrop-filter: blur(8px);
-            border-radius: 22px;         /* 圆角相应调小 */
-            padding: 1rem 0.6rem;        /* 内边距减小 */
+            border-radius: 22px;
+            padding: 1rem 0.6rem;
             box-shadow: 0 8px 20px rgba(0,0,0,0.5);
             border: 1px solid rgba(248,200,216,0.3);
+            transition: opacity 0.3s ease, transform 0.2s ease;
         }
+        /* 隐藏数独区域的类 */
+        .sudoku-section.hidden-sudoku {
+            display: none;  /* 直接隐藏整个区块 */
+        }
+
+        /* 标题栏现在设计为可点击，添加指针和交互提示 */
         .sudoku-title {
             text-align: center;
-            font-size: 1.2rem;           /* 标题调小 */
+            font-size: 1.2rem;
             color: #f8c8d8;
             margin-bottom: 0.3rem;
             letter-spacing: 1px;
@@ -258,34 +279,44 @@
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
+            cursor: pointer;  /* 变成手型，提示可点击 */
+            user-select: none;
+            transition: 0.2s;
+            padding: 0.2rem;
+            border-radius: 30px;
+        }
+        .sudoku-title:hover {
+            background: rgba(248,200,216,0.2);
+            text-shadow: 0 0 6px #f8c8d8;
         }
         .sudoku-title span {
-            font-size: 0.8rem;            /* 标签调小 */
+            font-size: 0.8rem;
             background: #f8c8d8;
             color: #222;
             padding: 0.1rem 0.8rem;
             border-radius: 30px;
             font-weight: 500;
+            pointer-events: none;  /* 让span不干扰点击事件，点击仍然触发标题 */
         }
         .sudoku-grid {
             display: grid;
             grid-template-columns: repeat(9, 1fr);
-            gap: 0;                       /* 间隙设为0，让边框直接相邻 */
+            gap: 0;
             background-color: rgba(255,255,255,0.15);
-            padding: 0;                   /* 移除内边距 */
-            border: 2px solid #f8c8d8;    /* 外边框用主题色 */
+            padding: 0;
+            border: 2px solid #f8c8d8;
             border-radius: 10px;
             margin: 0.5rem 0 0.8rem;
-            overflow: hidden;             /* 确保圆角裁剪 */
+            overflow: hidden;
         }
         .sudoku-cell {
             aspect-ratio: 1 / 1;
             background: rgba(30, 30, 40, 0.8);
-            border: 1px solid rgba(248,200,216,0.3);  /* 所有格子添加半透明边框 */
+            border: 1px solid rgba(248,200,216,0.3);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1rem;               /* 字体调小 */
+            font-size: 1rem;
             font-weight: 500;
             color: #f0d0e0;
             caret-color: #f8c8d8;
@@ -293,21 +324,18 @@
             text-align: center;
             box-sizing: border-box;
         }
-        /* 粗网格线表示3x3宫格 */
         .sudoku-cell.right-border {
             border-right: 2px solid #f8c8d8;
         }
         .sudoku-cell.bottom-border {
             border-bottom: 2px solid #f8c8d8;
         }
-        /* 预置数字样式 */
         .sudoku-cell.prefilled {
             color: #ffcfcf;
             background: rgba(60, 40, 50, 0.7);
             font-weight: 600;
             text-shadow: 0 0 6px #f8c8d8;
         }
-        /* 可编辑格子获得焦点时高亮 */
         .sudoku-cell[contenteditable="true"]:focus {
             outline: 2px solid #f8c8d8;
             outline-offset: -1px;
@@ -319,7 +347,7 @@
         .sudoku-controls {
             display: flex;
             justify-content: center;
-            gap: 0.6rem;                  /* 按钮间距调小 */
+            gap: 0.6rem;
             margin-top: 0.5rem;
             flex-wrap: wrap;
         }
@@ -327,9 +355,9 @@
             background: rgba(248,200,216,0.2);
             border: 1px solid #f8c8d8;
             color: #f8c8d8;
-            padding: 0.25rem 1rem;         /* 按钮内边距调小 */
+            padding: 0.25rem 1rem;
             border-radius: 30px;
-            font-size: 0.85rem;             /* 字体稍小 */
+            font-size: 0.85rem;
             font-weight: 500;
             cursor: pointer;
             backdrop-filter: blur(4px);
@@ -343,13 +371,13 @@
         }
         .sudoku-message {
             text-align: center;
-            font-size: 0.8rem;             /* 提示信息字体调小 */
+            font-size: 0.8rem;
             margin-top: 0.5rem;
             color: #f0c0d0;
             min-height: 1.4rem;
         }
 
-        /* 底部输入栏 (完全保留原样，但为发送消息增加样式) */
+        /* 底部输入栏 */
         .input-bar {
             position: fixed;
             bottom: 0;
@@ -382,7 +410,6 @@
             cursor: pointer;
             user-select: none;
         }
-        /* 发送符号增加一点反馈 */
         .input-bar .icons span:last-child {
             color: #f8c8d8;
             font-weight: bold;
@@ -453,21 +480,23 @@
         <button id="noBtn">no</button>
     </div>
 
-    <!-- 聊天区现在既包含原有bubble，也会动态显示历史消息 (放在bubble下方) -->
+    <!-- 聊天区 -->
     <div class="chat" id="chat">
         <div class="bubble">
 宝宝 和你在一起的日子总是这么幸福且短暂 和你见面很开心又很难过 每次洗漱完出来看到你都在我睡的那一边放好水 我就拿起手机边看日历边想 还有多少天就又要和你分开 我父母总是告诉我我长大了不可以再那么依赖别人 要独立 也不会怎么和我表达感情 交流也是越来越少 让我一直都认为人是漂泊的候鸟 直到你告诉我我可以去依赖你 信任你 多和你表达感受 我又觉得爱是可以宜居的小岛 有一种 我见众生皆草木 唯独见你是青山的感觉 你也总是很照顾我 虽然我会莫名其妙跟你生一些小气 但你都会说是你的错 包容我 这些都是我从未体验过的 我总说我不信任你 不是你做的不够好 是我怕信任你依赖你之后如果你不喜欢我了我又要变回原来的样子 那我要怎么习惯 但你好像拥有什么魔法 让我可以一点点向你摊呈自己 也让你看到我的脆弱 眼泪 还有一些不完美的那面 但真诚的 谢谢你的存在 有你在我总会很安心  送你去高铁站我想让你快点进去 这样我就不会那么舍不得你 而我现在能给你的又太少 再给我一点时间 以后一定能给你 我发誓 我不是很会表达这些情情话话的东西 但真心希望你好 我们互相加油变成更好的自己
 
 山高路远 一路平安  一个人在国外照顾好自己 虽然每次我说这句话 你都说你已经会很好的照顾自己了 但想到你一个人面对那些  一个人拖行李 落地要从机场坐那么久的车才能到家 也很不容易 我心疼你 做饭的时候小心不要烫到 走路要慢慢走 小心不要磕磕碰碰 多喝热水 要少吃褪黑素  不要着凉不要生病！我爱你 要多多想我 不可以哭哭噢  多笑笑
         </div>
-        <!-- 动态消息会追加在这里 -->
+        <div style="display: flex; justify-content: flex-start; margin: 0.5rem 0;">
+            <span id="toggleHistoryBtn" class="toggle-history-btn">看看我们说了些什么？</span>
+        </div>
         <div id="messageHistory"></div>
     </div>
 
-    <!-- ===== 数独游戏区域 (调小尺寸，居中放置，网格线清晰) ===== -->
-    <div class="sudoku-section">
-        <div class="sudoku-title">
-            🐑每日一练<span>snx加油</span>
+    <!-- ===== 数独游戏区域 (添加了隐藏功能，点击标题切换) ===== -->
+    <div class="sudoku-section" id="sudokuSection">
+        <div class="sudoku-title" id="toggleSudokuBtn">
+            🐑每日一练<span>snx加油</span>  <!-- 点击标题隐藏/显示整个数独区 -->
         </div>
         <div id="sudokuGrid" class="sudoku-grid"></div>
         <div class="sudoku-controls">
@@ -483,7 +512,7 @@
         <div class="icons">
             <span>yeobo</span>
             <span>i</span>
-            <span id="sendMsgBtn" style="cursor: pointer;">xin</span>  <!-- 点击xin发送 -->
+            <span id="sendMsgBtn" style="cursor: pointer;">xin</span>
         </div>
     </div>
 
@@ -577,7 +606,7 @@
 
     audio.load();
 
-    // ===== 数独游戏逻辑 (新增，不影响原有功能) =====
+    // ===== 数独游戏逻辑 (不变，但增加隐藏功能) =====
     const PUZZLE_EASY = [
         [5,3,0,0,7,0,0,0,0],
         [6,0,0,1,9,5,0,0,0],
@@ -596,13 +625,10 @@
     const gridContainer = document.getElementById('sudokuGrid');
     const messageEl = document.getElementById('sudokuMessage');
 
-    // 为格子添加宫格边界类 (实现3x3粗网格)
     function addBoxBorders(cell, row, col) {
-        // 右侧粗边框 (每3列，但最后一列不加)
         if (col % 3 === 2 && col !== 8) {
             cell.classList.add('right-border');
         }
-        // 底部粗边框 (每3行，但最后一行不加)
         if (row % 3 === 2 && row !== 8) {
             cell.classList.add('bottom-border');
         }
@@ -614,8 +640,6 @@
             for (let c = 0; c < 9; c++) {
                 const cell = document.createElement('div');
                 cell.className = 'sudoku-cell';
-                
-                // 添加宫格边界线
                 addBoxBorders(cell, r, c);
                 
                 const isPrefilled = initial[r][c] !== 0;
@@ -749,17 +773,14 @@
         }
     }
 
-    // 初始化渲染
     renderSudoku(currentBoard, initialBoard);
 
-    // 绑定按钮
     document.getElementById('checkSudoku').addEventListener('click', checkSudoku);
     document.getElementById('resetSudoku').addEventListener('click', resetToInitial);
     document.getElementById('newSudoku').addEventListener('click', function() {
         loadNewPuzzle();
     });
 
-    // 粘贴过滤
     document.querySelectorAll('#sudokuGrid .sudoku-cell[contenteditable="true"]').forEach(cell => {
         cell.addEventListener('paste', (e) => {
             e.preventDefault();
@@ -772,101 +793,49 @@
             }
         });
     });
-    // ===== 数独游戏逻辑结束 =====
 
-    // ========== 新增：消息发送与历史记录功能 (不改动原有代码) ==========
+    // ===== 消息发送与历史记录功能 =====
     const messageInput = document.getElementById('messageInput');
     const sendBtn = document.getElementById('sendMsgBtn');
     const messageHistoryDiv = document.getElementById('messageHistory');
+    const toggleHistoryBtn = document.getElementById('toggleHistoryBtn');
 
-    // 存储所有消息 (可选)
     let messages = [];
 
-    // 渲染历史消息
     function renderMessages() {
-        // 清空但保留bubble (bubble在chat里，messageHistory是单独容器)
         messageHistoryDiv.innerHTML = '';
-        // 按时间顺序显示 (早的在上面)
         messages.forEach(msg => {
             const msgDiv = document.createElement('div');
-            msgDiv.className = 'message-item own';  // 都当作自己发的
+            msgDiv.className = 'message-item own';
             msgDiv.innerHTML = `${msg.text} <small>${msg.time}</small>`;
             messageHistoryDiv.appendChild(msgDiv);
         });
-        // 自动滚动到底部
         chat.scrollTop = chat.scrollHeight;
     }
 
-    // 发送消息函数
     function sendMessage() {
         const text = messageInput.value.trim();
         if (text === '') return;
 
-        // 获取当前时间
-        const now = new Date();
-        const timeStr = now.toLocaleTimeString('zh-CN', { hour12: false, hour: '2-digit', minute: '2-digit' });
-
-        // 添加到数组
-        messages.push({ text, time: timeStr });
-
-        // 重新渲染
-        renderMessages();
-
-        // 清空输入框
-        messageInput.value = '';
-    }
-
-    // 监听发送按钮点击 (xin图标)
-    sendBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        sendMessage();
-        // 同时尝试播放音乐 (如果未播放)
-        playAudio();
-    });
-
-    // 监听回车键发送
-    messageInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            sendMessage();
-            playAudio();
-        }
-    });
-
-    // 为了让“说点什么”也能触发yes后的显示，但功能已完整：当yes显示聊天区后，即可发送并看到历史。
-    // 另外点击发送时，如果聊天区是隐藏的，可以自动显示（符合预期）
-    // 但原逻辑yes显示聊天区，若没点yes，手动发送可以自动显示聊天区（更友好）
-    const originalSend = sendMessage;
-    sendMessage = function() {
-        if (messageInput.value.trim() !== '') {
-            // 如果聊天区隐藏，自动显示
-            if (chat.style.display !== 'block') {
-                chat.style.display = 'block';
-            }
-            originalSend();
-        }
-    };
-    // 重新绑定
-    sendBtn.removeEventListener('click', sendMessage);
-    messageInput.removeEventListener('keypress', sendMessage);
-    // 重新定义并绑定
-    sendMessage = function() {
-        const text = messageInput.value.trim();
-        if (text === '') return;
         if (chat.style.display !== 'block') {
             chat.style.display = 'block';
         }
+
         const now = new Date();
         const timeStr = now.toLocaleTimeString('zh-CN', { hour12: false, hour: '2-digit', minute: '2-digit' });
+
         messages.push({ text, time: timeStr });
         renderMessages();
+
         messageInput.value = '';
-    };
+    }
+
     sendBtn.addEventListener('click', function(e) {
         e.preventDefault();
         sendMessage();
         playAudio();
     });
+
     messageInput.addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
             e.preventDefault();
@@ -874,7 +843,40 @@
             playAudio();
         }
     });
-    // ========== 消息功能结束 ==========
+
+    // 历史记录隐藏切换
+    let historyVisible = true;
+    toggleHistoryBtn.addEventListener('click', function() {
+        if (historyVisible) {
+            messageHistoryDiv.classList.add('hidden');
+            toggleHistoryBtn.textContent = '看看我们说了些啥？';
+            historyVisible = false;
+        } else {
+            messageHistoryDiv.classList.remove('hidden');
+            toggleHistoryBtn.textContent = '知道拉';
+            historyVisible = true;
+            chat.scrollTop = chat.scrollHeight;
+        }
+    });
+
+    // ===== 新增：数独区域隐藏/切换功能 (点击标题) =====
+    const sudokuSection = document.getElementById('sudokuSection');
+    const toggleSudokuBtn = document.getElementById('toggleSudokuBtn');
+    let sudokuVisible = true;  // 初始显示
+
+    toggleSudokuBtn.addEventListener('click', function() {
+        if (sudokuVisible) {
+            // 隐藏数独区域
+            sudokuSection.classList.add('hidden-sudoku');
+            toggleSudokuBtn.innerHTML = '🐑点击显示数独<span>snx</span>';  // 改变提示文字
+            sudokuVisible = false;
+        } else {
+            // 显示数独区域
+            sudokuSection.classList.remove('hidden-sudoku');
+            toggleSudokuBtn.innerHTML = '🐑每日一练<span>snx加油</span>';
+            sudokuVisible = true;
+        }
+    });
 </script>
 
 </body>
