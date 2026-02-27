@@ -12,13 +12,18 @@
             font-family: "Microsoft YaHei", "Segoe UI", sans-serif;
         }
 
-        /* 背景容器 —— 完全保留原始设置 */
+        /* 背景容器 —— 完全保留原始格式，同时优化清晰度 */
         body {
             position: relative;
             background-image: url("gsy666.jpg");
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
+            background-repeat: no-repeat;
+            /* 保持原始背景格式，仅添加清晰度优化 */
+            image-rendering: -webkit-optimize-contrast;  /* 针对Webkit浏览器优化清晰度 */
+            image-rendering: crisp-edges;                /* 针对其他浏览器 */
+            -webkit-backface-visibility: hidden;         /* 启用硬件加速 */
             min-height: 100vh;
             color: #fff;
             overflow-x: hidden;
@@ -204,21 +209,21 @@
             border-radius: 3px;
         }
 
-        /* ===== 数独游戏区域 (仅修改网格线显示，其他完全保留) ===== */
+        /* ===== 数独游戏区域 (调小尺寸，居中显示，网格线清晰) ===== */
         .sudoku-section {
             width: 90%;
-            max-width: 400px;
-            margin: 1.5rem auto 2rem;
+            max-width: 340px;           /* 调小尺寸，更紧凑 */
+            margin: 1.5rem auto 2rem;    /* 上下边距，左右auto实现完美居中 */
             background: rgba(10, 10, 20, 0.5);
             backdrop-filter: blur(8px);
-            border-radius: 28px;
-            padding: 1.2rem 0.8rem;
+            border-radius: 22px;         /* 圆角相应调小 */
+            padding: 1rem 0.6rem;        /* 内边距减小 */
             box-shadow: 0 8px 20px rgba(0,0,0,0.5);
             border: 1px solid rgba(248,200,216,0.3);
         }
         .sudoku-title {
             text-align: center;
-            font-size: 1.3rem;
+            font-size: 1.2rem;           /* 标题调小 */
             color: #f8c8d8;
             margin-bottom: 0.3rem;
             letter-spacing: 1px;
@@ -229,23 +234,23 @@
             gap: 0.5rem;
         }
         .sudoku-title span {
-            font-size: 0.85rem;
+            font-size: 0.8rem;            /* 标签调小 */
             background: #f8c8d8;
             color: #222;
-            padding: 0.15rem 0.9rem;
+            padding: 0.1rem 0.8rem;
             border-radius: 30px;
             font-weight: 500;
         }
         .sudoku-grid {
             display: grid;
             grid-template-columns: repeat(9, 1fr);
-            gap: 0;                     /* 间隙设为0，让边框直接相邻 */
+            gap: 0;                       /* 间隙设为0，让边框直接相邻 */
             background-color: rgba(255,255,255,0.15);
-            padding: 0;                 /* 移除内边距 */
-            border: 2px solid #f8c8d8;  /* 外边框用主题色 */
-            border-radius: 12px;
+            padding: 0;                   /* 移除内边距 */
+            border: 2px solid #f8c8d8;    /* 外边框用主题色 */
+            border-radius: 10px;
             margin: 0.5rem 0 0.8rem;
-            overflow: hidden;           /* 确保圆角裁剪 */
+            overflow: hidden;             /* 确保圆角裁剪 */
         }
         .sudoku-cell {
             aspect-ratio: 1 / 1;
@@ -254,7 +259,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.1rem;
+            font-size: 1rem;               /* 字体调小 */
             font-weight: 500;
             color: #f0d0e0;
             caret-color: #f8c8d8;
@@ -288,7 +293,7 @@
         .sudoku-controls {
             display: flex;
             justify-content: center;
-            gap: 0.8rem;
+            gap: 0.6rem;                  /* 按钮间距调小 */
             margin-top: 0.5rem;
             flex-wrap: wrap;
         }
@@ -296,14 +301,14 @@
             background: rgba(248,200,216,0.2);
             border: 1px solid #f8c8d8;
             color: #f8c8d8;
-            padding: 0.3rem 1.2rem;
+            padding: 0.25rem 1rem;         /* 按钮内边距调小 */
             border-radius: 30px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;             /* 字体稍小 */
             font-weight: 500;
             cursor: pointer;
             backdrop-filter: blur(4px);
             transition: 0.2s;
-            min-width: 70px;
+            min-width: 60px;
         }
         .sudoku-btn:hover {
             background: #f8c8d8;
@@ -312,10 +317,10 @@
         }
         .sudoku-message {
             text-align: center;
-            font-size: 0.85rem;
-            margin-top: 0.6rem;
+            font-size: 0.8rem;             /* 提示信息字体调小 */
+            margin-top: 0.5rem;
             color: #f0c0d0;
-            min-height: 1.5rem;
+            min-height: 1.4rem;
         }
 
         /* 底部输入栏 (完全保留原样) */
@@ -423,16 +428,16 @@
         </div>
     </div>
 
-    <!-- ===== 数独游戏区域 (已添加清晰网格线) ===== -->
+    <!-- ===== 数独游戏区域 (调小尺寸，居中放置，网格线清晰) ===== -->
     <div class="sudoku-section">
         <div class="sudoku-title">
-            🐑每日一考 <span>snx加油</span>
+            🐑每日一练<span>snx加油</span>
         </div>
         <div id="sudokuGrid" class="sudoku-grid"></div>
         <div class="sudoku-controls">
-            <button class="sudoku-btn" id="checkSudoku">💡 检查</button>
-            <button class="sudoku-btn" id="resetSudoku">🔄 重置</button>
-            <button class="sudoku-btn" id="newSudoku">✨ 新题</button>
+            <button class="sudoku-btn" id="checkSudoku">检查</button>
+            <button class="sudoku-btn" id="resetSudoku">重置</button>
+            <button class="sudoku-btn" id="newSudoku">新题</button>
         </div>
         <div id="sudokuMessage" class="sudoku-message">填入数字 1-9，每行/列/宫不重复</div>
     </div>
@@ -630,7 +635,7 @@
     function resetToInitial() {
         currentBoard = JSON.parse(JSON.stringify(initialBoard));
         updateUIFromBoard(currentBoard, initialBoard);
-        messageEl.innerText = '已重置，继续挑战吧老婆 💪';
+        messageEl.innerText = '已重置，加油老婆 💪';
     }
 
     const PUZZLE_MEDIUM = [
@@ -697,14 +702,14 @@
         }
 
         if (hasEmpty) {
-            messageEl.innerText = '还有空格子，再填填哦';
+            messageEl.innerText = '还有空格子，再填填呢宝宝';
             return;
         }
 
         if (isBoardValid(currentBoard)) {
-            messageEl.innerText = '完美！老婆厉害';
+            messageEl.innerText = '完美！老婆厉害！';
         } else {
-            messageEl.innerText = '好像有重复，再检查一下吧老婆';
+            messageEl.innerText = '好像有重复，再检查一下吧宝宝';
         }
     }
 
