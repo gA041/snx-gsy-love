@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>snx gsy  永远在一起</title>
+    <title>snx gsy永远在一起</title>
     <style>
         * {
             margin: 0;
@@ -21,9 +21,10 @@
             min-height: 100vh;
             color: #fff;
             overflow-x: hidden;
-            padding-bottom: 100px;  /* 为底部输入栏留出空间 */
+            padding-bottom: 100px;
         }
 
+        /* 半透明蒙版 —— 完全保留原来的效果 */
         body::before {
             content: '';
             position: fixed;
@@ -179,8 +180,8 @@
             max-width: 600px;
             margin: 2rem auto;
             max-height: 420px;
-            overflow-y: auto;    /* 滚动条 */
-            display: none;      /* 默认隐藏 */
+            overflow-y: auto;
+            display: none;
             background: transparent;
             padding: 0.5rem;
         }
@@ -202,24 +203,24 @@
             border-radius: 3px;
         }
 
-        /* ===== 新增数独游戏区域 ===== */
+        /* ===== 数独游戏区域 - 调小尺寸（其他所有文字保留原样） ===== */
         .sudoku-section {
             width: 90%;
-            max-width: 500px;
-            margin: 2.5rem auto 2rem;
+            max-width: 400px;           /* 缩小最大宽度 */
+            margin: 2rem auto 1.5rem;    /* 边距调整 */
             background: rgba(10, 10, 20, 0.5);
             backdrop-filter: blur(8px);
-            border-radius: 32px;
-            padding: 1.5rem 1rem;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            border-radius: 28px;         /* 圆角稍小 */
+            padding: 1.2rem 0.8rem;       /* 内边距减小 */
+            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
             border: 1px solid rgba(248,200,216,0.3);
         }
         .sudoku-title {
             text-align: center;
-            font-size: 1.5rem;
+            font-size: 1.3rem;           /* 标题调小 */
             color: #f8c8d8;
-            margin-bottom: 0.5rem;
-            letter-spacing: 2px;
+            margin-bottom: 0.3rem;
+            letter-spacing: 1px;
             font-weight: 300;
             display: flex;
             align-items: center;
@@ -227,31 +228,31 @@
             gap: 0.5rem;
         }
         .sudoku-title span {
-            font-size: 1rem;
+            font-size: 0.85rem;           /* 标签调小 */
             background: #f8c8d8;
             color: #222;
-            padding: 0.2rem 1rem;
+            padding: 0.15rem 0.9rem;
             border-radius: 30px;
             font-weight: 500;
         }
         .sudoku-grid {
             display: grid;
             grid-template-columns: repeat(9, 1fr);
-            gap: 3px;
+            gap: 2px;                     /* 格子间隙缩小 */
             background-color: rgba(255,255,255,0.15);
-            padding: 8px;
-            border-radius: 20px;
-            margin: 1rem 0 1.2rem;
+            padding: 5px;                  /* 内边距减小 */
+            border-radius: 16px;
+            margin: 0.5rem 0 0.8rem;        /* 上下边距调小 */
         }
         .sudoku-cell {
             aspect-ratio: 1 / 1;
             background: rgba(30, 30, 40, 0.8);
             border: none;
-            border-radius: 8px;
+            border-radius: 6px;             /* 圆角稍小 */
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.3rem;
+            font-size: 1.1rem;               /* 字体调小 */
             font-weight: 500;
             color: #f0d0e0;
             caret-color: #f8c8d8;
@@ -259,7 +260,7 @@
             text-align: center;
             box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05);
         }
-        /* 预置数字（固定线索）用更浅色表示不可编辑，但实际我们用 contenteditable 控制可编辑性，通过样式区分 */
+        /* 预置数字（固定线索）用更浅色表示不可编辑 */
         .sudoku-cell.prefilled {
             color: #ffcfcf;
             background: rgba(60, 40, 50, 0.7);
@@ -275,22 +276,22 @@
         .sudoku-controls {
             display: flex;
             justify-content: center;
-            gap: 1.2rem;
-            margin-top: 0.8rem;
+            gap: 0.8rem;                  /* 按钮间距调小 */
+            margin-top: 0.5rem;
             flex-wrap: wrap;
         }
         .sudoku-btn {
             background: rgba(248,200,216,0.2);
             border: 1px solid #f8c8d8;
             color: #f8c8d8;
-            padding: 0.5rem 1.5rem;
-            border-radius: 40px;
-            font-size: 1rem;
+            padding: 0.3rem 1.2rem;         /* 按钮内边距调小 */
+            border-radius: 30px;
+            font-size: 0.9rem;               /* 字体稍小 */
             font-weight: 500;
             cursor: pointer;
             backdrop-filter: blur(4px);
             transition: 0.2s;
-            min-width: 80px;
+            min-width: 70px;
         }
         .sudoku-btn:hover {
             background: #f8c8d8;
@@ -299,11 +300,12 @@
         }
         .sudoku-message {
             text-align: center;
-            font-size: 0.95rem;
-            margin-top: 1rem;
+            font-size: 0.85rem;             /* 提示信息字体调小 */
+            margin-top: 0.6rem;
             color: #f0c0d0;
-            min-height: 1.8rem;
+            min-height: 1.5rem;
         }
+
         /* 底部输入栏 (固定在底部) */
         .input-bar {
             position: fixed;
@@ -401,7 +403,7 @@
         <button id="noBtn">no</button>
     </div>
 
-    <!-- 聊天区 (点击yes显示) -->
+    <!-- 聊天区 (点击yes显示) - 文字内容原封不动 -->
     <div class="chat" id="chat">
         <div class="bubble">
 宝宝 和你在一起的日子总是这么幸福且短暂 和你见面很开心又很难过 每次洗漱完出来看到你都在我睡的那一边放好水 我就拿起手机边看日历边想 还有多少天就又要和你分开 我父母总是告诉我我长大了不可以再那么依赖别人 要独立 也不会怎么和我表达感情 交流也是越来越少 让我一直都认为人是漂泊的候鸟 直到你告诉我我可以去依赖你 信任你 多和你表达感受 我又觉得爱是可以宜居的小岛 有一种 我见众生皆草木 唯独见你是青山的感觉 你也总是很照顾我 虽然我会莫名其妙跟你生一些小气 但你都会说是你的错 包容我 这些都是我从未体验过的 我总说我不信任你 不是你做的不够好 是我怕信任你依赖你之后如果你不喜欢我了我又要变回原来的样子 那我要怎么习惯 但你好像拥有什么魔法 让我可以一点点向你摊呈自己 也让你看到我的脆弱 眼泪 还有一些不完美的那面 但真诚的 谢谢你的存在 有你在我总会很安心  送你去高铁站我想让你快点进去 这样我就不会那么舍不得你 而我现在能给你的又太少 再给我一点时间 以后一定能给你 我发誓 我不是很会表达这些情情话话的东西 但真心希望你好 我们互相加油变成更好的自己
@@ -410,12 +412,12 @@
         </div>
     </div>
 
-    <!-- ========== 数独游戏区域 ========== -->
+    <!-- ========== 数独游戏区域 (尺寸已调小，文字保留原样) ========== -->
     <div class="sudoku-section">
         <div class="sudoku-title">
-            🧩 <span>每日一考snx</span>
+            🧩每日一考snx<span></span>
         </div>
-        <!-- 9x9 网格会由js动态生成，以保证结构和交互 -->
+        <!-- 9x9 网格会由js动态生成 -->
         <div id="sudokuGrid" class="sudoku-grid"></div>
         <div class="sudoku-controls">
             <button class="sudoku-btn" id="checkSudoku">检查</button>
@@ -437,12 +439,11 @@
 
 <script>
     (function() {
-        // ---------- 原有功能 完全保留（略作整理，但保持行为不变） ----------
+        // ---------- 原有功能 完全保留 ----------
         const chat = document.getElementById('chat');
         const yesBtn = document.getElementById('yesBtn');
         const noBtn = document.getElementById('noBtn');
 
-        // 弹窗相关
         function showModal(message, showButtons) {
             const overlay = document.createElement('div');
             overlay.className = 'overlay';
@@ -485,7 +486,6 @@
             document.querySelectorAll('.modal').forEach(el => el.remove());
         }
 
-        // 原有yes/no逻辑
         yesBtn.onclick = function() {
             chat.style.display = 'block';
         };
@@ -497,7 +497,6 @@
 
         // ---------- 背景音乐自动播放 ----------
         const audio = document.getElementById('bgm');
-        // 保持原有链接，也可自行更换
         audio.src = "https://music.163.com/song/media/outer/url?id=209397.mp3";  
 
         let played = false;
@@ -515,7 +514,6 @@
         document.addEventListener('touchstart', playAudio, { once: true });
         document.addEventListener('click', playAudio, { once: true });
 
-        // 增强按钮播放
         const originalYes = yesBtn.onclick;
         yesBtn.onclick = function(e) {
             originalYes.call(this, e);
@@ -531,7 +529,6 @@
         audio.load();
 
         // ---------- 数独游戏逻辑 ----------
-        // 一个简单经典题目 (可解，有唯一解)
         const PUZZLE_EASY = [
             [5,3,0,0,7,0,0,0,0],
             [6,0,0,1,9,5,0,0,0],
@@ -544,9 +541,8 @@
             [0,0,0,0,8,0,0,7,9]
         ];
 
-        // 备份初始题目（用于重置）
         let currentBoard = JSON.parse(JSON.stringify(PUZZLE_EASY));
-        let initialBoard = JSON.parse(JSON.stringify(PUZZLE_EASY)); // 固定线索
+        let initialBoard = JSON.parse(JSON.stringify(PUZZLE_EASY));
 
         const gridContainer = document.getElementById('sudokuGrid');
         const messageEl = document.getElementById('sudokuMessage');
@@ -557,7 +553,6 @@
                 for (let c = 0; c < 9; c++) {
                     const cell = document.createElement('div');
                     cell.className = 'sudoku-cell';
-                    // 如果是初始给定数字（不为0），作为预置线索不可编辑
                     const isPrefilled = initial[r][c] !== 0;
                     if (isPrefilled) {
                         cell.classList.add('prefilled');
@@ -565,30 +560,24 @@
                         cell.textContent = initial[r][c];
                     } else {
                         cell.setAttribute('contenteditable', 'true');
-                        // 填入当前board中的值（可能用户输入过）
                         cell.textContent = board[r][c] !== 0 ? board[r][c] : '';
                     }
-                    // 添加自定义属性以便定位
                     cell.dataset.row = r;
                     cell.dataset.col = c;
-                    // 输入事件: 只允许1-9单数字，并更新board
                     cell.addEventListener('input', function(e) {
                         const row = parseInt(this.dataset.row);
                         const col = parseInt(this.dataset.col);
                         let val = this.innerText.trim();
-                        // 只保留最后一个数字字符
                         const match = val.match(/[1-9]/);
                         if (match) {
                             const digit = match[0];
                             this.innerText = digit;
                             currentBoard[row][col] = parseInt(digit);
                         } else {
-                            // 清空非数字
                             this.innerText = '';
                             currentBoard[row][col] = 0;
                         }
                     });
-                    // 防止粘贴多字符
                     cell.addEventListener('keydown', function(e) {
                         if (e.key === 'Enter') {
                             e.preventDefault();
@@ -600,29 +589,23 @@
             }
         }
 
-        // 更新UI显示为当前board
         function updateUIFromBoard(board, initial) {
             const cells = document.querySelectorAll('#sudokuGrid .sudoku-cell');
             cells.forEach(cell => {
                 const r = parseInt(cell.dataset.row);
                 const c = parseInt(cell.dataset.col);
-                if (initial[r][c] !== 0) {
-                    // 预置格子保持不变
-                    return;
-                }
+                if (initial[r][c] !== 0) return;
                 const val = board[r][c];
                 cell.textContent = val !== 0 ? val : '';
             });
         }
 
-        // 重置为初始题目
         function resetToInitial() {
             currentBoard = JSON.parse(JSON.stringify(initialBoard));
             updateUIFromBoard(currentBoard, initialBoard);
-            messageEl.innerText = '已重置，继续挑战吧老婆 💪';
+            messageEl.innerText = '已重置，继续挑战吧老婆！';
         }
 
-        // 新题目：简单轮换一个内置题目 (为了演示，使用另一个经典题)
         const PUZZLE_MEDIUM = [
             [0,0,0,2,6,0,7,0,1],
             [6,8,0,0,7,0,0,9,0],
@@ -638,12 +621,10 @@
             initialBoard = JSON.parse(JSON.stringify(PUZZLE_MEDIUM));
             currentBoard = JSON.parse(JSON.stringify(PUZZLE_MEDIUM));
             renderSudoku(currentBoard, initialBoard);
-            messageEl.innerText = '新题目来啦，开动脑筋snx！';
+            messageEl.innerText = '新题目来啦，加油哦宝宝';
         }
 
-        // 检查当前board是否符合数独规则
         function isBoardValid(board) {
-            // 检查行、列、宫
             const rows = Array(9).fill().map(() => ({}));
             const cols = Array(9).fill().map(() => ({}));
             const boxes = Array(9).fill().map(() => ({}));
@@ -651,12 +632,10 @@
             for (let r = 0; r < 9; r++) {
                 for (let c = 0; c < 9; c++) {
                     const val = board[r][c];
-                    if (val === 0) continue; // 空格忽略
+                    if (val === 0) continue;
                     if (val < 1 || val > 9) return false;
                     const boxIdx = Math.floor(r/3)*3 + Math.floor(c/3);
-                    if (rows[r][val] || cols[c][val] || boxes[boxIdx][val]) {
-                        return false; // 重复
-                    }
+                    if (rows[r][val] || cols[c][val] || boxes[boxIdx][val]) return false;
                     rows[r][val] = true;
                     cols[c][val] = true;
                     boxes[boxIdx][val] = true;
@@ -666,12 +645,11 @@
         }
 
         function checkSudoku() {
-            // 先将当前显示的值同步到currentBoard (实际上input已同步，但为防止手动直接改dom未触发，强制同步一次)
             const cells = document.querySelectorAll('#sudokuGrid .sudoku-cell');
             cells.forEach(cell => {
                 const r = parseInt(cell.dataset.row);
                 const c = parseInt(cell.dataset.col);
-                if (initialBoard[r][c] !== 0) return; // 跳过预置
+                if (initialBoard[r][c] !== 0) return;
                 const txt = cell.innerText.trim();
                 if (txt.match(/^[1-9]$/)) {
                     currentBoard[r][c] = parseInt(txt);
@@ -680,7 +658,6 @@
                 }
             });
 
-            // 检查是否有空格
             let hasEmpty = false;
             outer: for (let r=0; r<9; r++) {
                 for (let c=0; c<9; c++) {
@@ -692,31 +669,25 @@
             }
 
             if (hasEmpty) {
-                messageEl.innerText = ' 还有空格子，再想想哦';
+                messageEl.innerText = '❌ 还有空格子，再填填～';
                 return;
             }
 
             if (isBoardValid(currentBoard)) {
-                messageEl.innerText = '完美！老婆厉害';
-                // 可选弹出小彩蛋
+                messageEl.innerText = '完美！宝宝聪明';
             } else {
-                messageEl.innerText = ' 好像有重复，再检查一下哦老婆';
+                messageEl.innerText = '好像有重复，再检查一下哦老婆';
             }
         }
 
-        // 初始化渲染
         renderSudoku(currentBoard, initialBoard);
 
-        // 绑定按钮
         document.getElementById('checkSudoku').addEventListener('click', checkSudoku);
         document.getElementById('resetSudoku').addEventListener('click', resetToInitial);
         document.getElementById('newSudoku').addEventListener('click', function() {
             loadNewPuzzle();
         });
 
-        // 额外: 点击yes/no时如果有数独兴趣，但无影响；保持各自功能
-
-        // 避免格子内容换行/粘贴多内容
         document.querySelectorAll('#sudokuGrid .sudoku-cell[contenteditable="true"]').forEach(cell => {
             cell.addEventListener('paste', (e) => {
                 e.preventDefault();
@@ -724,7 +695,6 @@
                 const match = text.match(/[1-9]/);
                 if (match) {
                     cell.innerText = match[0];
-                    // 触发input手动
                     const inputEvent = new Event('input', { bubbles: true });
                     cell.dispatchEvent(inputEvent);
                 }
