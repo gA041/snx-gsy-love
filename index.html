@@ -31,7 +31,7 @@
             padding-bottom: 80px;
         }
 
-        /* 全屏半透明蒙版 —— 调得更透明，不遮住背景图 */
+        /* 全屏半透明蒙版 —— 设置为完全透明，不遮住背景图 */
         body::before {
             content: '';
             position: fixed;
@@ -39,7 +39,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.2);  /* 从0.4改为0.2，更透明 */
+            background-color: rgba(0, 0, 0, 0);  /* 完全透明，背景图清晰可见 */
             z-index: -1;
         }
 
@@ -210,35 +210,35 @@
             border-radius: 3px;
         }
 
-        /* ===== 数独游戏区域 (进一步调小尺寸) ===== */
+        /* ===== 数独游戏区域 (调小尺寸，居中显示，网格线清晰) ===== */
         .sudoku-section {
             width: 90%;
-            max-width: 280px;           /* 从340px进一步缩小到280px */
+            max-width: 340px;           /* 调小尺寸，更紧凑 */
             margin: 1.5rem auto 2rem;    /* 上下边距，左右auto实现完美居中 */
             background: rgba(10, 10, 20, 0.5);
             backdrop-filter: blur(8px);
-            border-radius: 18px;         /* 圆角相应调小 */
-            padding: 0.8rem 0.5rem;      /* 内边距减小 */
+            border-radius: 22px;         /* 圆角相应调小 */
+            padding: 1rem 0.6rem;        /* 内边距减小 */
             box-shadow: 0 8px 20px rgba(0,0,0,0.5);
             border: 1px solid rgba(248,200,216,0.3);
         }
         .sudoku-title {
             text-align: center;
-            font-size: 1rem;             /* 标题进一步调小 */
+            font-size: 1.2rem;           /* 标题调小 */
             color: #f8c8d8;
-            margin-bottom: 0.2rem;
+            margin-bottom: 0.3rem;
             letter-spacing: 1px;
             font-weight: 300;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.3rem;
+            gap: 0.5rem;
         }
         .sudoku-title span {
-            font-size: 0.7rem;            /* 标签进一步调小 */
+            font-size: 0.8rem;            /* 标签调小 */
             background: #f8c8d8;
             color: #222;
-            padding: 0.1rem 0.6rem;
+            padding: 0.1rem 0.8rem;
             border-radius: 30px;
             font-weight: 500;
         }
@@ -249,8 +249,8 @@
             background-color: rgba(255,255,255,0.15);
             padding: 0;                   /* 移除内边距 */
             border: 2px solid #f8c8d8;    /* 外边框用主题色 */
-            border-radius: 8px;
-            margin: 0.3rem 0 0.6rem;
+            border-radius: 10px;
+            margin: 0.5rem 0 0.8rem;
             overflow: hidden;             /* 确保圆角裁剪 */
         }
         .sudoku-cell {
@@ -260,7 +260,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.85rem;            /* 字体进一步调小 */
+            font-size: 1rem;               /* 字体调小 */
             font-weight: 500;
             color: #f0d0e0;
             caret-color: #f8c8d8;
@@ -294,22 +294,22 @@
         .sudoku-controls {
             display: flex;
             justify-content: center;
-            gap: 0.4rem;                  /* 按钮间距进一步调小 */
-            margin-top: 0.3rem;
+            gap: 0.6rem;                  /* 按钮间距调小 */
+            margin-top: 0.5rem;
             flex-wrap: wrap;
         }
         .sudoku-btn {
             background: rgba(248,200,216,0.2);
             border: 1px solid #f8c8d8;
             color: #f8c8d8;
-            padding: 0.2rem 0.8rem;        /* 按钮内边距进一步调小 */
+            padding: 0.25rem 1rem;         /* 按钮内边距调小 */
             border-radius: 30px;
-            font-size: 0.75rem;             /* 字体进一步调小 */
+            font-size: 0.85rem;             /* 字体稍小 */
             font-weight: 500;
             cursor: pointer;
             backdrop-filter: blur(4px);
             transition: 0.2s;
-            min-width: 50px;
+            min-width: 60px;
         }
         .sudoku-btn:hover {
             background: #f8c8d8;
@@ -318,10 +318,10 @@
         }
         .sudoku-message {
             text-align: center;
-            font-size: 0.7rem;             /* 提示信息字体进一步调小 */
-            margin-top: 0.4rem;
+            font-size: 0.8rem;             /* 提示信息字体调小 */
+            margin-top: 0.5rem;
             color: #f0c0d0;
-            min-height: 1.2rem;
+            min-height: 1.4rem;
         }
 
         /* 底部输入栏 (完全保留原样) */
@@ -429,7 +429,7 @@
         </div>
     </div>
 
-    <!-- ===== 数独游戏区域 (进一步调小尺寸) ===== -->
+    <!-- ===== 数独游戏区域 (调小尺寸，居中放置，网格线清晰) ===== -->
     <div class="sudoku-section">
         <div class="sudoku-title">
             🐑每日一练<span>snx加油</span>
