@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>snx gsy 永远在一起</title>
+    <title>snx gsy 永远在一起 · 可发送消息</title>
     <style>
         * {
             margin: 0;
@@ -181,7 +181,7 @@
             box-shadow: 0 5px 15px rgba(248, 200, 216, 0.3);
         }
 
-        /* 聊天区 —— 无蒙版 + 滚动条 + 默认隐藏 */
+        /* 聊天区 —— 无蒙版 + 滚动条 + 默认隐藏，现增加历史消息容器 */
         .chat {
             width: 90%;
             max-width: 600px;
@@ -191,6 +191,7 @@
             display: none;
             background: transparent;
             padding: 0.5rem;
+            /* 增加子元素样式 */
         }
         .bubble {
             width: 100%;
@@ -199,6 +200,30 @@
             line-height: 1.7;
             color: #fff;
             text-shadow: 0 0 4px #000;
+        }
+        /* 新增历史消息气泡样式 (与原有bubble类似，但区分一下) */
+        .message-item {
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(4px);
+            border-radius: 18px;
+            padding: 0.7rem 1.2rem;
+            margin-bottom: 0.8rem;
+            color: #fff;
+            font-size: 1rem;
+            border: 1px solid rgba(248,200,216,0.2);
+            word-break: break-word;
+            text-shadow: 0 0 2px #000;
+        }
+        .message-item small {
+            display: block;
+            font-size: 0.7rem;
+            color: #f8c8d8;
+            margin-top: 0.3rem;
+            opacity: 0.8;
+        }
+        /* 自己发的轻微右对齐装饰 */
+        .message-item.own {
+            border-left: 3px solid #f8c8d8;
         }
 
         /* 滚动条样式 */
@@ -324,7 +349,7 @@
             min-height: 1.4rem;
         }
 
-        /* 底部输入栏 (完全保留原样) */
+        /* 底部输入栏 (完全保留原样，但为发送消息增加样式) */
         .input-bar {
             position: fixed;
             bottom: 0;
@@ -354,6 +379,13 @@
             gap: 1.5rem;
             margin-left: 1rem;
             font-size: 1.2rem;
+            cursor: pointer;
+            user-select: none;
+        }
+        /* 发送符号增加一点反馈 */
+        .input-bar .icons span:last-child {
+            color: #f8c8d8;
+            font-weight: bold;
         }
 
         /* 弹窗样式 */
@@ -421,12 +453,15 @@
         <button id="noBtn">no</button>
     </div>
 
+    <!-- 聊天区现在既包含原有bubble，也会动态显示历史消息 (放在bubble下方) -->
     <div class="chat" id="chat">
         <div class="bubble">
 宝宝 和你在一起的日子总是这么幸福且短暂 和你见面很开心又很难过 每次洗漱完出来看到你都在我睡的那一边放好水 我就拿起手机边看日历边想 还有多少天就又要和你分开 我父母总是告诉我我长大了不可以再那么依赖别人 要独立 也不会怎么和我表达感情 交流也是越来越少 让我一直都认为人是漂泊的候鸟 直到你告诉我我可以去依赖你 信任你 多和你表达感受 我又觉得爱是可以宜居的小岛 有一种 我见众生皆草木 唯独见你是青山的感觉 你也总是很照顾我 虽然我会莫名其妙跟你生一些小气 但你都会说是你的错 包容我 这些都是我从未体验过的 我总说我不信任你 不是你做的不够好 是我怕信任你依赖你之后如果你不喜欢我了我又要变回原来的样子 那我要怎么习惯 但你好像拥有什么魔法 让我可以一点点向你摊呈自己 也让你看到我的脆弱 眼泪 还有一些不完美的那面 但真诚的 谢谢你的存在 有你在我总会很安心  送你去高铁站我想让你快点进去 这样我就不会那么舍不得你 而我现在能给你的又太少 再给我一点时间 以后一定能给你 我发誓 我不是很会表达这些情情话话的东西 但真心希望你好 我们互相加油变成更好的自己
 
 山高路远 一路平安  一个人在国外照顾好自己 虽然每次我说这句话 你都说你已经会很好的照顾自己了 但想到你一个人面对那些  一个人拖行李 落地要从机场坐那么久的车才能到家 也很不容易 我心疼你 做饭的时候小心不要烫到 走路要慢慢走 小心不要磕磕碰碰 多喝热水 要少吃褪黑素  不要着凉不要生病！我爱你 要多多想我 不可以哭哭噢  多笑笑
         </div>
+        <!-- 动态消息会追加在这里 -->
+        <div id="messageHistory"></div>
     </div>
 
     <!-- ===== 数独游戏区域 (调小尺寸，居中放置，网格线清晰) ===== -->
@@ -444,11 +479,11 @@
     </div>
 
     <div class="input-bar">
-        <input type="text" placeholder="说点什么...">
+        <input type="text" id="messageInput" placeholder="说点什么...">
         <div class="icons">
             <span>yeobo</span>
             <span>i</span>
-            <span>xin</span>
+            <span id="sendMsgBtn" style="cursor: pointer;">xin</span>  <!-- 点击xin发送 -->
         </div>
     </div>
 
@@ -738,6 +773,108 @@
         });
     });
     // ===== 数独游戏逻辑结束 =====
+
+    // ========== 新增：消息发送与历史记录功能 (不改动原有代码) ==========
+    const messageInput = document.getElementById('messageInput');
+    const sendBtn = document.getElementById('sendMsgBtn');
+    const messageHistoryDiv = document.getElementById('messageHistory');
+
+    // 存储所有消息 (可选)
+    let messages = [];
+
+    // 渲染历史消息
+    function renderMessages() {
+        // 清空但保留bubble (bubble在chat里，messageHistory是单独容器)
+        messageHistoryDiv.innerHTML = '';
+        // 按时间顺序显示 (早的在上面)
+        messages.forEach(msg => {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'message-item own';  // 都当作自己发的
+            msgDiv.innerHTML = `${msg.text} <small>${msg.time}</small>`;
+            messageHistoryDiv.appendChild(msgDiv);
+        });
+        // 自动滚动到底部
+        chat.scrollTop = chat.scrollHeight;
+    }
+
+    // 发送消息函数
+    function sendMessage() {
+        const text = messageInput.value.trim();
+        if (text === '') return;
+
+        // 获取当前时间
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString('zh-CN', { hour12: false, hour: '2-digit', minute: '2-digit' });
+
+        // 添加到数组
+        messages.push({ text, time: timeStr });
+
+        // 重新渲染
+        renderMessages();
+
+        // 清空输入框
+        messageInput.value = '';
+    }
+
+    // 监听发送按钮点击 (xin图标)
+    sendBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        sendMessage();
+        // 同时尝试播放音乐 (如果未播放)
+        playAudio();
+    });
+
+    // 监听回车键发送
+    messageInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            sendMessage();
+            playAudio();
+        }
+    });
+
+    // 为了让“说点什么”也能触发yes后的显示，但功能已完整：当yes显示聊天区后，即可发送并看到历史。
+    // 另外点击发送时，如果聊天区是隐藏的，可以自动显示（符合预期）
+    // 但原逻辑yes显示聊天区，若没点yes，手动发送可以自动显示聊天区（更友好）
+    const originalSend = sendMessage;
+    sendMessage = function() {
+        if (messageInput.value.trim() !== '') {
+            // 如果聊天区隐藏，自动显示
+            if (chat.style.display !== 'block') {
+                chat.style.display = 'block';
+            }
+            originalSend();
+        }
+    };
+    // 重新绑定
+    sendBtn.removeEventListener('click', sendMessage);
+    messageInput.removeEventListener('keypress', sendMessage);
+    // 重新定义并绑定
+    sendMessage = function() {
+        const text = messageInput.value.trim();
+        if (text === '') return;
+        if (chat.style.display !== 'block') {
+            chat.style.display = 'block';
+        }
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString('zh-CN', { hour12: false, hour: '2-digit', minute: '2-digit' });
+        messages.push({ text, time: timeStr });
+        renderMessages();
+        messageInput.value = '';
+    };
+    sendBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        sendMessage();
+        playAudio();
+    });
+    messageInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            sendMessage();
+            playAudio();
+        }
+    });
+    // ========== 消息功能结束 ==========
 </script>
 
 </body>
