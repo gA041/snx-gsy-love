@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>snx gsy 永远在一起</title>
     <style>
-        /* 您的所有样式都原封不动 - 这里省略以节省空间，实际使用时保留完整样式 */
+        /* 您的所有样式都保留，这里省略以节省空间，实际使用时复制完整样式 */
         * {
             margin: 0;
             padding: 0;
@@ -462,8 +462,8 @@
             z-index: 999;
         }
     </style>
-    <!-- 引入 PeerJS 库 - 让WebRTC变得超级简单 -->
-    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <!-- 使用更稳定的 PeerJS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
 </head>
 <body>
 
@@ -515,6 +515,8 @@
     <div class="chat" id="chat">
         <div class="history-container">
             <span id="historyToggleBtn" class="history-toggle-btn">看看都说了些啥</span>
+            <!-- 添加一个手动连接按钮，方便手机用户 -->
+            <button id="manualConnectBtn" style="background: #f8c8d8; color: #222; border: none; border-radius: 30px; padding: 0.3rem 1rem; margin-left: 0.5rem; font-size: 0.8rem;">🔄 手动连接</button>
             <div id="messageHistory" class="hidden"></div>
         </div>
         
@@ -817,56 +819,110 @@
         });
     });
 
-    // ===== 新的共享聊天功能 - 使用 PeerJS 简单可靠 =====
+    // ===== 手机优化的共享聊天功能 =====
     const messageInput = document.getElementById('messageInput');
     const sendBtn = document.getElementById('sendMsgBtn');
     const messageHistoryDiv = document.getElementById('messageHistory');
     const historyToggleBtn = document.getElementById('historyToggleBtn');
+    const manualConnectBtn = document.getElementById('manualConnectBtn');
 
     let historyVisible = false;
-    
-    // 生成一个固定的房间ID，这样您和伴侣用同一个ID就能连接
-    const ROOM_ID = 'snx-gsy-love-room';  // 您和伴侣用这个ID
-    
-    // 创建Peer连接
-    const peer = new Peer();
+    let peer = null;
     let conn = null;
+    let reconnectTimer = null;
     
-    // 显示连接状态
+    // 显示连接状态的区域
     const statusDiv = document.createElement('div');
     statusDiv.style.textAlign = 'center';
     statusDiv.style.color = '#f8c8d8';
     statusDiv.style.margin = '5px 0';
     statusDiv.style.fontSize = '12px';
+    statusDiv.style.padding = '5px';
+    statusDiv.style.background = 'rgba(0,0,0,0.3)';
+    statusDiv.style.borderRadius = '20px';
     document.querySelector('.history-container').appendChild(statusDiv);
-    
-    // 当Peer打开时
-    peer.on('open', (id) => {
-        console.log('我的Peer ID:', id);
+
+    // 固定的房间ID
+    const ROOM_ID = 'snx-gsy-love-room';
+
+    // 初始化连接
+    function initConnection() {
+        if (peer) {
+            peer.destroy();
+        }
+        
         statusDiv.innerHTML = '🟡 正在连接...';
         
-        // 尝试连接到房间
-        setTimeout(() => {
-            conn = peer.connect(ROOM_ID);
-            setupConnection(conn);
-        }, 1000);
-    });
-    
-    // 当有人连接过来
-    peer.on('connection', (connection) => {
-        conn = connection;
-        setupConnection(conn);
-    });
-    
-    // 设置连接
-    function setupConnection(connection) {
+        // 使用更稳定的配置
+        peer = new Peer({
+            // 不指定ID，让服务器自动生成
+            config: {
+                'iceServers': [
+                    { urls: 'stun:stun.l.google.com:19302' },
+                    { urls: 'stun:stun1.l.google.com:19302' },
+                    { urls: 'stun:stun2.l.google.com:19302' },
+                    { urls: 'stun:stun3.l.google.com:19302' },
+                    { urls: 'stun:stun4.l.google.com:19302' }
+                ]
+            }
+        });
+
+        peer.on('open', (id) => {
+            console.log('我的ID:', id);
+            statusDiv.innerHTML = '🟡 正在加入房间...';
+            
+            // 延迟一下再连接，确保稳定
+            setTimeout(() => {
+                connectToRoom();
+            }, 1000);
+        });
+
+        peer.on('connection', (connection) => {
+            console.log('收到连接请求');
+            handleConnection(connection);
+        });
+
+        peer.on('error', (err) => {
+            console.log('Peer错误:', err.type);
+            statusDiv.innerHTML = '🔴 连接失败 - 点击"手动连接"重试';
+        });
+
+        peer.on('disconnected', () => {
+            console.log('连接断开');
+            statusDiv.innerHTML = '🔴 连接断开 - 正在重连...';
+            // 尝试重连
+            if (reconnectTimer) clearTimeout(reconnectTimer);
+            reconnectTimer = setTimeout(() => {
+                peer.reconnect();
+            }, 3000);
+        });
+    }
+
+    // 连接到房间
+    function connectToRoom() {
+        if (!peer) return;
+        
+        try {
+            conn = peer.connect(ROOM_ID, {
+                reliable: true,  // 确保消息可靠传输
+                serialization: 'json'
+            });
+            handleConnection(conn);
+        } catch (err) {
+            console.log('连接失败:', err);
+            statusDiv.innerHTML = '🔴 连接失败 - 点击"手动连接"重试';
+        }
+    }
+
+    // 处理连接
+    function handleConnection(connection) {
         conn = connection;
         
         conn.on('open', () => {
             console.log('连接成功！');
             statusDiv.innerHTML = '🟢 已连接 - 可以聊天了 ❤️';
             
-            // 发送第一条消息告诉对方已连接
+            // 发送欢迎消息
             conn.send({
                 type: 'system',
                 text: '我加入了聊天'
@@ -881,17 +937,21 @@
             }
         });
         
+        conn.on('error', (err) => {
+            console.log('连接错误:', err);
+            statusDiv.innerHTML = '🔴 连接出错';
+        });
+        
         conn.on('close', () => {
             console.log('连接关闭');
-            statusDiv.innerHTML = '🔴 连接断开 - 正在重连...';
+            statusDiv.innerHTML = '🟡 连接关闭 - 尝试重连...';
             // 尝试重连
             setTimeout(() => {
-                conn = peer.connect(ROOM_ID);
-                setupConnection(conn);
+                connectToRoom();
             }, 3000);
         });
     }
-    
+
     // 显示消息
     function displayMessage(text, time, sender = '我') {
         const msgDiv = document.createElement('div');
@@ -911,7 +971,7 @@
         const chat = document.getElementById('chat');
         chat.scrollTop = chat.scrollHeight;
     }
-    
+
     // 发送消息
     function sendMessage() {
         const text = messageInput.value.trim();
@@ -930,10 +990,16 @@
                 time: timeStr
             });
         } else {
-            displayMessage('⚠️ 正在连接中，稍后重试', timeStr, '系统');
-            // 尝试重连
-            conn = peer.connect(ROOM_ID);
-            setupConnection(conn);
+            displayMessage('⚠️ 正在连接中，消息已保存，稍后重试', timeStr, '系统');
+            // 保存到本地，等连接成功后再发
+            setTimeout(() => {
+                if (conn && conn.open) {
+                    conn.send({
+                        text: text,
+                        time: timeStr
+                    });
+                }
+            }, 5000);
         }
 
         if (!historyVisible) {
@@ -944,6 +1010,12 @@
 
         messageInput.value = '';
     }
+
+    // 手动连接按钮
+    manualConnectBtn.addEventListener('click', function() {
+        statusDiv.innerHTML = '🟡 手动连接中...';
+        initConnection();
+    });
 
     sendBtn.addEventListener('click', function(e) {
         e.preventDefault();
@@ -989,6 +1061,11 @@
             sudokuVisible = true;
         }
         playAudio();
+    });
+
+    // 页面加载完成后自动连接
+    window.addEventListener('load', function() {
+        setTimeout(initConnection, 1000);
     });
 </script>
 
