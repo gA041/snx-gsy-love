@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>snx gsy 永远在一起</title>
+    <title>snx gsy 永远在一起 · 历史独立在上方</title>
     <style>
         * {
             margin: 0;
@@ -12,7 +12,7 @@
             font-family: "Microsoft YaHei", "Segoe UI", sans-serif;
         }
 
-        /* 背景容器 —— 缩小图片并居中，确保不被遮挡 */
+        /* 背景容器 */
         body {
             position: relative;
             background-image: url("gsy666.jpg");
@@ -153,11 +153,13 @@
             font-size: 1rem;
         }
 
+        /* 按钮区 */
         .buttons {
             display: flex;
             gap: 1.5rem;
             justify-content: center;
             margin: 2rem 0;
+            flex-wrap: wrap;
         }
         button {
             padding: 0.8rem 2.5rem;
@@ -175,26 +177,65 @@
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(248, 200, 216, 0.3);
         }
+        #sudokuToggleBtn {
+            background-color: rgba(248,200,216,0.3);
+            backdrop-filter: blur(5px);
+            border: 1px solid #f8c8d8;
+            color: #fff;
+        }
+        #sudokuToggleBtn:hover {
+            background-color: #f8c8d8;
+            color: #222;
+        }
 
-        /* 聊天区样式 */
+        /* 聊天区容器 */
         .chat {
             width: 90%;
             max-width: 600px;
             margin: 2rem auto;
             max-height: 420px;
             overflow-y: auto;
-            display: none;
+            display: block;
             background: transparent;
             padding: 0.5rem;
         }
-        .bubble {
-            width: 100%;
-            padding: 1rem;
-            font-size: 1rem;
-            line-height: 1.7;
-            color: #fff;
-            text-shadow: 0 0 4px #000;
+
+        /* 历史消息区域 - 独立在上方 */
+        .history-container {
+            margin-bottom: 1rem;
+            border-bottom: 1px solid rgba(248,200,216,0.3);
+            padding-bottom: 0.5rem;
         }
+
+        /* 历史消息控制按钮 - 独立的小按钮 */
+        .history-toggle-btn {
+            background: rgba(248,200,216,0.2);
+            border: 1px solid #f8c8d8;
+            color: #f8c8d8;
+            padding: 0.3rem 1rem;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            backdrop-filter: blur(4px);
+            transition: 0.2s;
+            margin-bottom: 0.8rem;
+            display: inline-block;
+            width: auto;
+        }
+        .history-toggle-btn:hover {
+            background: #f8c8d8;
+            color: #222;
+        }
+
+        /* 历史消息列表 */
+        #messageHistory {
+            display: block;
+            margin-top: 0.5rem;
+        }
+        #messageHistory.hidden {
+            display: none;
+        }
+
         .message-item {
             background: rgba(0, 0, 0, 0.4);
             backdrop-filter: blur(4px);
@@ -218,27 +259,17 @@
             border-left: 3px solid #f8c8d8;
         }
 
-        /* 历史记录隐藏按钮 */
-        .toggle-history-btn {
-            background: rgba(248,200,216,0.2);
-            border: 1px solid #f8c8d8;
-            color: #f8c8d8;
-            padding: 0.3rem 1rem;
-            border-radius: 30px;
-            font-size: 0.8rem;
-            cursor: pointer;
-            backdrop-filter: blur(4px);
-            transition: 0.2s;
-            margin-bottom: 0.8rem;
-            display: inline-block;
-            width: auto;
-        }
-        .toggle-history-btn:hover {
-            background: #f8c8d8;
-            color: #222;
-        }
-        #messageHistory.hidden {
+        /* 长文字气泡 - 默认隐藏，yes触发显示 */
+        .bubble {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #fff;
+            text-shadow: 0 0 4px #000;
             display: none;
+            margin-top: 1rem;
+            border-top: 1px solid rgba(248,200,216,0.2);
         }
 
         .chat::-webkit-scrollbar {
@@ -249,7 +280,7 @@
             border-radius: 3px;
         }
 
-        /* ===== 数独游戏区域 (添加隐藏功能相关样式) ===== */
+        /* 数独游戏区域 */
         .sudoku-section {
             width: 90%;
             max-width: 340px;
@@ -260,14 +291,12 @@
             padding: 1rem 0.6rem;
             box-shadow: 0 8px 20px rgba(0,0,0,0.5);
             border: 1px solid rgba(248,200,216,0.3);
-            transition: opacity 0.3s ease, transform 0.2s ease;
+            transition: opacity 0.3s ease;
         }
-        /* 隐藏数独区域的类 */
         .sudoku-section.hidden-sudoku {
-            display: none;  /* 直接隐藏整个区块 */
+            display: none;
         }
 
-        /* 标题栏现在设计为可点击，添加指针和交互提示 */
         .sudoku-title {
             text-align: center;
             font-size: 1.2rem;
@@ -279,15 +308,7 @@
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
-            cursor: pointer;  /* 变成手型，提示可点击 */
             user-select: none;
-            transition: 0.2s;
-            padding: 0.2rem;
-            border-radius: 30px;
-        }
-        .sudoku-title:hover {
-            background: rgba(248,200,216,0.2);
-            text-shadow: 0 0 6px #f8c8d8;
         }
         .sudoku-title span {
             font-size: 0.8rem;
@@ -296,7 +317,6 @@
             padding: 0.1rem 0.8rem;
             border-radius: 30px;
             font-weight: 500;
-            pointer-events: none;  /* 让span不干扰点击事件，点击仍然触发标题 */
         }
         .sudoku-grid {
             display: grid;
@@ -478,25 +498,31 @@
     <div class="buttons">
         <button id="yesBtn">yes</button>
         <button id="noBtn">no</button>
+        <button id="sudokuToggleBtn">🐑 每日一练</button>
     </div>
 
-    <!-- 聊天区 -->
+    <!-- 聊天区：历史消息在上方，长文字在下方 -->
     <div class="chat" id="chat">
-        <div class="bubble">
+        <!-- 历史消息区域 - 独立在上方 -->
+        <div class="history-container">
+            <!-- 独立的历史控制按钮 -->
+            <span id="historyToggleBtn" class="history-toggle-btn">📜 显示历史</span>
+            <!-- 历史消息列表 -->
+            <div id="messageHistory" class="hidden"></div>
+        </div>
+        
+        <!-- 长文字气泡 - 默认隐藏，yes触发显示 -->
+        <div class="bubble" id="longMessage">
 宝宝 和你在一起的日子总是这么幸福且短暂 和你见面很开心又很难过 每次洗漱完出来看到你都在我睡的那一边放好水 我就拿起手机边看日历边想 还有多少天就又要和你分开 我父母总是告诉我我长大了不可以再那么依赖别人 要独立 也不会怎么和我表达感情 交流也是越来越少 让我一直都认为人是漂泊的候鸟 直到你告诉我我可以去依赖你 信任你 多和你表达感受 我又觉得爱是可以宜居的小岛 有一种 我见众生皆草木 唯独见你是青山的感觉 你也总是很照顾我 虽然我会莫名其妙跟你生一些小气 但你都会说是你的错 包容我 这些都是我从未体验过的 我总说我不信任你 不是你做的不够好 是我怕信任你依赖你之后如果你不喜欢我了我又要变回原来的样子 那我要怎么习惯 但你好像拥有什么魔法 让我可以一点点向你摊呈自己 也让你看到我的脆弱 眼泪 还有一些不完美的那面 但真诚的 谢谢你的存在 有你在我总会很安心  送你去高铁站我想让你快点进去 这样我就不会那么舍不得你 而我现在能给你的又太少 再给我一点时间 以后一定能给你 我发誓 我不是很会表达这些情情话话的东西 但真心希望你好 我们互相加油变成更好的自己
 
 山高路远 一路平安  一个人在国外照顾好自己 虽然每次我说这句话 你都说你已经会很好的照顾自己了 但想到你一个人面对那些  一个人拖行李 落地要从机场坐那么久的车才能到家 也很不容易 我心疼你 做饭的时候小心不要烫到 走路要慢慢走 小心不要磕磕碰碰 多喝热水 要少吃褪黑素  不要着凉不要生病！我爱你 要多多想我 不可以哭哭噢  多笑笑
         </div>
-        <div style="display: flex; justify-content: flex-start; margin: 0.5rem 0;">
-            <span id="toggleHistoryBtn" class="toggle-history-btn">看看我们说了些什么？</span>
-        </div>
-        <div id="messageHistory"></div>
     </div>
 
-    <!-- ===== 数独游戏区域 (添加了隐藏功能，点击标题切换) ===== -->
-    <div class="sudoku-section" id="sudokuSection">
-        <div class="sudoku-title" id="toggleSudokuBtn">
-            🐑每日一练<span>snx加油</span>  <!-- 点击标题隐藏/显示整个数独区 -->
+    <!-- 数独游戏区域 (初始隐藏，通过每日一练按钮控制) -->
+    <div class="sudoku-section hidden-sudoku" id="sudokuSection">
+        <div class="sudoku-title">
+            🐑每日一练<span>snx加油</span>
         </div>
         <div id="sudokuGrid" class="sudoku-grid"></div>
         <div class="sudoku-controls">
@@ -517,17 +543,18 @@
     </div>
 
 <script>
-    // ===== 原有js功能 —— 完全保留未改动 =====
-    const chat = document.getElementById('chat');
+    // ===== 长文字通过yes按钮控制显示 =====
+    const longMsg = document.getElementById('longMessage');
     const yesBtn = document.getElementById('yesBtn');
     const noBtn = document.getElementById('noBtn');
 
     yesBtn.onclick = function() {
-        chat.style.display = 'block';
+        longMsg.style.display = 'block';
+        playAudio();
     };
 
     noBtn.onclick = function() {
-        chat.style.display = 'none';
+        playAudio();
         showModal('没有选no的机会哦 ♾️', true);
     };
 
@@ -592,21 +619,9 @@
     document.addEventListener('touchstart', playAudio, { once: true });
     document.addEventListener('click', playAudio, { once: true });
 
-    const originalYes = yesBtn.onclick;
-    yesBtn.onclick = function(e) {
-        originalYes.call(this, e);
-        playAudio();
-    };
-
-    const originalNo = noBtn.onclick;
-    noBtn.onclick = function(e) {
-        originalNo.call(this, e);
-        playAudio();
-    };
-
     audio.load();
 
-    // ===== 数独游戏逻辑 (不变，但增加隐藏功能) =====
+    // ===== 数独游戏逻辑 =====
     const PUZZLE_EASY = [
         [5,3,0,0,7,0,0,0,0],
         [6,0,0,1,9,5,0,0,0],
@@ -681,6 +696,12 @@
         }
     }
 
+    function resetToInitial() {
+        currentBoard = JSON.parse(JSON.stringify(initialBoard));
+        updateUIFromBoard(currentBoard, initialBoard);
+        messageEl.innerText = '已重置，加油老婆 💪';
+    }
+
     function updateUIFromBoard(board, initial) {
         const cells = document.querySelectorAll('#sudokuGrid .sudoku-cell');
         cells.forEach(cell => {
@@ -690,12 +711,6 @@
             const val = board[r][c];
             cell.textContent = val !== 0 ? val : '';
         });
-    }
-
-    function resetToInitial() {
-        currentBoard = JSON.parse(JSON.stringify(initialBoard));
-        updateUIFromBoard(currentBoard, initialBoard);
-        messageEl.innerText = '已重置，加油老婆 💪';
     }
 
     const PUZZLE_MEDIUM = [
@@ -798,9 +813,10 @@
     const messageInput = document.getElementById('messageInput');
     const sendBtn = document.getElementById('sendMsgBtn');
     const messageHistoryDiv = document.getElementById('messageHistory');
-    const toggleHistoryBtn = document.getElementById('toggleHistoryBtn');
+    const historyToggleBtn = document.getElementById('historyToggleBtn');
 
     let messages = [];
+    let historyVisible = false; // 初始隐藏
 
     function renderMessages() {
         messageHistoryDiv.innerHTML = '';
@@ -810,6 +826,8 @@
             msgDiv.innerHTML = `${msg.text} <small>${msg.time}</small>`;
             messageHistoryDiv.appendChild(msgDiv);
         });
+        // 滚动到底部
+        const chat = document.getElementById('chat');
         chat.scrollTop = chat.scrollHeight;
     }
 
@@ -817,17 +835,24 @@
         const text = messageInput.value.trim();
         if (text === '') return;
 
-        if (chat.style.display !== 'block') {
-            chat.style.display = 'block';
-        }
-
         const now = new Date();
         const timeStr = now.toLocaleTimeString('zh-CN', { hour12: false, hour: '2-digit', minute: '2-digit' });
 
         messages.push({ text, time: timeStr });
         renderMessages();
 
+        // 如果历史是隐藏的，发送消息后自动显示
+        if (!historyVisible) {
+            messageHistoryDiv.classList.remove('hidden');
+            historyToggleBtn.textContent = '📜 隐藏历史';
+            historyVisible = true;
+        }
+
         messageInput.value = '';
+        
+        // 自动滚动
+        const chat = document.getElementById('chat');
+        chat.scrollTop = chat.scrollHeight;
     }
 
     sendBtn.addEventListener('click', function(e) {
@@ -844,38 +869,38 @@
         }
     });
 
-    // 历史记录隐藏切换
-    let historyVisible = true;
-    toggleHistoryBtn.addEventListener('click', function() {
+    // 独立的历史按钮控制
+    historyToggleBtn.addEventListener('click', function() {
         if (historyVisible) {
             messageHistoryDiv.classList.add('hidden');
-            toggleHistoryBtn.textContent = '看看我们说了些啥？';
+            historyToggleBtn.textContent = '📜 显示历史';
             historyVisible = false;
         } else {
             messageHistoryDiv.classList.remove('hidden');
-            toggleHistoryBtn.textContent = '知道拉';
+            historyToggleBtn.textContent = '📜 隐藏历史';
             historyVisible = true;
+            // 显示时滚动到底部
+            const chat = document.getElementById('chat');
             chat.scrollTop = chat.scrollHeight;
         }
     });
 
-    // ===== 新增：数独区域隐藏/切换功能 (点击标题) =====
+    // ===== 数独显示/隐藏控制 (每日一练按钮) =====
     const sudokuSection = document.getElementById('sudokuSection');
-    const toggleSudokuBtn = document.getElementById('toggleSudokuBtn');
-    let sudokuVisible = true;  // 初始显示
+    const sudokuToggleBtn = document.getElementById('sudokuToggleBtn');
+    let sudokuVisible = false;
 
-    toggleSudokuBtn.addEventListener('click', function() {
+    sudokuToggleBtn.addEventListener('click', function() {
         if (sudokuVisible) {
-            // 隐藏数独区域
             sudokuSection.classList.add('hidden-sudoku');
-            toggleSudokuBtn.innerHTML = '🐑点击显示数独<span>snx</span>';  // 改变提示文字
+            sudokuToggleBtn.textContent = '🐑 每日一练';
             sudokuVisible = false;
         } else {
-            // 显示数独区域
             sudokuSection.classList.remove('hidden-sudoku');
-            toggleSudokuBtn.innerHTML = '🐑每日一练<span>snx加油</span>';
+            sudokuToggleBtn.textContent = '🐑 隐藏数独';
             sudokuVisible = true;
         }
+        playAudio();
     });
 </script>
 
