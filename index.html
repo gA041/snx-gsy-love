@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>snx gsy 永远在一起 · 历史独立在上方</title>
+    <title>snx gsy 永远在一起</title>
     <style>
         * {
             margin: 0;
@@ -153,15 +153,17 @@
             font-size: 1rem;
         }
 
-        /* 按钮区 */
+        /* 按钮区 - 调整布局，每日一练按钮调小 */
         .buttons {
             display: flex;
             gap: 1.5rem;
             justify-content: center;
             margin: 2rem 0;
             flex-wrap: wrap;
+            align-items: center;
         }
-        button {
+        /* yes/no 按钮保持原样 */
+        .btn-large {
             padding: 0.8rem 2.5rem;
             font-size: 1.2rem;
             border: none;
@@ -172,20 +174,31 @@
             cursor: pointer;
             transition: 0.3s;
         }
-        button:hover {
+        .btn-large:hover {
             background-color: #f5a7bc;
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(248, 200, 216, 0.3);
         }
-        #sudokuToggleBtn {
+        /* 每日一练按钮 - 调小尺寸 */
+        .btn-small {
+            padding: 0.4rem 1.2rem;  /* 更小的内边距 */
+            font-size: 0.9rem;        /* 更小的字体 */
+            border: none;
+            border-radius: 20px;       /* 稍圆的角 */
             background-color: rgba(248,200,216,0.3);
             backdrop-filter: blur(5px);
             border: 1px solid #f8c8d8;
             color: #fff;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.3s;
+            letter-spacing: 0.5px;
         }
-        #sudokuToggleBtn:hover {
+        .btn-small:hover {
             background-color: #f8c8d8;
             color: #222;
+            transform: translateY(-1px);
+            box-shadow: 0 3px 8px rgba(248, 200, 216, 0.2);
         }
 
         /* 聊天区容器 */
@@ -207,7 +220,7 @@
             padding-bottom: 0.5rem;
         }
 
-        /* 历史消息控制按钮 - 独立的小按钮 */
+        /* 历史消息控制按钮 */
         .history-toggle-btn {
             background: rgba(248,200,216,0.2);
             border: 1px solid #f8c8d8;
@@ -259,7 +272,7 @@
             border-left: 3px solid #f8c8d8;
         }
 
-        /* 长文字气泡 - 默认隐藏，yes触发显示 */
+        /* 长文字气泡 - 默认隐藏，yes切换显示/隐藏 */
         .bubble {
             width: 100%;
             padding: 1rem;
@@ -495,10 +508,11 @@
         <div class="avatar">🐈</div>
     </div>
 
+    <!-- 按钮区域：yes/no 用大按钮样式，每日一练用小按钮样式 -->
     <div class="buttons">
-        <button id="yesBtn">yes</button>
-        <button id="noBtn">no</button>
-        <button id="sudokuToggleBtn">🐑 每日一练</button>
+        <button id="yesBtn" class="btn-large">yes</button>
+        <button id="noBtn" class="btn-large">no</button>
+        <button id="sudokuToggleBtn" class="btn-small">🐑给老婆解闷</button>
     </div>
 
     <!-- 聊天区：历史消息在上方，长文字在下方 -->
@@ -506,12 +520,12 @@
         <!-- 历史消息区域 - 独立在上方 -->
         <div class="history-container">
             <!-- 独立的历史控制按钮 -->
-            <span id="historyToggleBtn" class="history-toggle-btn">📜 显示历史</span>
+            <span id="historyToggleBtn" class="history-toggle-btn">看看都说了些啥</span>
             <!-- 历史消息列表 -->
             <div id="messageHistory" class="hidden"></div>
         </div>
         
-        <!-- 长文字气泡 - 默认隐藏，yes触发显示 -->
+        <!-- 长文字气泡 - 默认隐藏，yes切换显示/隐藏 -->
         <div class="bubble" id="longMessage">
 宝宝 和你在一起的日子总是这么幸福且短暂 和你见面很开心又很难过 每次洗漱完出来看到你都在我睡的那一边放好水 我就拿起手机边看日历边想 还有多少天就又要和你分开 我父母总是告诉我我长大了不可以再那么依赖别人 要独立 也不会怎么和我表达感情 交流也是越来越少 让我一直都认为人是漂泊的候鸟 直到你告诉我我可以去依赖你 信任你 多和你表达感受 我又觉得爱是可以宜居的小岛 有一种 我见众生皆草木 唯独见你是青山的感觉 你也总是很照顾我 虽然我会莫名其妙跟你生一些小气 但你都会说是你的错 包容我 这些都是我从未体验过的 我总说我不信任你 不是你做的不够好 是我怕信任你依赖你之后如果你不喜欢我了我又要变回原来的样子 那我要怎么习惯 但你好像拥有什么魔法 让我可以一点点向你摊呈自己 也让你看到我的脆弱 眼泪 还有一些不完美的那面 但真诚的 谢谢你的存在 有你在我总会很安心  送你去高铁站我想让你快点进去 这样我就不会那么舍不得你 而我现在能给你的又太少 再给我一点时间 以后一定能给你 我发誓 我不是很会表达这些情情话话的东西 但真心希望你好 我们互相加油变成更好的自己
 
@@ -543,13 +557,17 @@
     </div>
 
 <script>
-    // ===== 长文字通过yes按钮控制显示 =====
+    // ===== 长文字通过yes按钮切换显示/隐藏 =====
     const longMsg = document.getElementById('longMessage');
     const yesBtn = document.getElementById('yesBtn');
     const noBtn = document.getElementById('noBtn');
 
     yesBtn.onclick = function() {
-        longMsg.style.display = 'block';
+        if (longMsg.style.display === 'block') {
+            longMsg.style.display = 'none';
+        } else {
+            longMsg.style.display = 'block';
+        }
         playAudio();
     };
 
@@ -844,7 +862,7 @@
         // 如果历史是隐藏的，发送消息后自动显示
         if (!historyVisible) {
             messageHistoryDiv.classList.remove('hidden');
-            historyToggleBtn.textContent = '📜 隐藏历史';
+            historyToggleBtn.textContent = '知道啦';
             historyVisible = true;
         }
 
@@ -873,11 +891,11 @@
     historyToggleBtn.addEventListener('click', function() {
         if (historyVisible) {
             messageHistoryDiv.classList.add('hidden');
-            historyToggleBtn.textContent = '📜 显示历史';
+            historyToggleBtn.textContent = '看看都说了些啥';
             historyVisible = false;
         } else {
             messageHistoryDiv.classList.remove('hidden');
-            historyToggleBtn.textContent = '📜 隐藏历史';
+            historyToggleBtn.textContent = '知道啦';
             historyVisible = true;
             // 显示时滚动到底部
             const chat = document.getElementById('chat');
@@ -893,11 +911,11 @@
     sudokuToggleBtn.addEventListener('click', function() {
         if (sudokuVisible) {
             sudokuSection.classList.add('hidden-sudoku');
-            sudokuToggleBtn.textContent = '🐑 每日一练';
+            sudokuToggleBtn.textContent = '🐑给老婆解闷';
             sudokuVisible = false;
         } else {
             sudokuSection.classList.remove('hidden-sudoku');
-            sudokuToggleBtn.textContent = '🐑 隐藏数独';
+            sudokuToggleBtn.textContent = '🐑还无聊就找我聊天哦 指路yeobo聊天框';
             sudokuVisible = true;
         }
         playAudio();
