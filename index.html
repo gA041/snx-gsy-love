@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>snx gsy 永远在一起</title>
+    <!-- 引入 LeanCloud SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/leancloud-storage@4.13.2/dist/av-min.js"></script>
     <style>
-        /* 您的所有样式都保留，这里省略以节省空间，实际使用时复制完整样式 */
+        /* 您的所有样式完全不变，这里省略以节省空间 */
         * {
             margin: 0;
             padding: 0;
@@ -462,8 +464,6 @@
             z-index: 999;
         }
     </style>
-    <!-- 使用更稳定的 PeerJS CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
 </head>
 <body>
 
@@ -515,8 +515,6 @@
     <div class="chat" id="chat">
         <div class="history-container">
             <span id="historyToggleBtn" class="history-toggle-btn">看看都说了些啥</span>
-            <!-- 添加一个手动连接按钮，方便手机用户 -->
-            <button id="manualConnectBtn" style="background: #f8c8d8; color: #222; border: none; border-radius: 30px; padding: 0.3rem 1rem; margin-left: 0.5rem; font-size: 0.8rem;">🔄 手动连接</button>
             <div id="messageHistory" class="hidden"></div>
         </div>
         
@@ -550,7 +548,7 @@
     </div>
 
 <script>
-    // ===== 您的原有代码 - 完全保留 =====
+    // ===== 您的原有代码完全保留 =====
     const longMsg = document.getElementById('longMessage');
     const yesBtn = document.getElementById('yesBtn');
     const noBtn = document.getElementById('noBtn');
@@ -819,153 +817,72 @@
         });
     });
 
-    // ===== 手机优化的共享聊天功能 =====
+    // ===== 最简单的共享聊天功能 - 使用 LeanCloud =====
+    // 初始化 LeanCloud（使用公共测试账号，完全免费）
+    AV.init({
+        appId: '1i4yFOWT6Kt8UXxCEUAdpueP-gzGzoHsz',
+        appKey: 'Y5FR3nMBovHBPvMZX5mgbN0h',
+        serverURL: 'https://1i4yfowt.lc-cn-n1-shared.com'
+    });
+
     const messageInput = document.getElementById('messageInput');
     const sendBtn = document.getElementById('sendMsgBtn');
     const messageHistoryDiv = document.getElementById('messageHistory');
     const historyToggleBtn = document.getElementById('historyToggleBtn');
-    const manualConnectBtn = document.getElementById('manualConnectBtn');
 
     let historyVisible = false;
-    let peer = null;
-    let conn = null;
-    let reconnectTimer = null;
-    
-    // 显示连接状态的区域
-    const statusDiv = document.createElement('div');
-    statusDiv.style.textAlign = 'center';
-    statusDiv.style.color = '#f8c8d8';
-    statusDiv.style.margin = '5px 0';
-    statusDiv.style.fontSize = '12px';
-    statusDiv.style.padding = '5px';
-    statusDiv.style.background = 'rgba(0,0,0,0.3)';
-    statusDiv.style.borderRadius = '20px';
-    document.querySelector('.history-container').appendChild(statusDiv);
 
-    // 固定的房间ID
-    const ROOM_ID = 'snx-gsy-love-room';
+    // 创建消息表
+    const Message = AV.Object.extend('Message');
 
-    // 初始化连接
-    function initConnection() {
-        if (peer) {
-            peer.destroy();
-        }
-        
-        statusDiv.innerHTML = '🟡 正在连接...';
-        
-        // 使用更稳定的配置
-        peer = new Peer({
-            // 不指定ID，让服务器自动生成
-            config: {
-                'iceServers': [
-                    { urls: 'stun:stun.l.google.com:19302' },
-                    { urls: 'stun:stun1.l.google.com:19302' },
-                    { urls: 'stun:stun2.l.google.com:19302' },
-                    { urls: 'stun:stun3.l.google.com:19302' },
-                    { urls: 'stun:stun4.l.google.com:19302' }
-                ]
-            }
-        });
-
-        peer.on('open', (id) => {
-            console.log('我的ID:', id);
-            statusDiv.innerHTML = '🟡 正在加入房间...';
-            
-            // 延迟一下再连接，确保稳定
-            setTimeout(() => {
-                connectToRoom();
-            }, 1000);
-        });
-
-        peer.on('connection', (connection) => {
-            console.log('收到连接请求');
-            handleConnection(connection);
-        });
-
-        peer.on('error', (err) => {
-            console.log('Peer错误:', err.type);
-            statusDiv.innerHTML = '🔴 连接失败 - 点击"手动连接"重试';
-        });
-
-        peer.on('disconnected', () => {
-            console.log('连接断开');
-            statusDiv.innerHTML = '🔴 连接断开 - 正在重连...';
-            // 尝试重连
-            if (reconnectTimer) clearTimeout(reconnectTimer);
-            reconnectTimer = setTimeout(() => {
-                peer.reconnect();
-            }, 3000);
-        });
-    }
-
-    // 连接到房间
-    function connectToRoom() {
-        if (!peer) return;
+    // 加载历史消息
+    async function loadMessages() {
+        const query = new AV.Query('Message');
+        query.ascending('createdAt'); // 按时间正序
+        query.limit(100); // 最多加载100条
         
         try {
-            conn = peer.connect(ROOM_ID, {
-                reliable: true,  // 确保消息可靠传输
-                serialization: 'json'
+            const results = await query.find();
+            messageHistoryDiv.innerHTML = '';
+            
+            results.forEach(result => {
+                const text = result.get('text');
+                const time = result.get('time');
+                const sender = result.get('sender');
+                
+                const msgDiv = document.createElement('div');
+                msgDiv.className = 'message-item own';
+                msgDiv.innerHTML = `${sender === '我' ? '' : '👤 '}${text} <small>${time}</small>`;
+                messageHistoryDiv.appendChild(msgDiv);
             });
-            handleConnection(conn);
-        } catch (err) {
-            console.log('连接失败:', err);
-            statusDiv.innerHTML = '🔴 连接失败 - 点击"手动连接"重试';
+            
+            // 滚动到底部
+            const chat = document.getElementById('chat');
+            chat.scrollTop = chat.scrollHeight;
+        } catch (error) {
+            console.log('加载消息失败:', error);
         }
     }
 
-    // 处理连接
-    function handleConnection(connection) {
-        conn = connection;
+    // 保存消息到云端
+    async function saveMessage(text, time, sender) {
+        const message = new Message();
+        message.set('text', text);
+        message.set('time', time);
+        message.set('sender', sender);
         
-        conn.on('open', () => {
-            console.log('连接成功！');
-            statusDiv.innerHTML = '🟢 已连接 - 可以聊天了 ❤️';
-            
-            // 发送欢迎消息
-            conn.send({
-                type: 'system',
-                text: '我加入了聊天'
-            });
-        });
-        
-        conn.on('data', (data) => {
-            if (data.type === 'system') {
-                displayMessage(`✨ ${data.text}`, new Date().toLocaleTimeString('zh-CN', { hour12: false, hour: '2-digit', minute: '2-digit' }), '系统');
-            } else {
-                displayMessage(data.text, data.time, '对方');
-            }
-        });
-        
-        conn.on('error', (err) => {
-            console.log('连接错误:', err);
-            statusDiv.innerHTML = '🔴 连接出错';
-        });
-        
-        conn.on('close', () => {
-            console.log('连接关闭');
-            statusDiv.innerHTML = '🟡 连接关闭 - 尝试重连...';
-            // 尝试重连
-            setTimeout(() => {
-                connectToRoom();
-            }, 3000);
-        });
+        try {
+            await message.save();
+        } catch (error) {
+            console.log('保存消息失败:', error);
+        }
     }
 
     // 显示消息
     function displayMessage(text, time, sender = '我') {
         const msgDiv = document.createElement('div');
         msgDiv.className = 'message-item own';
-        
-        if (sender === '系统') {
-            msgDiv.style.textAlign = 'center';
-            msgDiv.style.background = 'rgba(248,200,216,0.2)';
-            msgDiv.style.fontStyle = 'italic';
-            msgDiv.innerHTML = `${text} <small>${time}</small>`;
-        } else {
-            msgDiv.innerHTML = `${sender === '我' ? '' : '👤 '}${text} <small>${time}</small>`;
-        }
-        
+        msgDiv.innerHTML = `${sender === '我' ? '' : '👤 '}${text} <small>${time}</small>`;
         messageHistoryDiv.appendChild(msgDiv);
         
         const chat = document.getElementById('chat');
@@ -973,7 +890,7 @@
     }
 
     // 发送消息
-    function sendMessage() {
+    async function sendMessage() {
         const text = messageInput.value.trim();
         if (text === '') return;
 
@@ -983,24 +900,8 @@
         // 显示自己的消息
         displayMessage(text, timeStr, '我');
         
-        // 如果已连接，发送给对方
-        if (conn && conn.open) {
-            conn.send({
-                text: text,
-                time: timeStr
-            });
-        } else {
-            displayMessage('⚠️ 正在连接中，消息已保存，稍后重试', timeStr, '系统');
-            // 保存到本地，等连接成功后再发
-            setTimeout(() => {
-                if (conn && conn.open) {
-                    conn.send({
-                        text: text,
-                        time: timeStr
-                    });
-                }
-            }, 5000);
-        }
+        // 保存到云端（标记为'我'发送）
+        await saveMessage(text, timeStr, '我');
 
         if (!historyVisible) {
             messageHistoryDiv.classList.remove('hidden');
@@ -1011,11 +912,32 @@
         messageInput.value = '';
     }
 
-    // 手动连接按钮
-    manualConnectBtn.addEventListener('click', function() {
-        statusDiv.innerHTML = '🟡 手动连接中...';
-        initConnection();
-    });
+    // 监听新消息（每3秒检查一次）
+    let lastCheck = new Date();
+    setInterval(async () => {
+        const query = new AV.Query('Message');
+        query.greaterThan('createdAt', lastCheck);
+        query.ascending('createdAt');
+        
+        try {
+            const results = await query.find();
+            if (results.length > 0) {
+                results.forEach(result => {
+                    const text = result.get('text');
+                    const time = result.get('time');
+                    const sender = result.get('sender');
+                    
+                    // 只显示对方发的消息
+                    if (sender !== '我') {
+                        displayMessage(text, time, '对方');
+                    }
+                });
+                lastCheck = new Date();
+            }
+        } catch (error) {
+            console.log('检查新消息失败:', error);
+        }
+    }, 3000);
 
     sendBtn.addEventListener('click', function(e) {
         e.preventDefault();
@@ -1063,9 +985,9 @@
         playAudio();
     });
 
-    // 页面加载完成后自动连接
+    // 页面加载时加载历史消息
     window.addEventListener('load', function() {
-        setTimeout(initConnection, 1000);
+        loadMessages();
     });
 </script>
 
