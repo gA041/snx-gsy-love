@@ -60,6 +60,47 @@
             color: #ddd;
         }
 
+        /* 新增：纪念日和天气区域 */
+        .info-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            background: rgba(0,0,0,0.2);
+            backdrop-filter: blur(5px);
+            border-bottom: 1px solid rgba(248,200,216,0.2);
+            font-size: 0.9rem;
+            color: #f0f0f0;
+        }
+        .anniversary {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .anniversary-icon {
+            color: #f8c8d8;
+            font-size: 1rem;
+        }
+        .weather {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        .weather-city {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        .weather-icon {
+            font-size: 0.9rem;
+        }
+        .wuhan {
+            color: #ffd700;
+        }
+        .seoul {
+            color: #87ceeb;
+        }
+
         /* 歌曲信息区 */
         .song-info {
             text-align: center;
@@ -485,6 +526,24 @@
         <source src="https://music.163.com/song/media/outer/url?id=209397.mp3" type="audio/mpeg">
     </audio>
 
+    <!-- 新增：纪念日和天气信息栏 -->
+    <div class="info-bar">
+        <div class="anniversary" id="anniversaryInfo">
+            <span class="anniversary-icon">❤️</span>
+            <span>在一起 <span id="daysCount">0</span> 天</span>
+        </div>
+        <div class="weather">
+            <div class="weather-city wuhan" id="wuhanWeather">
+                <span class="weather-icon">☀️</span>
+                <span>武汉: 加载中...</span>
+            </div>
+            <div class="weather-city seoul" id="seoulWeather">
+                <span class="weather-icon">☀️</span>
+                <span>首尔: 加载中...</span>
+            </div>
+        </div>
+    </div>
+
     <div class="top-bar">
         <div>
             <span>🐾</span>
@@ -570,6 +629,72 @@
     </div>
 
 <script>
+    // ===== 新增：恋爱纪念日计算 =====
+    function calculateAnniversaryDays() {
+        const anniversaryDate = new Date('2026-01-20T00:00:00');
+        const today = new Date();
+        const timeDiff = today.getTime() - anniversaryDate.getTime();
+        const daysDiff = Math.floor(timeDiff / (1000 * 3600 * 24));
+        return daysDiff;
+    }
+
+    function updateAnniversaryInfo() {
+        const days = calculateAnniversaryDays();
+        document.getElementById('daysCount').textContent = days;
+    }
+
+    // 初始化显示天数
+    updateAnniversaryInfo();
+
+    // ===== 新增：天气信息获取 =====
+    async function fetchWeather(city, elementId) {
+        try {
+            const apiKey = 'YOUR_API_KEY_HERE'; // 这里需要替换为实际的天气API密钥
+            const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}&lang=zh_cn`;
+            
+            // 模拟天气数据（实际使用时取消注释上面的API调用）
+            const mockWeather = {
+                'Wuhan': { temp: 8, description: '多云', icon: '☁️' },
+                'Seoul': { temp: 3, description: '晴', icon: '☀️' }
+            };
+            
+            // 模拟延迟
+            await new Promise(resolve => setTimeout(resolve, 300));
+            
+            const cityName = city === 'Wuhan' ? 'Wuhan' : 'Seoul';
+            const weather = mockWeather[cityName];
+            
+            document.getElementById(elementId).innerHTML = `
+                <span class="weather-icon">${weather.icon}</span>
+                <span>${city === 'Wuhan' ? '武汉' : '首尔'}: ${weather.temp}°C ${weather.description}</span>
+            `;
+            
+        } catch (error) {
+            console.error(`获取${city}天气失败:`, error);
+            document.getElementById(elementId).innerHTML = `
+                <span class="weather-icon">🌡️</span>
+                <span>${city === 'Wuhan' ? '武汉' : '首尔'}: 加载失败</span>
+            `;
+        }
+    }
+
+    // 初始化天气显示
+    async function initWeather() {
+        // 这里使用模拟数据，实际使用时需要注册并获取OpenWeatherMap API密钥
+        await Promise.all([
+            fetchWeather('Wuhan', 'wuhanWeather'),
+            fetchWeather('Seoul', 'seoulWeather')
+        ]);
+    }
+
+    // 页面加载完成后初始化天气
+    document.addEventListener('DOMContentLoaded', function() {
+        initWeather();
+        
+        // 每天更新纪念日天数
+        updateAnniversaryInfo();
+    });
+
     // ===== 长文字通过yes按钮切换显示/隐藏 =====
     const longMsg = document.getElementById('longMessage');
     const yesBtn = document.getElementById('yesBtn');
