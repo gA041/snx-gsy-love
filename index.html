@@ -60,45 +60,82 @@
             color: #ddd;
         }
 
-        /* 新增：纪念日和天气区域 */
-        .info-bar {
+        /* 新增：纪念日和天气区域 - 优化样式 */
+        .love-info {
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
-            padding: 0.5rem 1rem;
-            background: rgba(0,0,0,0.2);
-            backdrop-filter: blur(5px);
-            border-bottom: 1px solid rgba(248,200,216,0.2);
-            font-size: 0.9rem;
-            color: #f0f0f0;
+            gap: 2rem;
+            padding: 0.8rem 1rem;
+            margin: 0.5rem auto 1rem;
+            width: 90%;
+            max-width: 500px;
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(8px);
+            border-radius: 20px;
+            border: 1px solid rgba(248, 200, 216, 0.3);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
-        .anniversary {
+        
+        .anniversary-box, .weather-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0.3rem 0.8rem;
+        }
+        
+        .anniversary-icon, .weather-icon {
+            font-size: 1.2rem;
+            margin-bottom: 0.2rem;
+        }
+        
+        .anniversary-label, .weather-label {
+            font-size: 0.7rem;
+            color: #f0c0d0;
+            margin-bottom: 0.2rem;
+            letter-spacing: 0.5px;
+        }
+        
+        .anniversary-days {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #f8c8d8;
+            text-shadow: 0 0 6px rgba(248, 200, 216, 0.5);
+        }
+        
+        .weather-content {
             display: flex;
             align-items: center;
             gap: 0.5rem;
         }
-        .anniversary-icon {
-            color: #f8c8d8;
-            font-size: 1rem;
-        }
-        .weather {
+        
+        .city-weather {
             display: flex;
+            flex-direction: column;
             align-items: center;
-            gap: 0.8rem;
+            gap: 0.1rem;
         }
-        .weather-city {
-            display: flex;
-            align-items: center;
-            gap: 0.3rem;
+        
+        .city-name {
+            font-size: 0.75rem;
+            color: #f0f0f0;
         }
-        .weather-icon {
+        
+        .weather-temp {
             font-size: 0.9rem;
+            font-weight: 500;
+            color: #f8c8d8;
         }
-        .wuhan {
-            color: #ffd700;
+        
+        .weather-desc {
+            font-size: 0.65rem;
+            color: #e0c0d0;
         }
-        .seoul {
-            color: #87ceeb;
+        
+        .weather-divider {
+            width: 1px;
+            height: 30px;
+            background: rgba(248, 200, 216, 0.3);
         }
 
         /* 歌曲信息区 */
@@ -518,6 +555,25 @@
             background: rgba(0,0,0,0.5);
             z-index: 999;
         }
+        
+        /* 响应式调整 */
+        @media (max-width: 480px) {
+            .love-info {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+            
+            .weather-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .weather-divider {
+                width: 60%;
+                height: 1px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -526,24 +582,6 @@
         <source src="https://music.163.com/song/media/outer/url?id=209397.mp3" type="audio/mpeg">
     </audio>
 
-    <!-- 新增：纪念日和天气信息栏 -->
-    <div class="info-bar">
-        <div class="anniversary" id="anniversaryInfo">
-            <span class="anniversary-icon">💍</span>
-            <span>在一起 <span id="daysCount">0</span> 天</span>
-        </div>
-        <div class="weather">
-            <div class="weather-city wuhan" id="wuhanWeather">
-                <span class="weather-icon">🐾</span>
-                <span>武汉: 加载中...</span>
-            </div>
-            <div class="weather-city seoul" id="seoulWeather">
-                <span class="weather-icon">🐈</span>
-                <span>首尔: 加载中...</span>
-            </div>
-        </div>
-    </div>
-
     <div class="top-bar">
         <div>
             <span>🐾</span>
@@ -551,6 +589,34 @@
         </div>
         <div class="title">we got one love</div>
         <div class="info">一起听 ♡ 时长: 20:21</div>
+    </div>
+    
+    <!-- 新增：优化后的纪念日和天气信息框 -->
+    <div class="love-info">
+        <div class="anniversary-box">
+            <div class="anniversary-icon">💍</div>
+            <div class="anniversary-label">在一起</div>
+            <div class="anniversary-days" id="daysCount">0</div>
+            <div class="anniversary-label">2026.1.20 起</div>
+        </div>
+        
+        <div class="weather-box">
+            <div class="weather-icon"></div>
+            <div class="weather-label">注意穿衣 不要生病</div>
+            <div class="weather-content">
+                <div class="city-weather" id="wuhanWeather">
+                    <div class="city-name">武汉</div>
+                    <div class="weather-temp">8°C</div>
+                    <div class="weather-desc">多云</div>
+                </div>
+                <div class="weather-divider"></div>
+                <div class="city-weather" id="seoulWeather">
+                    <div class="city-name">首尔</div>
+                    <div class="weather-temp">3°C</div>
+                    <div class="weather-desc">晴</div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="song-info">
@@ -635,65 +701,85 @@
         const today = new Date();
         const timeDiff = today.getTime() - anniversaryDate.getTime();
         const daysDiff = Math.floor(timeDiff / (1000 * 3600 * 24));
-        return daysDiff;
+        return Math.max(daysDiff, 0); // 确保天数不为负
     }
 
     function updateAnniversaryInfo() {
         const days = calculateAnniversaryDays();
         document.getElementById('daysCount').textContent = days;
+        
+        // 如果天数变化，添加一个微妙的动画效果
+        const daysElement = document.getElementById('daysCount');
+        daysElement.style.transform = 'scale(1.1)';
+        setTimeout(() => {
+            daysElement.style.transform = 'scale(1)';
+        }, 150);
     }
 
     // 初始化显示天数
     updateAnniversaryInfo();
+    
+    // 每天更新纪念日天数
+    setInterval(updateAnniversaryInfo, 60000); // 每分钟检查一次
 
-    // ===== 新增：天气信息获取 =====
-    async function fetchWeather(city, elementId) {
-        try {
-            const apiKey = 'YOUR_API_KEY_HERE'; // 这里需要替换为实际的天气API密钥
-            const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}&lang=zh_cn`;
-            
-            // 模拟天气数据（实际使用时取消注释上面的API调用）
-            const mockWeather = {
-                'Wuhan': { temp: 8, description: '多云', icon: '☁️' },
-                'Seoul': { temp: 3, description: '晴', icon: '☀️' }
-            };
-            
-            // 模拟延迟
-            await new Promise(resolve => setTimeout(resolve, 300));
-            
-            const cityName = city === 'Wuhan' ? 'Wuhan' : 'Seoul';
-            const weather = mockWeather[cityName];
-            
-            document.getElementById(elementId).innerHTML = `
-                <span class="weather-icon">${weather.icon}</span>
-                <span>${city === 'Wuhan' ? '武汉' : '首尔'}: ${weather.temp}°C ${weather.description}</span>
-            `;
-            
-        } catch (error) {
-            console.error(`获取${city}天气失败:`, error);
-            document.getElementById(elementId).innerHTML = `
-                <span class="weather-icon">🌡️</span>
-                <span>${city === 'Wuhan' ? '武汉' : '首尔'}: 加载失败</span>
-            `;
+    // ===== 新增：优化天气显示 =====
+    const weatherData = {
+        'wuhan': {
+            name: '武汉',
+            icon: '🐾',
+            temp: 8,
+            description: '多云',
+            color: '#f8c8d8'
+        },
+        'seoul': {
+            name: '首尔',
+            icon: '🐈',
+            temp: 3,
+            description: '晴',
+            color: '#a0d2ff'
         }
+    };
+
+    function updateWeatherDisplay() {
+        // 更新武汉天气
+        const wuhanEl = document.getElementById('wuhanWeather');
+        wuhanEl.innerHTML = `
+            <div class="city-name">${weatherData.wuhan.name}</div>
+            <div class="weather-temp" style="color: ${weatherData.wuhan.color}">${weatherData.wuhan.temp}°C</div>
+            <div class="weather-desc">${weatherData.wuhan.description}</div>
+        `;
+        
+        // 更新首尔天气
+        const seoulEl = document.getElementById('seoulWeather');
+        seoulEl.innerHTML = `
+            <div class="city-name">${weatherData.seoul.name}</div>
+            <div class="weather-temp" style="color: ${weatherData.seoul.color}">${weatherData.seoul.temp}°C</div>
+            <div class="weather-desc">${weatherData.seoul.description}</div>
+        `;
+        
+        // 更新天气图标
+        document.querySelector('.weather-icon').textContent = weatherData.wuhan.icon;
+    }
+
+    // 模拟天气变化（实际使用时可替换为真实API）
+    function simulateWeatherChange() {
+        // 随机微调温度
+        weatherData.wuhan.temp = Math.max(-5, Math.min(25, weatherData.wuhan.temp + (Math.random() - 0.5) * 2));
+        weatherData.seoul.temp = Math.max(-10, Math.min(20, weatherData.seoul.temp + (Math.random() - 0.5) * 2));
+        
+        // 随机天气描述
+        const weatherTypes = ['晴', '多云', '阴', '小雨', '雪'];
+        weatherData.wuhan.description = weatherTypes[Math.floor(Math.random() * weatherTypes.length)];
+        weatherData.seoul.description = weatherTypes[Math.floor(Math.random() * weatherTypes.length)];
+        
+        updateWeatherDisplay();
     }
 
     // 初始化天气显示
-    async function initWeather() {
-        // 这里使用模拟数据，实际使用时需要注册并获取OpenWeatherMap API密钥
-        await Promise.all([
-            fetchWeather('Wuhan', 'wuhanWeather'),
-            fetchWeather('Seoul', 'seoulWeather')
-        ]);
-    }
-
-    // 页面加载完成后初始化天气
-    document.addEventListener('DOMContentLoaded', function() {
-        initWeather();
-        
-        // 每天更新纪念日天数
-        updateAnniversaryInfo();
-    });
+    updateWeatherDisplay();
+    
+    // 每30分钟模拟一次天气变化（实际使用时应调用真实API）
+    setInterval(simulateWeatherChange, 30 * 60 * 1000);
 
     // ===== 长文字通过yes按钮切换显示/隐藏 =====
     const longMsg = document.getElementById('longMessage');
