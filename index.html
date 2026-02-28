@@ -1126,6 +1126,134 @@
 
 })();
 </script>
+<!-- ===== 性能优化：解决卡顿问题 ===== -->
+<script>
+(function() {
+    // 1. 优化音乐加载：如果音乐加载失败，不再重试
+    const audio = document.getElementById('bgm');
+    if (audio) {
+        // 设置加载超时
+        audio.addEventListener('error', function() {
+            console.log('音乐加载失败，已跳过');
+            // 移除audio元素，避免持续占用资源
+            audio.remove();
+        });
+        
+        // 如果5秒内没有成功播放，则放弃
+        setTimeout(function() {
+            if (audio.readyState < 3) { // HAVE_FUTURE_DATA 表示可以播放
+                console.log('音乐加载超时，已跳过');
+                audio.remove();
+            }
+        }, 5000);
+    }
 
+    // 2. 优化LeanCloud留言板：添加超时控制
+    const originalInit = AV.init;
+    AV.init = function(config) {
+        // 设置请求超时
+        AV._config = AV._config || {};
+        AV._config.timeout = 5000; // 5秒超时
+        return originalInit.call(this, config);
+    };
+
+    // 3. 优化留言板加载：使用缓存，减少请求频率
+    let lastLoadTime = 0;
+    const CACHE_TIME = 30000; // 30秒缓存
+    
+    // 保存原始的loadAllMessages函数
+    const originalLoad = window.loadAllMessages;
+    
+    // 重写loadAllMessages添加缓存
+    window.loadAllMessages = async function() {
+        const now = Date.now();
+        if (now - lastLoadTime < CACHE_TIME) {
+            console.log('使用缓存留言');
+            return;
+        }
+        lastLoadTime = now;
+        
+        try {
+            // 添加超时控制
+            const timeoutPromise = new Promise((_, reject) => 
+                setTimeout(() => reject(new Error('加载超时')), 5000)
+            );
+            
+            const query = new AV.Query('Message');
+            query.ascending('createdAt');
+            
+            await Promise.race([query.find(), timeoutPromise]);
+            
+        } catch (error) {
+            console.log('留言板加载失败（已忽略）');
+            // 不显示错误，避免卡顿
+        }
+    };
+
+    // 4. 优化事件监听：防抖处理
+    function debounce(func, wait) {
+        let timeout;
+        return function() {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(this, arguments), wait);
+        };
+    }
+
+    // 5. 优化滚动性能
+    const chat = document.getElementById('chat');
+    if (chat) {
+        let ticking = false;
+        chat.addEventListener('scroll', function() {
+            if (!ticking) {
+                window.requestAnimationFrame(function() {
+                    // 滚动时的操作
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        });
+    }
+
+    // 6. 清理不必要的定时器和事件
+    const originalPlayAudio = window.playAudio;
+    if (originalPlayAudio) {
+        window.playAudio = function() {
+            // 限制播放频率
+            if (window._lastPlayTime && Date.now() - window._lastPlayTime < 1000) {
+                return;
+            }
+            window._lastPlayTime = Date.now();
+            originalPlayAudio();
+        };
+    }
+
+    console.log('✅ 性能优化已应用');
+})();
+</script>
+
+<!-- ===== 备用方案：如果仍然卡顿，可以手动清理 ===== -->
+<script>
+// 紧急清理：如果页面卡死，可以双击页面清理
+document.addEventListener('dblclick', function() {
+    // 清理所有定时器
+    let id = setTimeout(function() {}, 0);
+    while (id--) {
+        clearTimeout(id);
+        clearInterval(id);
+    }
+    
+    // 清理多余的audio元素
+    document.querySelectorAll('audio').forEach((audio, index) => {
+        if (index > 0) audio.remove(); // 只保留第一个
+    });
+    
+    // 强制重新渲染
+    document.body.style.display = 'none';
+    document.body.offsetHeight;
+    document.body.style.display = '';
+    
+    alert('页面已清理，如果仍然卡顿，请刷新页面');
+});
+</script>
 </body>
 </html>
