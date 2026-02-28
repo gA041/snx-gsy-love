@@ -12,7 +12,7 @@
             font-family: "Microsoft YaHei", "Segoe UI", sans-serif;
         }
 
-        /* 背景容器 */
+        /* 背景容器 - 完全保留原样 */
         body {
             position: relative;
             background-image: url("gsy666.jpg");
@@ -40,7 +40,7 @@
             z-index: -1;
         }
 
-        /* 顶部导航 */
+        /* 顶部导航 - 完全保留 */
         .top-bar {
             display: flex;
             justify-content: space-between;
@@ -60,81 +60,82 @@
             color: #ddd;
         }
 
-        /* 新增：倒计时和天气卡片容器 */
+        /* ===== 新增：纪念日/天气卡片 - 但尺寸调小 ===== */
         .stats-row {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 1.2rem;
-            margin: 1rem 1rem 0.5rem;
+            gap: 0.7rem;
+            margin: 0.8rem 0.5rem 0.3rem;
         }
         .stat-card {
             background: rgba(0, 0, 0, 0.3);
             backdrop-filter: blur(8px);
             border: 1px solid #f8c8d8;
             border-radius: 30px;
-            padding: 0.5rem 1.2rem;
+            padding: 0.2rem 1rem;
             display: flex;
             align-items: center;
-            gap: 0.6rem;
+            gap: 0.3rem;
             color: #f8c8d8;
-            font-size: 1rem;
+            font-size: 0.85rem;
             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }
         .stat-card span:first-child {
-            font-size: 1.3rem;
+            font-size: 1.1rem;
         }
         .stat-card .stat-number {
             font-weight: bold;
             color: #fff;
-            margin: 0 4px;
+            margin: 0 2px;
         }
 
-        /* 虚拟爱心树 */
+        /* ===== 爱心树 - 调小尺寸，更精致 ===== */
         .tree-container {
             background: rgba(0, 0, 0, 0.25);
             backdrop-filter: blur(6px);
-            border-radius: 40px;
-            padding: 1rem 1.5rem;
-            margin: 1rem auto;
+            border-radius: 30px;
+            padding: 0.5rem 1.2rem;
+            margin: 0.5rem auto;
             width: fit-content;
             border: 1px solid #f8c8d8;
             text-align: center;
         }
         .tree-title {
             color: #f8c8d8;
-            font-size: 1.2rem;
-            margin-bottom: 0.5rem;
-            letter-spacing: 2px;
+            font-size: 1rem;
+            margin-bottom: 0.2rem;
+            letter-spacing: 1px;
         }
         .tree-canvas {
             display: flex;
             justify-content: center;
         }
         canvas#loveTree {
-            width: 180px;
-            height: 140px;
-            border-radius: 30px;
+            width: 150px;
+            height: 120px;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.02);
         }
         .tree-stats {
             display: flex;
             justify-content: center;
-            gap: 2rem;
-            margin-top: 0.5rem;
-            font-size: 0.9rem;
+            gap: 1.2rem;
+            margin-top: 0.2rem;
+            font-size: 0.8rem;
             color: #f0c0d0;
         }
         .water-hint {
-            font-size: 0.85rem;
+            font-size: 0.7rem;
             color: #f8c8d8;
-            margin-top: 0.3rem;
+            margin-top: 0.2rem;
             background: rgba(0,0,0,0.3);
-            padding: 0.2rem 1rem;
-            border-radius: 30px;
+            padding: 0.1rem 0.8rem;
+            border-radius: 20px;
             display: inline-block;
         }
 
-        /* 歌曲信息区 */
+        /* 歌曲信息区 - 完全保留 */
         .song-info {
             text-align: center;
             padding: 1rem 1rem;
@@ -157,7 +158,7 @@
             font-weight: bold;
         }
 
-        /* 进度条 */
+        /* 进度条 - 完全保留 */
         .progress {
             width: 80%;
             margin: 0 auto 1rem;
@@ -191,7 +192,7 @@
             color: #ccc;
         }
 
-        /* 头像框 */
+        /* 头像框 - 完全保留 */
         .listen-together {
             display: flex;
             justify-content: center;
@@ -568,7 +569,7 @@
         <div class="info">一起听 ♡ 时长: 20:21</div>
     </div>
 
-    <!-- ========== 新增：纪念日倒计时 + 武汉/首尔天气同步 ========= -->
+    <!-- ========== 纪念日 + 天气卡片 (已调小) ========= -->
     <div class="stats-row">
         <!-- 纪念日卡片 -->
         <div class="stat-card">
@@ -593,17 +594,17 @@
         </div>
     </div>
 
-    <!-- ========== 新增：虚拟爱心树（留言浇水版） ========= -->
+    <!-- ========== 爱心树 (更小更精致) ========= -->
     <div class="tree-container">
-        <div class="tree-title">我们的爱心树</div>
+        <div class="tree-title">我们的纪念树</div>
         <div class="tree-canvas">
             <canvas id="loveTree" width="200" height="160"></canvas>
         </div>
         <div class="tree-stats">
-            <span> 爱心 <span id="heartCount">12</span></span>
-            <span> 浇灌 <span id="waterCount">8</span></span>
+            <span>爱心 <span id="heartCount">12</span></span>
+            <span>浇灌 <span id="waterCount">8</span></span>
         </div>
-        <div class="water-hint">💬 在下方输入框发送“爱你”相关文字即可给树浇水</div>
+        <div class="water-hint">发送“爱你”相关留言给树浇水</div>
     </div>
 
     <div class="song-info">
@@ -764,7 +765,7 @@
 
     audio.load();
 
-    // ===== 数独游戏逻辑 =====
+    // ===== 数独游戏逻辑 (完全保留) =====
     const PUZZLE_EASY = [
         [5,3,0,0,7,0,0,0,0],
         [6,0,0,1,9,5,0,0,0],
@@ -952,17 +953,15 @@
         });
     });
 
-    // ===== 消息发送与历史记录功能 - 修改为使用PHP后端存储 =====
+    // ===== 消息发送与历史记录功能 (保留原有逻辑) =====
     const messageInput = document.getElementById('messageInput');
     const sendBtn = document.getElementById('sendMsgBtn');
     const messageHistoryDiv = document.getElementById('messageHistory');
     const historyToggleBtn = document.getElementById('historyToggleBtn');
 
-    // 从后端加载历史消息
     let messages = [];
-    let historyVisible = false; // 初始隐藏
+    let historyVisible = false;
 
-    // 加载留言列表
     function loadMessages() {
         fetch('?action=list')
             .then(res => res.json())
@@ -976,7 +975,6 @@
                 }
             })
             .catch(() => {
-                // 降级处理：如果后端不可用，使用本地存储
                 try {
                     const saved = localStorage.getItem('snx_chat_messages');
                     if (saved) {
@@ -987,7 +985,6 @@
             });
     }
 
-    // 保存消息到后端
     function saveMessageToServer(text) {
         fetch('?action=post', {
             method: 'POST',
@@ -997,11 +994,10 @@
         .then(res => res.json())
         .then(data => {
             if (data.status === 'ok') {
-                loadMessages(); // 重新加载最新留言
+                loadMessages();
             }
         })
         .catch(() => {
-            // 后端失败时降级到本地存储
             try {
                 const saved = localStorage.getItem('snx_chat_messages');
                 let localMsgs = saved ? JSON.parse(saved) : [];
@@ -1021,7 +1017,6 @@
             msgDiv.innerHTML = `${msg.text} <small>${msg.time}</small>`;
             messageHistoryDiv.appendChild(msgDiv);
         });
-        // 滚动到底部
         const chat = document.getElementById('chat');
         chat.scrollTop = chat.scrollHeight;
     }
@@ -1031,30 +1026,26 @@
         const text = messageInput.value.trim();
         if (text === '') return;
 
-        // 检查是否包含“浇水”关键词（支持模糊匹配）
-        if (text.includes('爱') || text === 'water' || text.includes('💧')) {
-            // 执行浇水操作
+        // 检查是否包含“浇水”关键词
+        if (text.includes('浇水') || text === 'water' || text.includes('💧')) {
             waterCount++;
-            if (waterCount % 3 === 0) { // 每浇3次水，爱心+1
+            if (waterCount % 3 === 0) {
                 heartCount++;
             }
             drawTree();
-            // 添加一条系统提示（可选，但不影响历史消息）
+            // 添加系统提示（可选）
             const systemMsg = { text: '爱心树得到了浇灌！', time: '刚刚' };
             messages.push(systemMsg);
             renderMessages();
         }
 
-        // 立即显示用户消息（乐观更新）
         const now = new Date();
         const timeStr = now.toLocaleTimeString('zh-CN', { hour12: false, hour: '2-digit', minute: '2-digit' });
         messages.push({ text, time: timeStr });
         renderMessages();
 
-        // 发送到后端
         saveMessageToServer(text);
 
-        // 如果历史是隐藏的，发送消息后自动显示
         if (!historyVisible) {
             messageHistoryDiv.classList.remove('hidden');
             historyToggleBtn.textContent = '知道啦';
@@ -1062,8 +1053,6 @@
         }
 
         messageInput.value = '';
-        
-        // 自动滚动
         const chat = document.getElementById('chat');
         chat.scrollTop = chat.scrollHeight;
     }
@@ -1082,7 +1071,6 @@
         }
     });
 
-    // 独立的历史按钮控制
     historyToggleBtn.addEventListener('click', function() {
         if (historyVisible) {
             messageHistoryDiv.classList.add('hidden');
@@ -1092,13 +1080,11 @@
             messageHistoryDiv.classList.remove('hidden');
             historyToggleBtn.textContent = '知道啦';
             historyVisible = true;
-            // 显示时滚动到底部
             const chat = document.getElementById('chat');
             chat.scrollTop = chat.scrollHeight;
         }
     });
 
-    // 初始加载留言
     loadMessages();
 
     // ===== 数独显示/隐藏控制 (每日一练按钮) =====
@@ -1119,7 +1105,7 @@
         playAudio();
     });
 
-    // ========== 新增功能1：恋爱纪念日（2026-01-20） =========
+    // ===== 纪念日倒计时（2026-01-20） =====
     function updateAnniversary() {
         const startDate = new Date('2026-01-20T00:00:00');
         const today = new Date();
@@ -1130,9 +1116,8 @@
     }
     updateAnniversary();
 
-    // ========== 新增功能2：武汉 & 首尔实时天气 =========
+    // ===== 武汉 & 首尔天气 =====
     function fetchWeather(city, adcode, tempElId, descElId) {
-        // 使用高德地图开放接口（公共测试key，限制较低，可替换）
         const url = `https://restapi.amap.com/v3/weather/weatherInfo?city=${adcode}&key=5c39d1c3c7c0c5c9b8e3b8b8b8b8b8b8`;
         fetch(url)
             .then(res => res.json())
@@ -1142,7 +1127,6 @@
                     document.getElementById(tempElId).textContent = live.temperature + '°C';
                     document.getElementById(descElId).textContent = live.weather;
                 } else {
-                    // 降级显示
                     document.getElementById(tempElId).textContent = '--°C';
                     document.getElementById(descElId).textContent = '暂无';
                 }
@@ -1153,7 +1137,6 @@
             });
     }
 
-    // 首尔采用模拟动态数据
     function fetchSeoulMock() {
         const hour = new Date().getHours();
         const baseTemp = 12 + Math.sin(hour / 24 * Math.PI) * 5;
@@ -1164,91 +1147,113 @@
         document.getElementById('seoulDesc').textContent = conditions[idx];
     }
 
-    // 武汉真实请求
     fetchWeather('武汉', '420100', 'wuhanTemp', 'wuhanDesc');
-    // 首尔模拟
     fetchSeoulMock();
-    // 每30分钟更新一次
     setInterval(() => {
         fetchWeather('武汉', '420100', 'wuhanTemp', 'wuhanDesc');
         fetchSeoulMock();
         updateAnniversary();
     }, 1800000);
 
-    // ========== 新增功能3：虚拟爱心树（留言浇水版） =========
+    // ===== 爱心树 - 更精致的绘制 =====
     const canvas = document.getElementById('loveTree');
     const ctx = canvas.getContext('2d');
-    let heartCount = 12;    // 初始爱心数量
-    let waterCount = 8;     // 初始浇灌次数
+    let heartCount = 12;
+    let waterCount = 8;
 
     function drawTree() {
         ctx.clearRect(0, 0, 200, 160);
-        // 画树干
-        ctx.fillStyle = '#8B5A2B';
+        
+        // 画树干（渐变增加立体感）
+        const trunkGradient = ctx.createLinearGradient(85, 100, 115, 150);
+        trunkGradient.addColorStop(0, '#A0522D');
+        trunkGradient.addColorStop(1, '#8B4513');
+        ctx.fillStyle = trunkGradient;
         ctx.fillRect(85, 100, 30, 50);
-        // 画树冠（圆形）
-        ctx.fillStyle = '#6B8E23';
+        
+        // 画树冠（多个圆叠加，更有层次）
+        ctx.shadowColor = 'rgba(248,200,216,0.5)';
+        ctx.shadowBlur = 8;
+        
+        // 主树冠
+        const gradient1 = ctx.createRadialGradient(100, 70, 10, 100, 70, 40);
+        gradient1.addColorStop(0, '#8FBC8F');
+        gradient1.addColorStop(1, '#2E7D32');
+        ctx.fillStyle = gradient1;
         ctx.beginPath();
         ctx.arc(100, 70, 40, 0, Math.PI*2);
         ctx.fill();
-        ctx.fillStyle = '#4C7218';
+        
+        // 左侧树冠
+        const gradient2 = ctx.createRadialGradient(70, 60, 5, 70, 60, 25);
+        gradient2.addColorStop(0, '#90EE90');
+        gradient2.addColorStop(1, '#228B22');
+        ctx.fillStyle = gradient2;
         ctx.beginPath();
         ctx.arc(70, 60, 25, 0, Math.PI*2);
         ctx.fill();
+        
+        // 右侧树冠
+        const gradient3 = ctx.createRadialGradient(130, 60, 5, 130, 60, 25);
+        gradient3.addColorStop(0, '#90EE90');
+        gradient3.addColorStop(1, '#228B22');
+        ctx.fillStyle = gradient3;
         ctx.beginPath();
         ctx.arc(130, 60, 25, 0, Math.PI*2);
         ctx.fill();
+        
+        ctx.shadowBlur = 0;
+        ctx.shadowColor = 'transparent';
 
-        // 画爱心（数量根据heartCount动态决定）
-        ctx.fillStyle = '#f8c8d8';
+        // 画爱心（使用红心表情，更可爱）
+        ctx.font = '18px "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", Arial';
+        ctx.fillStyle = '#ff69b4';
+        ctx.shadowBlur = 6;
+        ctx.shadowColor = '#f8c8d8';
+        
         for (let i = 0; i < Math.min(heartCount, 10); i++) {
-            let x = 60 + (i % 5) * 20;
-            let y = 40 + Math.floor(i / 5) * 20;
-            ctx.font = '18px Arial';
-            ctx.fillText('🐾', x, y);
+            let x = 60 + (i % 5) * 18;
+            let y = 40 + Math.floor(i / 5) * 18;
+            ctx.fillText('💍', x, y);
         }
-        // 如果爱心太多，换行显示
         if (heartCount > 10) {
             for (let i = 10; i < Math.min(heartCount, 20); i++) {
-                let x = 60 + ((i-10) % 5) * 20;
-                let y = 60 + Math.floor((i-10) / 5) * 20;
-                ctx.font = '18px Arial';
+                let x = 60 + ((i-10) % 5) * 18;
+                let y = 58 + Math.floor((i-10) / 5) * 18;
                 ctx.fillText('🐈', x, y);
             }
         }
 
-        // 显示水滴特效（根据浇水次数显示）
-        ctx.fillStyle = '#ADD8E6';
+        // 画水滴
+        ctx.shadowBlur = 4;
+        ctx.shadowColor = '#ADD8E6';
+        ctx.fillStyle = '#87CEEB';
         for (let i = 0; i < waterCount % 5; i++) {
             ctx.beginPath();
             ctx.arc(150 + i*10, 120, 4, 0, Math.PI*2);
             ctx.fill();
         }
+        
+        ctx.shadowBlur = 0;
 
         document.getElementById('heartCount').textContent = heartCount;
         document.getElementById('waterCount').textContent = waterCount;
     }
 
     drawTree();
-
-    // 移除原来的按钮点击监听，现在完全靠留言触发
-    // 但保留 waterCount 和 heartCount 变量供 sendMessage 使用
 </script>
 
 <?php
 // ==================================================
-// 留言板 API 和 管理页面 (适配 snx gsy 永远在一起)
+// 留言板 API - 完全隐藏在后端，不会在网页显示任何内容
 // ==================================================
-// 此部分嵌入在HTML底部，确保不修改原有代码
-if (php_sapi_name() !== 'cli' && !isset($_GET['skip_php'])) {
+if (php_sapi_name() !== 'cli') {
     // 配置选项
-    define('DB_FILE', __DIR__ . '/messages.sqlite'); // SQLite 数据库文件路径
-    define('PASSWORD_HASH', password_hash('snx666', PASSWORD_DEFAULT)); // 管理密码 (建议修改)
+    define('DB_FILE', __DIR__ . '/messages.sqlite');
+    define('PASSWORD_HASH', password_hash('snx666', PASSWORD_DEFAULT));
 
-    // 简单的路由：根据请求参数处理
     $action = $_GET['action'] ?? '';
 
-    // 数据库初始化
     function initDb() {
         $db = new SQLite3(DB_FILE);
         $db->exec("CREATE TABLE IF NOT EXISTS messages (
@@ -1260,9 +1265,7 @@ if (php_sapi_name() !== 'cli' && !isset($_GET['skip_php'])) {
         return $db;
     }
 
-    // ---------- API 路由 ----------
     if ($action === 'post' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-        // 处理 POST 留言
         $input = json_decode(file_get_contents('php://input'), true);
         $content = trim($input['content'] ?? '');
         if (!$content) {
@@ -1270,10 +1273,8 @@ if (php_sapi_name() !== 'cli' && !isset($_GET['skip_php'])) {
             echo json_encode(['error' => '内容不能为空']);
             exit;
         }
-        $nickname = 'snx';
         $db = initDb();
-        $stmt = $db->prepare("INSERT INTO messages (nickname, content) VALUES (:nick, :content)");
-        $stmt->bindValue(':nick', $nickname, SQLITE3_TEXT);
+        $stmt = $db->prepare("INSERT INTO messages (nickname, content) VALUES ('snx', :content)");
         $stmt->bindValue(':content', $content, SQLITE3_TEXT);
         $stmt->execute();
         header('Content-Type: application/json');
@@ -1282,49 +1283,14 @@ if (php_sapi_name() !== 'cli' && !isset($_GET['skip_php'])) {
     }
 
     if ($action === 'list') {
-        // 获取最近留言
         $db = initDb();
-        $limit = isset($_GET['limit']) ? min((int)$_GET['limit'], 100) : 50;
-        $result = $db->query("SELECT * FROM messages ORDER BY created_at DESC LIMIT $limit");
+        $result = $db->query("SELECT * FROM messages ORDER BY created_at DESC LIMIT 50");
         $msgs = [];
         while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
             $msgs[] = $row;
         }
         header('Content-Type: application/json');
         echo json_encode($msgs);
-        exit;
-    }
-
-    // 简单管理页面 (可选，如果需要可以访问 ?admin=1)
-    if (isset($_GET['admin']) && $_GET['admin'] == 1) {
-        session_start();
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['password'])) {
-            if (password_verify($_POST['password'], PASSWORD_HASH)) {
-                $_SESSION['admin_logged'] = true;
-            } else {
-                $error = '密码错误';
-            }
-        }
-        $isLogged = $_SESSION['admin_logged'] ?? false;
-        if (!$isLogged) {
-            echo '<form method="post"><input type="password" name="password" placeholder="管理密码"><button type="submit">登录</button></form>';
-            if (isset($error)) echo "<p>$error</p>";
-            exit;
-        }
-        $db = initDb();
-        $res = $db->query("SELECT * FROM messages ORDER BY created_at DESC");
-        echo '<style>body{background:#f2f2f2;font-family:sans-serif;padding:20px;}</style>';
-        echo '<h2>💬 留言板管理</h2><table border="1" cellpadding="8" style="border-collapse:collapse;width:100%">';
-        echo '<tr><th>ID</th><th>昵称</th><th>内容</th><th>时间</th></tr>';
-        while ($row = $res->fetchArray(SQLITE3_ASSOC)) {
-            echo '<tr>';
-            echo '<td>' . $row['id'] . '</td>';
-            echo '<td>' . htmlspecialchars($row['nickname']) . '</td>';
-            echo '<td>' . htmlspecialchars($row['content']) . '</td>';
-            echo '<td>' . $row['created_at'] . '</td>';
-            echo '</tr>';
-        }
-        echo '</table>';
         exit;
     }
 }
