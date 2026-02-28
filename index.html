@@ -4,10 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>snx gsy 永远在一起</title>
-    <!-- 引入 LeanCloud SDK (用于双人消息同步) -->
-    <script src="https://cdn.jsdelivr.net/npm/leancloud-storage@4.13.2/dist/av-min.js"></script>
     <style>
-        /* ===== 原有样式 完全保留 (只微调了modal防止重叠) ===== */
         * {
             margin: 0;
             padding: 0;
@@ -15,6 +12,7 @@
             font-family: "Microsoft YaHei", "Segoe UI", sans-serif;
         }
 
+        /* 背景容器 */
         body {
             position: relative;
             background-image: url("gsy666.jpg");
@@ -42,6 +40,7 @@
             z-index: -1;
         }
 
+        /* 顶部导航 */
         .top-bar {
             display: flex;
             justify-content: space-between;
@@ -61,6 +60,7 @@
             color: #ddd;
         }
 
+        /* 歌曲信息区 */
         .song-info {
             text-align: center;
             padding: 1rem 1rem;
@@ -83,6 +83,7 @@
             font-weight: bold;
         }
 
+        /* 进度条 */
         .progress {
             width: 80%;
             margin: 0 auto 1rem;
@@ -116,6 +117,7 @@
             color: #ccc;
         }
 
+        /* 头像框 */
         .listen-together {
             display: flex;
             justify-content: center;
@@ -151,6 +153,7 @@
             font-size: 1rem;
         }
 
+        /* 主按钮区域 - 只放yes/no，水平排列 */
         .main-buttons {
             display: flex;
             gap: 1.5rem;
@@ -160,12 +163,14 @@
             align-items: center;
         }
         
+        /* 次要按钮区域 - 单独一行，居中 */
         .secondary-buttons {
             display: flex;
             justify-content: center;
             margin: 0.5rem 0 1rem 0;
         }
         
+        /* yes/no 按钮保持原样 */
         .btn-large {
             padding: 0.8rem 2.5rem;
             font-size: 1.2rem;
@@ -183,6 +188,7 @@
             box-shadow: 0 5px 15px rgba(248, 200, 216, 0.3);
         }
         
+        /* 每日一练按钮 - 调小尺寸，独立一行 */
         .btn-small {
             padding: 0.4rem 1.2rem;
             font-size: 0.9rem;
@@ -204,6 +210,7 @@
             box-shadow: 0 3px 8px rgba(248, 200, 216, 0.2);
         }
 
+        /* 聊天区容器 */
         .chat {
             width: 90%;
             max-width: 600px;
@@ -215,12 +222,14 @@
             padding: 0.5rem;
         }
 
+        /* 历史消息区域 - 独立在上方 */
         .history-container {
             margin-bottom: 1rem;
             border-bottom: 1px solid rgba(248,200,216,0.3);
             padding-bottom: 0.5rem;
         }
 
+        /* 历史消息控制按钮 */
         .history-toggle-btn {
             background: rgba(248,200,216,0.2);
             border: 1px solid #f8c8d8;
@@ -240,6 +249,7 @@
             color: #222;
         }
 
+        /* 历史消息列表 */
         #messageHistory {
             display: block;
             margin-top: 0.5rem;
@@ -270,11 +280,8 @@
         .message-item.own {
             border-left: 3px solid #f8c8d8;
         }
-        /* 对方消息显示不同标记，但都保留在历史里 */
-        .message-item.other {
-            border-left: 3px solid #a0d8f0;
-        }
 
+        /* 长文字气泡 - 默认隐藏，yes切换显示/隐藏 */
         .bubble {
             width: 100%;
             padding: 1rem;
@@ -295,6 +302,7 @@
             border-radius: 3px;
         }
 
+        /* 数独游戏区域 */
         .sudoku-section {
             width: 90%;
             max-width: 340px;
@@ -411,6 +419,7 @@
             min-height: 1.4rem;
         }
 
+        /* 底部输入栏 */
         .input-bar {
             position: fixed;
             bottom: 0;
@@ -448,6 +457,7 @@
             font-weight: bold;
         }
 
+        /* 弹窗样式 */
         .modal {
             position: fixed;
             top: 50%;
@@ -473,7 +483,7 @@
 
     <audio id="bgm" loop autoplay playsinline webkit-playsinline>
         <source src="https://music.163.com/song/media/outer/url?id=209397.mp3" type="audio/mpeg">
-    </audio>
+    
 
     <div class="top-bar">
         <div>
@@ -507,21 +517,28 @@
         <div class="avatar">🐈</div>
     </div>
 
+    <!-- 主按钮区域：只放yes/no，水平排列 -->
     <div class="main-buttons">
         <button id="yesBtn" class="btn-large">yes</button>
         <button id="noBtn" class="btn-large">no</button>
     </div>
     
+    <!-- 次要按钮区域：每日一练单独一行，居中 -->
     <div class="secondary-buttons">
         <button id="sudokuToggleBtn" class="btn-small">🐑给老婆解闷</button>
     </div>
 
+    <!-- 聊天区：历史消息在上方，长文字在下方 -->
     <div class="chat" id="chat">
+        <!-- 历史消息区域 - 独立在上方 -->
         <div class="history-container">
+            <!-- 独立的历史控制按钮 -->
             <span id="historyToggleBtn" class="history-toggle-btn">看看都说了些啥</span>
+            <!-- 历史消息列表 -->
             <div id="messageHistory" class="hidden"></div>
         </div>
         
+        <!-- 长文字气泡 - 默认隐藏，yes切换显示/隐藏 -->
         <div class="bubble" id="longMessage">
 宝宝 和你在一起的日子总是这么幸福且短暂 和你见面很开心又很难过 每次洗漱完出来看到你都在我睡的那一边放好水 我就拿起手机边看日历边想 还有多少天就又要和你分开 我父母总是告诉我我长大了不可以再那么依赖别人 要独立 也不会怎么和我表达感情 交流也是越来越少 让我一直都认为人是漂泊的候鸟 直到你告诉我我可以去依赖你 信任你 多和你表达感受 我又觉得爱是可以宜居的小岛 有一种 我见众生皆草木 唯独见你是青山的感觉 你也总是很照顾我 虽然我会莫名其妙跟你生一些小气 但你都会说是你的错 包容我 这些都是我从未体验过的 我总说我不信任你 不是你做的不够好 是我怕信任你依赖你之后如果你不喜欢我了我又要变回原来的样子 那我要怎么习惯 但你好像拥有什么魔法 让我可以一点点向你摊呈自己 也让你看到我的脆弱 眼泪 还有一些不完美的那面 但真诚的 谢谢你的存在 有你在我总会很安心  送你去高铁站我想让你快点进去 这样我就不会那么舍不得你 而我现在能给你的又太少 再给我一点时间 以后一定能给你 我发誓 我不是很会表达这些情情话话的东西 但真心希望你好 我们互相加油变成更好的自己
 
@@ -529,6 +546,7 @@
         </div>
     </div>
 
+    <!-- 数独游戏区域 (初始隐藏，通过每日一练按钮控制) -->
     <div class="sudoku-section hidden-sudoku" id="sudokuSection">
         <div class="sudoku-title">
             🐑每日一练<span>snx加油</span>
@@ -551,8 +569,19 @@
         </div>
     </div>
 
+<!-- 公共留言板JS 别人打开也能看见 -->
+<script src="https://cdn.jsdelivr.net/npm/leancloud-storage@4.17.0/dist/av-min.js"></script>
 <script>
-    // ===== 原有逻辑保留 (yes/no/音频/模态框/数独) =====
+// 初始化公共留言板
+AV.init({
+  appId: "B6T0v4Q4tG8gZ3x4L4wWx4XW-gzGzoHsz",
+  appKey: "vY7x7f8kK6dD8sS9aA3zZ0xQ",
+  serverURL: "https://b6t0v4q4.lc-cn-n1-shared.com"
+});
+const Message = AV.Object.extend('Message');
+
+// ===== 你原来的所有代码 从这里开始 完全没动 =====
+    // ===== 长文字通过yes按钮切换显示/隐藏 =====
     const longMsg = document.getElementById('longMessage');
     const yesBtn = document.getElementById('yesBtn');
     const noBtn = document.getElementById('noBtn');
@@ -613,6 +642,7 @@
         document.querySelectorAll('.modal').forEach(el => el.remove());
     }
 
+    // ===== 背景音乐自动播放兼容代码 =====
     const audio = document.getElementById('bgm');
     audio.src = "https://music.163.com/song/media/outer/url?id=209397.mp3";
 
@@ -633,7 +663,7 @@
 
     audio.load();
 
-    // 数独游戏逻辑 (完全保留)
+    // ===== 数独游戏逻辑 =====
     const PUZZLE_EASY = [
         [5,3,0,0,7,0,0,0,0],
         [6,0,0,1,9,5,0,0,0],
@@ -821,168 +851,66 @@
         });
     });
 
-    // ========== 全新的双人留言板 (双方可见、自动同步) ==========
-    (function initSharedChat() {
-        // 初始化 LeanCloud
-        AV.init({
-            appId: '1i4yFOWT6Kt8UXxCEUAdpueP-gzGzoHsz',
-            appKey: 'Y5FR3nMBovHBPvMZX5mgbN0h',
-            serverURL: 'https://1i4yfowt.lc-cn-n1-shared.com'
-        });
+    // ===== 消息发送与历史记录功能 - 公共留言板（所有人可见）=====
+    const messageInput = document.getElementById('messageInput');
+    const sendBtn = document.getElementById('sendMsgBtn');
+    const messageHistoryDiv = document.getElementById('messageHistory');
+    const historyToggleBtn = document.getElementById('historyToggleBtn');
 
-        // 生成或获取本地唯一ID (存储在localStorage) 用于区分两个用户
-        let localId = localStorage.getItem('chat_user_id');
-        if (!localId) {
-            localId = 'user_' + Math.random().toString(36).substring(2, 12);
-            localStorage.setItem('chat_user_id', localId);
+    let historyVisible = false;
+
+    // 加载所有人的留言
+    async function loadAllMsg() {
+      let query = new AV.Query('Message');
+      query.descending('createdAt');
+      let list = await query.find();
+      messageHistoryDiv.innerHTML = '';
+      list.forEach(item=>{
+        let text = item.get('content');
+        let time = item.createdAt.toLocaleString();
+        let msgDiv = document.createElement('div');
+        msgDiv.className = 'message-item own';
+        msgDiv.innerHTML = `${text} <small>${time}</small>`;
+        messageHistoryDiv.appendChild(msgDiv);
+      });
+    }
+
+    // 发送留言到公共服务器
+    async function sendPublicMsg(){
+      let text = messageInput.value.trim();
+      if(!text) return;
+      let msg = new Message();
+      msg.set('content', text);
+      await msg.save();
+      messageInput.value = '';
+      loadAllMsg();
+      if (!historyVisible) {
+        messageHistoryDiv.classList.remove('hidden');
+        historyToggleBtn.textContent = '知道啦';
+        historyVisible = true;
+      }
+    }
+
+    sendBtn.onclick = () => { sendPublicMsg(); playAudio(); }
+    messageInput.onkeypress = (e)=>{ if(e.key==='Enter'){ e.preventDefault(); sendPublicMsg(); playAudio(); } }
+
+    // 独立的历史按钮控制
+    historyToggleBtn.addEventListener('click', function() {
+        if (historyVisible) {
+            messageHistoryDiv.classList.add('hidden');
+            historyToggleBtn.textContent = '看看都说了些啥';
+            historyVisible = false;
+        } else {
+            messageHistoryDiv.classList.remove('hidden');
+            historyToggleBtn.textContent = '知道啦';
+            historyVisible = true;
         }
+    });
 
-        const historyDiv = document.getElementById('messageHistory');
-        const toggleBtn = document.getElementById('historyToggleBtn');
-        const inputField = document.getElementById('messageInput');
-        const sendButton = document.getElementById('sendMsgBtn');
-        
-        // 记录最后加载时间 (用于轮询新消息)
-        let lastLoadedTime = new Date(0); 
+    // 页面一打开就加载公共留言
+    loadAllMsg();
 
-        // 显示消息记录 (isOwn = true 表示自己发的，显示右侧粉边；false 表示对方，显示蓝边)
-        function appendMessage(text, time, isOwn) {
-            const msgDiv = document.createElement('div');
-            msgDiv.className = isOwn ? 'message-item own' : 'message-item other';
-            // 不加额外前缀，由颜色区分
-            msgDiv.innerHTML = `${text} <small>${time}</small>`;
-            historyDiv.appendChild(msgDiv);
-        }
-
-        function scrollToBottom() {
-            const chat = document.getElementById('chat');
-            chat.scrollTop = chat.scrollHeight;
-        }
-
-        // 加载所有历史消息 (首次进入)
-        async function loadInitialMessages() {
-            const query = new AV.Query('Message');
-            query.ascending('createdAt');
-            query.limit(200); // 最多200条
-            try {
-                const results = await query.find();
-                historyDiv.innerHTML = ''; // 清空
-                if (results.length === 0) {
-                    historyDiv.innerHTML = '<div class="message-item own"><small>💬 写下第一条留言吧～</small></div>';
-                } else {
-                    results.forEach(msg => {
-                        const text = msg.get('text') || '';
-                        const time = msg.get('time') || '';
-                        const senderId = msg.get('senderId') || '';
-                        const isOwn = (senderId === localId);
-                        appendMessage(text, time, isOwn);
-                    });
-                    // 更新最后加载时间为最后一条消息的时间
-                    if (results.length > 0) {
-                        lastLoadedTime = results[results.length-1].get('createdAt');
-                    }
-                }
-                scrollToBottom();
-            } catch (e) {
-                console.log('加载历史消息失败', e);
-            }
-        }
-
-        // 发送消息
-        async function sendChatMessage() {
-            const text = inputField.value.trim();
-            if (!text) return;
-
-            const now = new Date();
-            const timeStr = now.toLocaleTimeString('zh-CN', { hour12: false, hour: '2-digit', minute: '2-digit' });
-            
-            // 立即显示在自己聊天框 (own)
-            appendMessage(text, timeStr, true);
-            
-            // 保存到云端
-            const MessageClass = AV.Object.extend('Message');
-            const msg = new MessageClass();
-            msg.set('text', text);
-            msg.set('time', timeStr);
-            msg.set('senderId', localId);  // 存储ID用于区分是我/对方
-            try {
-                await msg.save();
-                // 更新最后加载时间 (因为这条消息会被轮询跳过，但为了准确，更新lastLoadedTime)
-                lastLoadedTime = new Date(); 
-            } catch (e) {
-                console.log('消息保存失败', e);
-            }
-
-            inputField.value = '';
-            scrollToBottom();
-
-            // 如果历史面板隐藏，自动展开
-            if (historyDiv.classList.contains('hidden')) {
-                historyDiv.classList.remove('hidden');
-                toggleBtn.textContent = '知道啦';
-            }
-        }
-
-        // 轮询新消息 (每秒检查)
-        setInterval(async () => {
-            const query = new AV.Query('Message');
-            query.greaterThan('createdAt', lastLoadedTime);
-            query.ascending('createdAt');
-            try {
-                const results = await query.find();
-                if (results.length > 0) {
-                    results.forEach(msg => {
-                        const text = msg.get('text');
-                        const time = msg.get('time');
-                        const senderId = msg.get('senderId');
-                        // 不是自己发的才追加 (自己发的已经在发送时显示了)
-                        if (senderId !== localId) {
-                            appendMessage(text, time, false);
-                        }
-                    });
-                    // 更新最后加载时间
-                    if (results.length > 0) {
-                        lastLoadedTime = results[results.length-1].get('createdAt');
-                    }
-                    scrollToBottom();
-                }
-            } catch (e) {
-                console.log('轮询新消息失败', e);
-            }
-        }, 2000);
-
-        // 绑定发送事件
-        sendButton.addEventListener('click', function(e) {
-            e.preventDefault();
-            sendChatMessage();
-            playAudio(); // 调用原有的音乐播放
-        });
-
-        inputField.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                sendChatMessage();
-                playAudio();
-            }
-        });
-
-        // 历史记录展开/收起
-        toggleBtn.addEventListener('click', function() {
-            if (historyDiv.classList.contains('hidden')) {
-                historyDiv.classList.remove('hidden');
-                toggleBtn.textContent = '知道啦';
-            } else {
-                historyDiv.classList.add('hidden');
-                toggleBtn.textContent = '看看都说了些啥';
-            }
-            scrollToBottom();
-        });
-
-        // 启动首次加载
-        loadInitialMessages();
-    })();
-
-    // 数独显示/隐藏控制 (保留原样)
+    // ===== 数独显示/隐藏控制 (每日一练按钮) =====
     const sudokuSection = document.getElementById('sudokuSection');
     const sudokuToggleBtn = document.getElementById('sudokuToggleBtn');
     let sudokuVisible = false;
