@@ -89,52 +89,6 @@
             color: #fff;
             margin: 0 2px;
         }
-
-        /* ===== 爱心树 - 调小尺寸，更精致 ===== */
-        .tree-container {
-            background: rgba(0, 0, 0, 0.25);
-            backdrop-filter: blur(6px);
-            border-radius: 30px;
-            padding: 0.5rem 1.2rem;
-            margin: 0.5rem auto;
-            width: fit-content;
-            border: 1px solid #f8c8d8;
-            text-align: center;
-        }
-        .tree-title {
-            color: #f8c8d8;
-            font-size: 1rem;
-            margin-bottom: 0.2rem;
-            letter-spacing: 1px;
-        }
-        .tree-canvas {
-            display: flex;
-            justify-content: center;
-        }
-        canvas#loveTree {
-            width: 150px;
-            height: 120px;
-            border-radius: 20px;
-            background: rgba(255,255,255,0.02);
-        }
-        .tree-stats {
-            display: flex;
-            justify-content: center;
-            gap: 1.2rem;
-            margin-top: 0.2rem;
-            font-size: 0.8rem;
-            color: #f0c0d0;
-        }
-        .water-hint {
-            font-size: 0.7rem;
-            color: #f8c8d8;
-            margin-top: 0.2rem;
-            background: rgba(0,0,0,0.3);
-            padding: 0.1rem 0.8rem;
-            border-radius: 20px;
-            display: inline-block;
-        }
-
         /* 歌曲信息区 - 完全保留 */
         .song-info {
             text-align: center;
@@ -593,20 +547,6 @@
             <span id="seoulDesc">加载中...</span>
         </div>
     </div>
-
-    <!-- ========== 爱心树 (更小更精致) ========= -->
-    <div class="tree-container">
-        <div class="tree-title">我们的纪念树</div>
-        <div class="tree-canvas">
-            <canvas id="loveTree" width="200" height="160"></canvas>
-        </div>
-        <div class="tree-stats">
-            <span>爱心 <span id="heartCount">12</span></span>
-            <span>浇灌 <span id="waterCount">8</span></span>
-        </div>
-        <div class="water-hint">发送“爱你”相关留言给树浇水</div>
-    </div>
-
     <div class="song-info">
         <div class="song-title">可爱女人</div>
         <div class="song-artist">周杰伦</div>
@@ -1020,19 +960,7 @@
         const chat = document.getElementById('chat');
         chat.scrollTop = chat.scrollHeight;
     }
-
-    // 修改 sendMessage 函数，增加对“浇水”关键词的检测
-    function sendMessage() {
-        const text = messageInput.value.trim();
-        if (text === '') return;
-
-        // 检查是否包含“浇水”关键词
-        if (text.includes('浇水') || text === 'water' || text.includes('💧')) {
-            waterCount++;
-            if (waterCount % 3 === 0) {
-                heartCount++;
-            }
-            drawTree();
+    
             // 添加系统提示（可选）
             const systemMsg = { text: '爱心树得到了浇灌！', time: '刚刚' };
             messages.push(systemMsg);
@@ -1155,146 +1083,4 @@
         updateAnniversary();
     }, 1800000);
 
-    // ===== 爱心树 - 更精致的绘制 =====
-    const canvas = document.getElementById('loveTree');
-    const ctx = canvas.getContext('2d');
-    let heartCount = 12;
-    let waterCount = 8;
-
-    function drawTree() {
-        ctx.clearRect(0, 0, 200, 160);
-        
-        // 画树干（渐变增加立体感）
-        const trunkGradient = ctx.createLinearGradient(85, 100, 115, 150);
-        trunkGradient.addColorStop(0, '#A0522D');
-        trunkGradient.addColorStop(1, '#8B4513');
-        ctx.fillStyle = trunkGradient;
-        ctx.fillRect(85, 100, 30, 50);
-        
-        // 画树冠（多个圆叠加，更有层次）
-        ctx.shadowColor = 'rgba(248,200,216,0.5)';
-        ctx.shadowBlur = 8;
-        
-        // 主树冠
-        const gradient1 = ctx.createRadialGradient(100, 70, 10, 100, 70, 40);
-        gradient1.addColorStop(0, '#8FBC8F');
-        gradient1.addColorStop(1, '#2E7D32');
-        ctx.fillStyle = gradient1;
-        ctx.beginPath();
-        ctx.arc(100, 70, 40, 0, Math.PI*2);
-        ctx.fill();
-        
-        // 左侧树冠
-        const gradient2 = ctx.createRadialGradient(70, 60, 5, 70, 60, 25);
-        gradient2.addColorStop(0, '#90EE90');
-        gradient2.addColorStop(1, '#228B22');
-        ctx.fillStyle = gradient2;
-        ctx.beginPath();
-        ctx.arc(70, 60, 25, 0, Math.PI*2);
-        ctx.fill();
-        
-        // 右侧树冠
-        const gradient3 = ctx.createRadialGradient(130, 60, 5, 130, 60, 25);
-        gradient3.addColorStop(0, '#90EE90');
-        gradient3.addColorStop(1, '#228B22');
-        ctx.fillStyle = gradient3;
-        ctx.beginPath();
-        ctx.arc(130, 60, 25, 0, Math.PI*2);
-        ctx.fill();
-        
-        ctx.shadowBlur = 0;
-        ctx.shadowColor = 'transparent';
-
-        // 画爱心（使用红心表情，更可爱）
-        ctx.font = '18px "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", Arial';
-        ctx.fillStyle = '#ff69b4';
-        ctx.shadowBlur = 6;
-        ctx.shadowColor = '#f8c8d8';
-        
-        for (let i = 0; i < Math.min(heartCount, 10); i++) {
-            let x = 60 + (i % 5) * 18;
-            let y = 40 + Math.floor(i / 5) * 18;
-            ctx.fillText('💍', x, y);
-        }
-        if (heartCount > 10) {
-            for (let i = 10; i < Math.min(heartCount, 20); i++) {
-                let x = 60 + ((i-10) % 5) * 18;
-                let y = 58 + Math.floor((i-10) / 5) * 18;
-                ctx.fillText('🐈', x, y);
-            }
-        }
-
-        // 画水滴
-        ctx.shadowBlur = 4;
-        ctx.shadowColor = '#ADD8E6';
-        ctx.fillStyle = '#87CEEB';
-        for (let i = 0; i < waterCount % 5; i++) {
-            ctx.beginPath();
-            ctx.arc(150 + i*10, 120, 4, 0, Math.PI*2);
-            ctx.fill();
-        }
-        
-        ctx.shadowBlur = 0;
-
-        document.getElementById('heartCount').textContent = heartCount;
-        document.getElementById('waterCount').textContent = waterCount;
-    }
-
-    drawTree();
-</script>
-
-<?php
-// ==================================================
-// 留言板 API - 完全隐藏在后端，不会在网页显示任何内容
-// ==================================================
-if (php_sapi_name() !== 'cli') {
-    // 配置选项
-    define('DB_FILE', __DIR__ . '/messages.sqlite');
-    define('PASSWORD_HASH', password_hash('snx666', PASSWORD_DEFAULT));
-
-    $action = $_GET['action'] ?? '';
-
-    function initDb() {
-        $db = new SQLite3(DB_FILE);
-        $db->exec("CREATE TABLE IF NOT EXISTS messages (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            nickname TEXT DEFAULT 'snx',
-            content TEXT NOT NULL,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-        )");
-        return $db;
-    }
-
-    if ($action === 'post' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-        $input = json_decode(file_get_contents('php://input'), true);
-        $content = trim($input['content'] ?? '');
-        if (!$content) {
-            http_response_code(400);
-            echo json_encode(['error' => '内容不能为空']);
-            exit;
-        }
-        $db = initDb();
-        $stmt = $db->prepare("INSERT INTO messages (nickname, content) VALUES ('snx', :content)");
-        $stmt->bindValue(':content', $content, SQLITE3_TEXT);
-        $stmt->execute();
-        header('Content-Type: application/json');
-        echo json_encode(['status' => 'ok', 'id' => $db->lastInsertRowID()]);
-        exit;
-    }
-
-    if ($action === 'list') {
-        $db = initDb();
-        $result = $db->query("SELECT * FROM messages ORDER BY created_at DESC LIMIT 50");
-        $msgs = [];
-        while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
-            $msgs[] = $row;
-        }
-        header('Content-Type: application/json');
-        echo json_encode($msgs);
-        exit;
-    }
-}
-?>
-
-</body>
-</html>
+  
