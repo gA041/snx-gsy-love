@@ -60,31 +60,6 @@
             color: #ddd;
         }
 
-        /* 新增：纪念日和天气信息栏 */
-        .anniversary-weather {
-            text-align: center;
-            padding: 0.5rem 1rem;
-            font-size: 0.75rem; /* 小字体 */
-            color: #f8c8d8;
-            background: rgba(0,0,0,0.2);
-            margin: 0.5rem 0;
-        }
-        .anniversary {
-            margin-bottom: 0.2rem;
-            letter-spacing: 0.5px;
-        }
-        .weather {
-            display: flex;
-            justify-content: center;
-            gap: 1.5rem;
-            color: #ddd;
-        }
-        .weather-item {
-            display: flex;
-            align-items: center;
-            gap: 0.3rem;
-        }
-
         /* 歌曲信息区 */
         .song-info {
             text-align: center;
@@ -519,15 +494,6 @@
         <div class="info">一起听 ♡ 时长: 20:21</div>
     </div>
 
-    <!-- 新增：纪念日和天气信息栏 -->
-    <div class="anniversary-weather">
-        <div class="anniversary">💍在一起已经<span id="daysTogether">0</span>天</div>
-        <div class="weather">
-            <div class="weather-item">武汉<span id="wuhanWeather">10~18°C 晴</span></div>
-            <div class="weather-item">首尔<span id="seoulWeather">5~12°C 多云</span></div>
-        </div>
-    </div>
-
     <div class="song-info">
         <div class="song-title">可爱女人</div>
         <div class="song-artist">周杰伦</div>
@@ -604,19 +570,6 @@
     </div>
 
 <script>
-    // ===== 新增：计算恋爱天数 =====
-    function calculateDaysTogether() {
-        const anniversary = new Date(2026, 0, 20); // 月份从0开始，1月是0
-        const today = new Date();
-        // 计算时间差（毫秒）
-        const diffTime = today - anniversary;
-        // 转换为天数
-        const diffDays = Math.max(0, Math.floor(diffTime / (1000 * 60 * 60 * 24)));
-        document.getElementById('daysTogether').textContent = diffDays;
-    }
-    // 初始化计算
-    calculateDaysTogether();
-
     // ===== 长文字通过yes按钮切换显示/隐藏 =====
     const longMsg = document.getElementById('longMessage');
     const yesBtn = document.getElementById('yesBtn');
