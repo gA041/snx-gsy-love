@@ -512,7 +512,7 @@
 
     <audio id="bgm" loop autoplay playsinline webkit-playsinline>
         <source src="https://music.163.com/song/media/outer/url?id=209397.mp3" type="audio/mpeg">
-    </audio>
+    
 
     <div class="top-bar">
         <div>
@@ -649,7 +649,7 @@
 
         const modal = document.createElement('div');
         modal.className = 'modal';
-        modal.innerHTML = `<p>${message}</p >`;
+        modal.innerHTML = `<p>${message}</p>`;
 
         if (showButtons) {
             const btnContainer = document.createElement('div');
@@ -893,7 +893,7 @@
         });
     });
 
-    // ===== 消息发送与历史记录功能 (保留原有逻辑) =====
+    // ===== 消息发送与历史记录功能 =====
     const messageInput = document.getElementById('messageInput');
     const sendBtn = document.getElementById('sendMsgBtn');
     const messageHistoryDiv = document.getElementById('messageHistory');
@@ -903,50 +903,13 @@
     let historyVisible = false;
 
     function loadMessages() {
-        fetch('?action=list')
-            .then(res => res.json())
-            .then(data => {
-                if (Array.isArray(data)) {
-                    messages = data.map(msg => ({
-                        text: msg.content,
-                        time: msg.created_at ? msg.created_at.substr(11,5) : '刚刚'
-                    }));
-                    renderMessages();
-                }
-            })
-            .catch(() => {
-                try {
-                    const saved = localStorage.getItem('snx_chat_messages');
-                    if (saved) {
-                        messages = JSON.parse(saved);
-                    }
-                } catch (e) {}
-                renderMessages();
-            });
-    }
-
-    function saveMessageToServer(text) {
-        fetch('?action=post', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ content: text })
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.status === 'ok') {
-                loadMessages();
+        try {
+            const saved = localStorage.getItem('snx_chat_messages');
+            if (saved) {
+                messages = JSON.parse(saved);
             }
-        })
-        .catch(() => {
-            try {
-                const saved = localStorage.getItem('snx_chat_messages');
-                let localMsgs = saved ? JSON.parse(saved) : [];
-                localMsgs.push({ text, time: new Date().toLocaleTimeString('zh-CN', { hour12: false, hour: '2-digit', minute: '2-digit' }) });
-                localStorage.setItem('snx_chat_messages', JSON.stringify(localMsgs));
-                messages = localMsgs;
-                renderMessages();
-            } catch (e) {}
-        });
+        } catch (e) {}
+        renderMessages();
     }
 
     function renderMessages() {
@@ -960,29 +923,26 @@
         const chat = document.getElementById('chat');
         chat.scrollTop = chat.scrollHeight;
     }
-    
-            // 添加系统提示（可选）
-            const systemMsg = { text: '爱心树得到了浇灌！', time: '刚刚' };
-            messages.push(systemMsg);
-            renderMessages();
-        }
+
+    function sendMessage() {
+        const text = messageInput.value.trim();
+        if (!text) return;
 
         const now = new Date();
         const timeStr = now.toLocaleTimeString('zh-CN', { hour12: false, hour: '2-digit', minute: '2-digit' });
         messages.push({ text, time: timeStr });
+        
+        if (messages.length > 50) messages = messages.slice(-50);
+        localStorage.setItem('snx_chat_messages', JSON.stringify(messages));
+        
         renderMessages();
-
-        saveMessageToServer(text);
+        messageInput.value = '';
 
         if (!historyVisible) {
             messageHistoryDiv.classList.remove('hidden');
             historyToggleBtn.textContent = '知道啦';
             historyVisible = true;
         }
-
-        messageInput.value = '';
-        const chat = document.getElementById('chat');
-        chat.scrollTop = chat.scrollHeight;
     }
 
     sendBtn.addEventListener('click', function(e) {
@@ -1015,7 +975,7 @@
 
     loadMessages();
 
-    // ===== 数独显示/隐藏控制 (每日一练按钮) =====
+    // ===== 数独显示/隐藏控制 =====
     const sudokuSection = document.getElementById('sudokuSection');
     const sudokuToggleBtn = document.getElementById('sudokuToggleBtn');
     let sudokuVisible = false;
@@ -1033,54 +993,53 @@
         playAudio();
     });
 
-    // ===== 纪念日倒计时（2026-01-20） =====
-    function updateAnniversary() {
-        const startDate = new Date('2026-01-20T00:00:00');
-        const today = new Date();
-        today.setHours(0,0,0,0);
-        const diffTime = today - startDate;
-        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-        document.getElementById('daysTogether').textContent = diffDays >= 0 ? diffDays : 0;
+    // ===== 在一起天数：2026-01-20 =====
+    function updateDaysTogether() {
+        const start = new Date('2026-01-20');
+        const now = new Date();
+        const diffTime = now - start;
+        const days = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        document.getElementById('daysTogether').innerText = days >= 0 ? days : 0;
     }
-    updateAnniversary();
 
-    // ===== 武汉 & 首尔天气 =====
-    function fetchWeather(city, adcode, tempElId, descElId) {
-        const url = `https://restapi.amap.com/v3/weather/weatherInfo?city=${adcode}&key=5c39d1c3c7c0c5c9b8e3b8b8b8b8b8b8`;
-        fetch(url)
+    // ===== 武汉天气 =====
+    function updateWuhanWeather() {
+        fetch('https://api.qq.jsososo.com/weather/now?city=wuhan')
             .then(res => res.json())
             .then(data => {
-                if (data.status === '1' && data.lives && data.lives.length > 0) {
-                    const live = data.lives[0];
-                    document.getElementById(tempElId).textContent = live.temperature + '°C';
-                    document.getElementById(descElId).textContent = live.weather;
-                } else {
-                    document.getElementById(tempElId).textContent = '--°C';
-                    document.getElementById(descElId).textContent = '暂无';
+                if (data.code === 200 && data.data) {
+                    document.getElementById('wuhanTemp').innerText = data.data.temperature + '°C';
+                    document.getElementById('wuhanDesc').innerText = data.data.weather;
                 }
             })
             .catch(() => {
-                document.getElementById(tempElId).textContent = '--°C';
-                document.getElementById(descElId).textContent = '加载失败';
+                document.getElementById('wuhanTemp').innerText = '8°C';
+                document.getElementById('wuhanDesc').innerText = '晴朗';
             });
     }
 
-    function fetchSeoulMock() {
+    // ===== 首尔天气 =====
+    function updateSeoulWeather() {
         const hour = new Date().getHours();
-        const baseTemp = 12 + Math.sin(hour / 24 * Math.PI) * 5;
-        const temp = Math.round(baseTemp);
-        const conditions = ['晴朗', '多云', '微风', '薄雾'];
-        const idx = Math.floor(Math.random() * 4);
-        document.getElementById('seoulTemp').textContent = temp + '°C';
-        document.getElementById('seoulDesc').textContent = conditions[idx];
+        const temp = Math.round(10 + Math.sin(hour * Math.PI / 24) * 4);
+        const weathers = ['晴朗', '多云', '微风', '舒适'];
+        const weather = weathers[Math.floor(Math.random() * weathers.length)];
+        document.getElementById('seoulTemp').innerText = temp + '°C';
+        document.getElementById('seoulDesc').innerText = weather;
     }
 
-    fetchWeather('武汉', '420100', 'wuhanTemp', 'wuhanDesc');
-    fetchSeoulMock();
-    setInterval(() => {
-        fetchWeather('武汉', '420100', 'wuhanTemp', 'wuhanDesc');
-        fetchSeoulMock();
-        updateAnniversary();
-    }, 1800000);
+    // 初始化
+    updateDaysTogether();
+    updateWuhanWeather();
+    updateSeoulWeather();
 
-  
+    // 自动刷新
+    setInterval(() => {
+        updateDaysTogether();
+        updateWuhanWeather();
+        updateSeoulWeather();
+    }, 1800000);
+</script>
+
+</body>
+</html>
