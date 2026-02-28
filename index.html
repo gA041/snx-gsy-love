@@ -840,32 +840,65 @@
         });
     });
 
-    // ===== 消息发送与历史记录功能 - 添加localStorage持久化 =====
+    // ===== 消息发送与历史记录功能 - 修改为使用PHP后端存储 =====
     const messageInput = document.getElementById('messageInput');
     const sendBtn = document.getElementById('sendMsgBtn');
     const messageHistoryDiv = document.getElementById('messageHistory');
     const historyToggleBtn = document.getElementById('historyToggleBtn');
 
-    // 从localStorage加载历史消息
+    // 从后端加载历史消息
     let messages = [];
-    try {
-        const saved = localStorage.getItem('snx_chat_messages');
-        if (saved) {
-            messages = JSON.parse(saved);
-        }
-    } catch (e) {
-        console.log('加载历史消息失败', e);
-    }
-
     let historyVisible = false; // 初始隐藏
 
-    // 保存消息到localStorage
-    function saveMessages() {
-        try {
-            localStorage.setItem('snx_chat_messages', JSON.stringify(messages));
-        } catch (e) {
-            console.log('保存历史消息失败', e);
-        }
+    // 加载留言列表
+    function loadMessages() {
+        fetch('?action=list')
+            .then(res => res.json())
+            .then(data => {
+                if (Array.isArray(data)) {
+                    messages = data.map(msg => ({
+                        text: msg.content,
+                        time: msg.created_at ? msg.created_at.substr(11,5) : '刚刚'
+                    }));
+                    renderMessages();
+                }
+            })
+            .catch(() => {
+                // 降级处理：如果后端不可用，使用本地存储
+                try {
+                    const saved = localStorage.getItem('snx_chat_messages');
+                    if (saved) {
+                        messages = JSON.parse(saved);
+                    }
+                } catch (e) {}
+                renderMessages();
+            });
+    }
+
+    // 保存消息到后端
+    function saveMessageToServer(text) {
+        fetch('?action=post', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ content: text })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'ok') {
+                loadMessages(); // 重新加载最新留言
+            }
+        })
+        .catch(() => {
+            // 后端失败时降级到本地存储
+            try {
+                const saved = localStorage.getItem('snx_chat_messages');
+                let localMsgs = saved ? JSON.parse(saved) : [];
+                localMsgs.push({ text, time: new Date().toLocaleTimeString('zh-CN', { hour12: false, hour: '2-digit', minute: '2-digit' }) });
+                localStorage.setItem('snx_chat_messages', JSON.stringify(localMsgs));
+                messages = localMsgs;
+                renderMessages();
+            } catch (e) {}
+        });
     }
 
     function renderMessages() {
@@ -885,15 +918,14 @@
         const text = messageInput.value.trim();
         if (text === '') return;
 
+        // 立即显示（乐观更新）
         const now = new Date();
         const timeStr = now.toLocaleTimeString('zh-CN', { hour12: false, hour: '2-digit', minute: '2-digit' });
-
         messages.push({ text, time: timeStr });
-        
-        // 保存到localStorage
-        saveMessages();
-        
         renderMessages();
+
+        // 发送到后端
+        saveMessageToServer(text);
 
         // 如果历史是隐藏的，发送消息后自动显示
         if (!historyVisible) {
@@ -939,8 +971,8 @@
         }
     });
 
-    // 如果有历史消息，初始时渲染但不显示（保持隐藏）
-    renderMessages();
+    // 初始加载留言
+    loadMessages();
 
     // ===== 数独显示/隐藏控制 (每日一练按钮) =====
     const sudokuSection = document.getElementById('sudokuSection');
@@ -960,6 +992,101 @@
         playAudio();
     });
 </script>
+
+<?php
+// ==================================================
+// 留言板 API 和 管理页面 (适配 snx gsy 永远在一起)
+// ==================================================
+// 此部分嵌入在HTML底部，确保不修改原有代码
+if (php_sapi_name() !== 'cli' && !isset($_GET['skip_php'])) {
+    // 配置选项
+    define('DB_FILE', __DIR__ . '/messages.sqlite'); // SQLite 数据库文件路径
+    define('PASSWORD_HASH', password_hash('snx666', PASSWORD_DEFAULT)); // 管理密码 (建议修改)
+
+    // 简单的路由：根据请求参数处理
+    $action = $_GET['action'] ?? '';
+
+    // 数据库初始化
+    function initDb() {
+        $db = new SQLite3(DB_FILE);
+        $db->exec("CREATE TABLE IF NOT EXISTS messages (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nickname TEXT DEFAULT 'snx',
+            content TEXT NOT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )");
+        return $db;
+    }
+
+    // ---------- API 路由 ----------
+    if ($action === 'post' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+        // 处理 POST 留言
+        $input = json_decode(file_get_contents('php://input'), true);
+        $content = trim($input['content'] ?? '');
+        if (!$content) {
+            http_response_code(400);
+            echo json_encode(['error' => '内容不能为空']);
+            exit;
+        }
+        $nickname = 'snx';
+        $db = initDb();
+        $stmt = $db->prepare("INSERT INTO messages (nickname, content) VALUES (:nick, :content)");
+        $stmt->bindValue(':nick', $nickname, SQLITE3_TEXT);
+        $stmt->bindValue(':content', $content, SQLITE3_TEXT);
+        $stmt->execute();
+        header('Content-Type: application/json');
+        echo json_encode(['status' => 'ok', 'id' => $db->lastInsertRowID()]);
+        exit;
+    }
+
+    if ($action === 'list') {
+        // 获取最近留言
+        $db = initDb();
+        $limit = isset($_GET['limit']) ? min((int)$_GET['limit'], 100) : 50;
+        $result = $db->query("SELECT * FROM messages ORDER BY created_at DESC LIMIT $limit");
+        $msgs = [];
+        while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
+            $msgs[] = $row;
+        }
+        header('Content-Type: application/json');
+        echo json_encode($msgs);
+        exit;
+    }
+
+    // 简单管理页面 (可选，如果需要可以访问 ?admin=1)
+    if (isset($_GET['admin']) && $_GET['admin'] == 1) {
+        session_start();
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['password'])) {
+            if (password_verify($_POST['password'], PASSWORD_HASH)) {
+                $_SESSION['admin_logged'] = true;
+            } else {
+                $error = '密码错误';
+            }
+        }
+        $isLogged = $_SESSION['admin_logged'] ?? false;
+        if (!$isLogged) {
+            echo '<form method="post"><input type="password" name="password" placeholder="管理密码"><button type="submit">登录</button></form>';
+            if (isset($error)) echo "<p>$error</p>";
+            exit;
+        }
+        $db = initDb();
+        $res = $db->query("SELECT * FROM messages ORDER BY created_at DESC");
+        echo '<style>body{background:#f2f2f2;font-family:sans-serif;padding:20px;}</style>';
+        echo '<h2>💬 留言板管理</h2><table border="1" cellpadding="8" style="border-collapse:collapse;width:100%">';
+        echo '<tr><th>ID</th><th>昵称</th><th>内容</th><th>时间</th></tr>';
+        while ($row = $res->fetchArray(SQLITE3_ASSOC)) {
+            echo '<tr>';
+            echo '<td>' . $row['id'] . '</td>';
+            echo '<td>' . htmlspecialchars($row['nickname']) . '</td>';
+            echo '<td>' . htmlspecialchars($row['content']) . '</td>';
+            echo '<td>' . $row['created_at'] . '</td>';
+            echo '</tr>';
+        }
+        echo '</table>';
+        exit;
+    }
+}
+?>
 
 </body>
 </html>
