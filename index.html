@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>snx gsy 永远在一起</title>
     <style>
+        /* 原有CSS代码保持不变 */
         * {
             margin: 0;
             padding: 0;
@@ -587,14 +588,14 @@
             <div class="weather-content">
                 <div class="city-weather" id="wuhanWeather">
                     <div class="city-name">武汉</div>
-                    <div class="weather-temp">8°C</div>
-                    <div class="weather-desc">多云</div>
+                    <div class="weather-temp">加载中...</div>
+                    <div class="weather-desc">---</div>
                 </div>
                 <div class="weather-divider"></div>
                 <div class="city-weather" id="seoulWeather">
                     <div class="city-name">首尔</div>
-                    <div class="weather-temp">3°C</div>
-                    <div class="weather-desc">晴</div>
+                    <div class="weather-temp">加载中...</div>
+                    <div class="weather-desc">---</div>
                 </div>
             </div>
         </div>
@@ -703,64 +704,157 @@
     // 每分钟更新纪念日天数
     setInterval(updateAnniversaryInfo, 60000);
 
-    // ===== 新增：优化天气显示 =====
-    const weatherData = {
-        'wuhan': {
-            name: '武汉',
-            icon: '🌥️',
-            temp: 8,
-            description: '多云',
-            color: '#d8b8e8' // 淡紫色
-        },
-        'seoul': {
-            name: '首尔',
-            icon: '☀️',
-            temp: 3,
-            description: '晴',
-            color: '#d8b8e8' // 淡紫色
-        }
+    // ===== 新增：使用准确的天气API =====
+    // 使用wttr.in免费天气API
+    const weatherIcons = {
+        'Sunny': '☀️',
+        'Clear': '☀️',
+        'Partly cloudy': '⛅',
+        'Cloudy': '☁️',
+        'Overcast': '☁️',
+        'Mist': '🌫️',
+        'Patchy rain': '🌦️',
+        'Patchy snow': '🌨️',
+        'Patchy sleet': '🌨️',
+        'Patchy freezing drizzle': '🌨️',
+        'Thundery outbreaks': '⛈️',
+        'Blowing snow': '❄️',
+        'Blizzard': '❄️',
+        'Fog': '🌫️',
+        'Freezing fog': '🌫️',
+        'Patchy light drizzle': '🌧️',
+        'Light drizzle': '🌧️',
+        'Freezing drizzle': '🌧️',
+        'Heavy freezing drizzle': '🌧️',
+        'Patchy light rain': '🌦️',
+        'Light rain': '🌧️',
+        'Moderate rain': '🌧️',
+        'Heavy rain': '🌧️',
+        'Light freezing rain': '🌧️',
+        'Moderate or heavy freezing rain': '🌧️',
+        'Light sleet': '🌨️',
+        'Moderate or heavy sleet': '🌨️',
+        'Patchy light snow': '🌨️',
+        'Light snow': '❄️',
+        'Patchy moderate snow': '❄️',
+        'Moderate snow': '❄️',
+        'Patchy heavy snow': '❄️',
+        'Heavy snow': '❄️',
+        'Ice pellets': '🌨️',
+        'Light rain shower': '🌦️',
+        'Moderate or heavy rain shower': '🌧️',
+        'Torrential rain shower': '🌧️',
+        'Light sleet showers': '🌨️',
+        'Moderate or heavy sleet showers': '🌨️',
+        'Light snow showers': '❄️',
+        'Moderate or heavy snow showers': '❄️',
+        'Light showers of ice pellets': '🌨️',
+        'Moderate or heavy showers of ice pellets': '🌨️',
+        'Patchy light rain with thunder': '⛈️',
+        'Moderate or heavy rain with thunder': '⛈️',
+        'Patchy light snow with thunder': '⛈️',
+        'Moderate or heavy snow with thunder': '⛈️'
     };
 
-    function updateWeatherDisplay() {
-        // 更新武汉天气
-        const wuhanEl = document.getElementById('wuhanWeather');
-        wuhanEl.innerHTML = `
-            <div class="city-name">${weatherData.wuhan.name}</div>
-            <div class="weather-temp" style="color: ${weatherData.wuhan.color}">${weatherData.wuhan.temp}°C</div>
-            <div class="weather-desc">${weatherData.wuhan.description}</div>
-        `;
-        
-        // 更新首尔天气
-        const seoulEl = document.getElementById('seoulWeather');
-        seoulEl.innerHTML = `
-            <div class="city-name">${weatherData.seoul.name}</div>
-            <div class="weather-temp" style="color: ${weatherData.seoul.color}">${weatherData.seoul.temp}°C</div>
-            <div class="weather-desc">${weatherData.seoul.description}</div>
-        `;
-        
-        // 更新天气图标
-        document.querySelector('.weather-icon').textContent = weatherData.wuhan.icon;
+    // 获取天气数据的函数
+    async function fetchWeather(city, cityName, elementId) {
+        try {
+            // 使用wttr.in免费API
+            const apiUrl = `https://wttr.in/${city}?format=j1&lang=zh`;
+            
+            const response = await fetch(apiUrl);
+            if (!response.ok) {
+                throw new Error('天气API请求失败');
+            }
+            
+            const data = await response.json();
+            
+            // 从API响应中提取天气信息
+            const currentCondition = data.current_condition[0];
+            const tempC = currentCondition.temp_C;
+            const weatherDesc = currentCondition.weatherDesc[0].value;
+            const feelsLikeC = currentCondition.FeelsLikeC;
+            
+            // 获取对应的天气图标
+            const weatherIcon = weatherIcons[weatherDesc] || '🌤️';
+            
+            // 更新天气显示
+            const weatherElement = document.getElementById(elementId);
+            weatherElement.innerHTML = `
+                <div class="city-name">${cityName}</div>
+                <div class="weather-temp" style="color: #d8b8e8">${tempC}°C</div>
+                <div class="weather-desc">${weatherDesc}</div>
+            `;
+            
+            return { temp: tempC, desc: weatherDesc, icon: weatherIcon, feelsLike: feelsLikeC };
+            
+        } catch (error) {
+            console.error(`获取${cityName}天气失败:`, error);
+            
+            // 如果API失败，使用备用方案：通过IP地址获取粗略位置天气
+            try {
+                const fallbackUrl = `https://wttr.in/?format=%t+%C`;
+                const fallbackResponse = await fetch(fallbackUrl);
+                if (fallbackResponse.ok) {
+                    const fallbackText = await fallbackResponse.text();
+                    const match = fallbackText.match(/([+-]?\d+)°C/);
+                    if (match) {
+                        const temp = match[1];
+                        const weatherElement = document.getElementById(elementId);
+                        weatherElement.innerHTML = `
+                            <div class="city-name">${cityName}</div>
+                            <div class="weather-temp" style="color: #d8b8e8">${temp}°C</div>
+                            <div class="weather-desc">获取中</div>
+                        `;
+                        return { temp: temp, desc: "获取中", icon: "🌤️" };
+                    }
+                }
+            } catch (fallbackError) {
+                console.error('备用天气获取失败:', fallbackError);
+            }
+            
+            // 如果都失败，显示错误信息
+            const weatherElement = document.getElementById(elementId);
+            weatherElement.innerHTML = `
+                <div class="city-name">${cityName}</div>
+                <div class="weather-temp" style="color: #d8b8e8">--°C</div>
+                <div class="weather-desc">获取失败</div>
+            `;
+            
+            return null;
+        }
     }
 
-    // 模拟天气变化
-    function simulateWeatherChange() {
-        // 随机微调温度
-        weatherData.wuhan.temp = Math.max(-5, Math.min(25, weatherData.wuhan.temp + (Math.random() - 0.5) * 2));
-        weatherData.seoul.temp = Math.max(-10, Math.min(20, weatherData.seoul.temp + (Math.random() - 0.5) * 2));
-        
-        // 随机天气描述
-        const weatherTypes = ['晴', '多云', '阴', '小雨', '雪'];
-        weatherData.wuhan.description = weatherTypes[Math.floor(Math.random() * weatherTypes.length)];
-        weatherData.seoul.description = weatherTypes[Math.floor(Math.random() * weatherTypes.length)];
-        
-        updateWeatherDisplay();
+    // 更新所有天气信息
+    async function updateAllWeather() {
+        try {
+            // 并行获取两个城市的天气
+            const [wuhanWeather, seoulWeather] = await Promise.allSettled([
+                fetchWeather('wuhan', '武汉', 'wuhanWeather'),
+                fetchWeather('seoul', '首尔', 'seoulWeather')
+            ]);
+            
+            // 根据获取到的天气更新图标
+            let weatherIcon = '🐾'; // 默认图标
+            
+            if (wuhanWeather.status === 'fulfilled' && wuhanWeather.value) {
+                weatherIcon = wuhanWeather.value.icon;
+            } else if (seoulWeather.status === 'fulfilled' && seoulWeather.value) {
+                weatherIcon = seoulWeather.value.icon;
+            }
+            
+            document.querySelector('.weather-icon').textContent = weatherIcon;
+            
+        } catch (error) {
+            console.error('更新天气信息失败:', error);
+        }
     }
 
-    // 初始化天气显示
-    updateWeatherDisplay();
+    // 初始化时获取天气
+    updateAllWeather();
     
-    // 每30分钟模拟一次天气变化
-    setInterval(simulateWeatherChange, 30 * 60 * 1000);
+    // 每30分钟更新一次天气
+    setInterval(updateAllWeather, 30 * 60 * 1000);
 
     // ===== 长文字通过yes按钮切换显示/隐藏 =====
     const longMsg = document.getElementById('longMessage');
