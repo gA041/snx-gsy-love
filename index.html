@@ -841,134 +841,7 @@
         });
     });
 
-    // ===== 消息发送与历史记录功能 - 添加localStorage持久化 =====
-    const messageInput = document.getElementById('messageInput');
-    const sendBtn = document.getElementById('sendMsgBtn');
-    const messageHistoryDiv = document.getElementById('messageHistory');
-    const historyToggleBtn = document.getElementById('historyToggleBtn');
-
-    
-// ===== 消息发送与历史记录功能 - 云端同步 =====
-    // 初始化 LeanCloud
-    AV.init({
-        appId: "B6T0v4Q4tG8gZ3x4L4wWx4XW-gzGzoHsz",
-        appKey: "vY7x7f8kK6dD8sS9aA3zZ0xQ",
-        serverURL: "https://b6t0v4q4.lc-cn-n1-shared.com"
-    });
-    
-    const Message = AV.Object.extend('Message');
-    const messageInput = document.getElementById('messageInput');
-    const sendBtn = document.getElementById('sendMsgBtn');
-    const messageHistoryDiv = document.getElementById('messageHistory');
-    const historyToggleBtn = document.getElementById('historyToggleBtn');
-
-    let historyVisible = false; // 初始隐藏
-
-    // 加载所有留言（从云端）
-    async function loadAllMessages() {
-        try {
-            const query = new AV.Query('Message');
-            query.ascending('createdAt'); // 按时间正序
-            const results = await query.find();
-            
-            messageHistoryDiv.innerHTML = '';
-            
-            if (results.length === 0) {
-                const emptyMsg = document.createElement('div');
-                emptyMsg.className = 'message-item own';
-                emptyMsg.style.opacity = '0.6';
-                emptyMsg.innerHTML = `💬 还没有留言，说点什么吧 <small>${new Date().toLocaleTimeString()}</small>`;
-                messageHistoryDiv.appendChild(emptyMsg);
-            } else {
-                results.forEach(item => {
-                    const text = item.get('content');
-                    const time = item.createdAt.toLocaleString('zh-CN', {
-                        month: '2-digit',
-                        day: '2-digit',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                    });
-                    
-                    const msgDiv = document.createElement('div');
-                    msgDiv.className = 'message-item own';
-                    msgDiv.innerHTML = `${text} <small>${time}</small>`;
-                    messageHistoryDiv.appendChild(msgDiv);
-                });
-            }
-            
-            // 滚动到底部
-            const chat = document.getElementById('chat');
-            if (chat) chat.scrollTop = chat.scrollHeight;
-        } catch (error) {
-            console.error('加载留言失败:', error);
-        }
-    }
-
-    // 发送留言到云端
-    async function sendMessage() {
-        const text = messageInput.value.trim();
-        if (text === '') return;
-        
-        try {
-            const msg = new Message();
-            msg.set('content', text);
-            await msg.save();
-            
-            messageInput.value = '';
-            await loadAllMessages(); // 重新加载
-            
-            if (!historyVisible) {
-                messageHistoryDiv.classList.remove('hidden');
-                historyToggleBtn.textContent = '知道啦';
-                historyVisible = true;
-            }
-            
-            if (typeof playAudio === 'function') playAudio();
-        } catch (error) {
-            console.error('发送失败:', error);
-            alert('发送失败，请检查网络');
-        }
-    }
-
-    // 绑定事件
-    sendBtn.onclick = function(e) {
-        e.preventDefault();
-        sendMessage();
-    };
-
-    messageInput.onkeypress = function(e) {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            sendMessage();
-        }
-    };
-
-    // 历史按钮切换
-    historyToggleBtn.onclick = async function() {
-        if (historyVisible) {
-            messageHistoryDiv.classList.add('hidden');
-            historyToggleBtn.textContent = '看看都说了些啥';
-            historyVisible = false;
-        } else {
-            messageHistoryDiv.classList.remove('hidden');
-            historyToggleBtn.textContent = '知道啦';
-            historyVisible = true;
-            await loadAllMessages(); // 每次显示都加载最新
-            const chat = document.getElementById('chat');
-            if (chat) chat.scrollTop = chat.scrollHeight;
-        }
-    };
-
-    // 初始状态：隐藏
-    messageHistoryDiv.classList.add('hidden');
-    historyToggleBtn.textContent = '看看都说了些啥';
-    historyVisible = false;
-    
-    // 预加载一次（但不显示）
-    loadAllMessages().catch(() => {});
-
     // ===== 数独显示/隐藏控制 (每日一练按钮) =====
-    // 下面的数独代码完全保留，不要动
     const sudokuSection = document.getElementById('sudokuSection');
     const sudokuToggleBtn = document.getElementById('sudokuToggleBtn');
     let sudokuVisible = false;
@@ -1037,7 +910,6 @@
                 results.forEach(item => {
                     const text = item.get('content');
                     const time = item.createdAt.toLocaleString('zh-CN', {
-                        year: 'numeric',
                         month: '2-digit',
                         day: '2-digit',
                         hour: '2-digit',
@@ -1131,154 +1003,24 @@
         }
     });
 
-    // 9. 初始加载：先隐藏，但预加载数据
+    // 9. 初始加载：先隐藏
     (async function init() {
-        // 预加载留言（但不显示）
-        try {
-            const query = new AV.Query('Message');
-            query.limit(1); // 只查一条，用于预热连接
-            await query.find();
-            console.log('留言板连接成功');
-        } catch (error) {
-            console.warn('留言板连接失败，请检查网络:', error);
-        }
-        
         // 确保初始状态是隐藏的
         messageHistoryDiv.classList.add('hidden');
         historyToggleBtn.textContent = '看看都说了些啥';
         historyVisible = false;
+        
+        // 预加载一次留言（但不显示）
+        try {
+            await loadAllMessages();
+            console.log('✅ 留言板连接成功');
+        } catch (error) {
+            console.warn('留言板连接失败，请检查网络:', error);
+        }
     })();
 
 })();
 </script>
-<!-- ===== 性能优化：解决卡顿问题 ===== -->
-<script>
-(function() {
-    // 1. 优化音乐加载：如果音乐加载失败，不再重试
-    const audio = document.getElementById('bgm');
-    if (audio) {
-        // 设置加载超时
-        audio.addEventListener('error', function() {
-            console.log('音乐加载失败，已跳过');
-            // 移除audio元素，避免持续占用资源
-            audio.remove();
-        });
-        
-        // 如果5秒内没有成功播放，则放弃
-        setTimeout(function() {
-            if (audio.readyState < 3) { // HAVE_FUTURE_DATA 表示可以播放
-                console.log('音乐加载超时，已跳过');
-                audio.remove();
-            }
-        }, 5000);
-    }
 
-    // 2. 优化LeanCloud留言板：添加超时控制
-    const originalInit = AV.init;
-    AV.init = function(config) {
-        // 设置请求超时
-        AV._config = AV._config || {};
-        AV._config.timeout = 5000; // 5秒超时
-        return originalInit.call(this, config);
-    };
-
-    // 3. 优化留言板加载：使用缓存，减少请求频率
-    let lastLoadTime = 0;
-    const CACHE_TIME = 30000; // 30秒缓存
-    
-    // 保存原始的loadAllMessages函数
-    const originalLoad = window.loadAllMessages;
-    
-    // 重写loadAllMessages添加缓存
-    window.loadAllMessages = async function() {
-        const now = Date.now();
-        if (now - lastLoadTime < CACHE_TIME) {
-            console.log('使用缓存留言');
-            return;
-        }
-        lastLoadTime = now;
-        
-        try {
-            // 添加超时控制
-            const timeoutPromise = new Promise((_, reject) => 
-                setTimeout(() => reject(new Error('加载超时')), 5000)
-            );
-            
-            const query = new AV.Query('Message');
-            query.ascending('createdAt');
-            
-            await Promise.race([query.find(), timeoutPromise]);
-            
-        } catch (error) {
-            console.log('留言板加载失败（已忽略）');
-            // 不显示错误，避免卡顿
-        }
-    };
-
-    // 4. 优化事件监听：防抖处理
-    function debounce(func, wait) {
-        let timeout;
-        return function() {
-            clearTimeout(timeout);
-            timeout = setTimeout(() => func.apply(this, arguments), wait);
-        };
-    }
-
-    // 5. 优化滚动性能
-    const chat = document.getElementById('chat');
-    if (chat) {
-        let ticking = false;
-        chat.addEventListener('scroll', function() {
-            if (!ticking) {
-                window.requestAnimationFrame(function() {
-                    // 滚动时的操作
-                    ticking = false;
-                });
-                ticking = true;
-            }
-        });
-    }
-
-    // 6. 清理不必要的定时器和事件
-    const originalPlayAudio = window.playAudio;
-    if (originalPlayAudio) {
-        window.playAudio = function() {
-            // 限制播放频率
-            if (window._lastPlayTime && Date.now() - window._lastPlayTime < 1000) {
-                return;
-            }
-            window._lastPlayTime = Date.now();
-            originalPlayAudio();
-        };
-    }
-
-    console.log('✅ 性能优化已应用');
-})();
-</script>
-
-<!-- ===== 备用方案：如果仍然卡顿，可以手动清理 ===== -->
-<script>
-// 紧急清理：如果页面卡死，可以双击页面清理
-document.addEventListener('dblclick', function() {
-    // 清理所有定时器
-    let id = setTimeout(function() {}, 0);
-    while (id--) {
-        clearTimeout(id);
-        clearInterval(id);
-    }
-    
-    // 清理多余的audio元素
-    document.querySelectorAll('audio').forEach((audio, index) => {
-        if (index > 0) audio.remove(); // 只保留第一个
-    });
-    
-    // 强制重新渲染
-    document.body.style.display = 'none';
-    document.body.offsetHeight;
-    document.body.style.display = '';
-    
-    alert('页面已清理，如果仍然卡顿，请刷新页面');
-});
-</script>
 </body>
 </html>
