@@ -483,7 +483,7 @@
 
     <audio id="bgm" loop autoplay playsinline webkit-playsinline>
         <source src="https://music.163.com/song/media/outer/url?id=209397.mp3" type="audio/mpeg">
-    
+    </audio>
 
     <div class="top-bar">
         <div>
@@ -840,82 +840,109 @@
         });
     });
 
-    // ======================
-    // 只改这里：双方共享历史
-    // ======================
+    // ===== 消息发送与历史记录功能 - 添加localStorage持久化 =====
     const messageInput = document.getElementById('messageInput');
     const sendBtn = document.getElementById('sendMsgBtn');
     const messageHistoryDiv = document.getElementById('messageHistory');
     const historyToggleBtn = document.getElementById('historyToggleBtn');
 
-    const STORAGE_KEY = 'snx_gsy_chat';
+    // 从localStorage加载历史消息
     let messages = [];
-    let historyVisible = false;
-
-    // 统一加载：谁打开都看同一份记录
-    function loadMessages() {
-        try {
-            const data = localStorage.getItem(STORAGE_KEY);
-            if (data) messages = JSON.parse(data);
-        } catch (e) {}
-        renderMessages();
+    try {
+        const saved = localStorage.getItem('snx_chat_messages');
+        if (saved) {
+            messages = JSON.parse(saved);
+        }
+    } catch (e) {
+        console.log('加载历史消息失败', e);
     }
 
-    // 统一保存
+    let historyVisible = false; // 初始隐藏
+
+    // 保存消息到localStorage
     function saveMessages() {
         try {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
-        } catch (e) {}
+            localStorage.setItem('snx_chat_messages', JSON.stringify(messages));
+        } catch (e) {
+            console.log('保存历史消息失败', e);
+        }
     }
 
     function renderMessages() {
         messageHistoryDiv.innerHTML = '';
         messages.forEach(msg => {
-            const div = document.createElement('div');
-            div.className = 'message-item own';
-            div.innerHTML = `${msg.text} <small>${msg.time}</small>`;
-            messageHistoryDiv.appendChild(div);
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'message-item own';
+            msgDiv.innerHTML = `${msg.text} <small>${msg.time}</small>`;
+            messageHistoryDiv.appendChild(msgDiv);
         });
+        // 滚动到底部
+        const chat = document.getElementById('chat');
+        chat.scrollTop = chat.scrollHeight;
     }
 
     function sendMessage() {
         const text = messageInput.value.trim();
-        if (!text) return;
+        if (text === '') return;
+
         const now = new Date();
         const timeStr = now.toLocaleTimeString('zh-CN', { hour12: false, hour: '2-digit', minute: '2-digit' });
+
         messages.push({ text, time: timeStr });
+        
+        // 保存到localStorage
         saveMessages();
+        
         renderMessages();
-        messageInput.value = '';
+
+        // 如果历史是隐藏的，发送消息后自动显示
         if (!historyVisible) {
             messageHistoryDiv.classList.remove('hidden');
             historyToggleBtn.textContent = '知道啦';
             historyVisible = true;
         }
-        document.getElementById('chat').scrollTop = 99999;
-        playAudio();
+
+        messageInput.value = '';
+        
+        // 自动滚动
+        const chat = document.getElementById('chat');
+        chat.scrollTop = chat.scrollHeight;
     }
 
-    sendBtn.onclick = sendMessage;
-    messageInput.addEventListener('keypress', e => {
-        if (e.key === 'Enter') sendMessage();
+    sendBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        sendMessage();
+        playAudio();
     });
 
-    historyToggleBtn.onclick = () => {
-        historyVisible = !historyVisible;
+    messageInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            sendMessage();
+            playAudio();
+        }
+    });
+
+    // 独立的历史按钮控制
+    historyToggleBtn.addEventListener('click', function() {
         if (historyVisible) {
-            messageHistoryDiv.classList.remove('hidden');
-            historyToggleBtn.textContent = '知道啦';
-        } else {
             messageHistoryDiv.classList.add('hidden');
             historyToggleBtn.textContent = '看看都说了些啥';
+            historyVisible = false;
+        } else {
+            messageHistoryDiv.classList.remove('hidden');
+            historyToggleBtn.textContent = '知道啦';
+            historyVisible = true;
+            // 显示时滚动到底部
+            const chat = document.getElementById('chat');
+            chat.scrollTop = chat.scrollHeight;
         }
-    };
+    });
 
-    // 页面一打开就加载同一份记录
-    loadMessages();
+    // 如果有历史消息，初始时渲染但不显示（保持隐藏）
+    renderMessages();
 
-    // ===== 数独显示/隐藏控制 =====
+    // ===== 数独显示/隐藏控制 (每日一练按钮) =====
     const sudokuSection = document.getElementById('sudokuSection');
     const sudokuToggleBtn = document.getElementById('sudokuToggleBtn');
     let sudokuVisible = false;
@@ -932,6 +959,115 @@
         }
         playAudio();
     });
+</script>
+
+<!-- ===== 云端留言板 (双方都可以看到历史记录，简便不卡顿) ===== -->
+<script src="https://cdn.jsdelivr.net/npm/leancloud-storage@4.17.0/dist/av-min.js"></script>
+<script>
+// 初始化 LeanCloud
+AV.init({
+    appId: "B6T0v4Q4tG8gZ3x4L4wWx4XW-gzGzoHsz",
+    appKey: "vY7x7f8kK6dD8sS9aA3zZ0xQ",
+    serverURL: "https://b6t0v4q4.lc-cn-n1-shared.com"
+});
+
+// 获取元素
+const msgInput = document.getElementById('messageInput');
+const sendButton = document.getElementById('sendMsgBtn');
+const msgHistory = document.getElementById('messageHistory');
+const toggleBtn = document.getElementById('historyToggleBtn');
+
+let isVisible = false;
+
+// 加载所有留言
+async function loadMessages() {
+    try {
+        const query = new AV.Query('Message');
+        query.ascending('createdAt'); // 按时间正序
+        const messages = await query.find();
+        
+        msgHistory.innerHTML = '';
+        
+        if (messages.length === 0) {
+            msgHistory.innerHTML = '<div class="message-item own">💬 还没有留言，说点什么吧</div>';
+            return;
+        }
+        
+        messages.forEach(msg => {
+            const div = document.createElement('div');
+            div.className = 'message-item own';
+            const time = msg.createdAt.toLocaleString('zh-CN', { 
+                month: '2-digit', 
+                day: '2-digit',
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+            div.innerHTML = `${msg.get('content')} <small>${time}</small>`;
+            msgHistory.appendChild(div);
+        });
+        
+        // 滚动到底部
+        document.getElementById('chat').scrollTop = msgHistory.scrollHeight;
+    } catch (e) {
+        console.log('加载留言失败');
+    }
+}
+
+// 发送留言
+sendButton.onclick = async function(e) {
+    e.preventDefault();
+    const text = msgInput.value.trim();
+    if (!text) return;
+    
+    try {
+        const Message = AV.Object.extend('Message');
+        const msg = new Message();
+        msg.set('content', text);
+        await msg.save();
+        
+        msgInput.value = '';
+        await loadMessages();
+        
+        if (!isVisible) {
+            msgHistory.classList.remove('hidden');
+            toggleBtn.textContent = '知道啦';
+            isVisible = true;
+        }
+        
+        if (typeof playAudio === 'function') playAudio();
+    } catch (e) {
+        console.log('发送失败');
+    }
+};
+
+// 回车发送
+msgInput.onkeypress = function(e) {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        sendButton.onclick(e);
+    }
+};
+
+// 切换显示
+toggleBtn.onclick = async function() {
+    if (isVisible) {
+        msgHistory.classList.add('hidden');
+        toggleBtn.textContent = '看看都说了些啥';
+        isVisible = false;
+    } else {
+        msgHistory.classList.remove('hidden');
+        toggleBtn.textContent = '知道啦';
+        isVisible = true;
+        await loadMessages();
+    }
+};
+
+// 初始隐藏
+msgHistory.classList.add('hidden');
+toggleBtn.textContent = '看看都说了些啥';
+
+// 预加载一次
+loadMessages();
 </script>
 
 </body>
