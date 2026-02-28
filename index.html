@@ -569,7 +569,6 @@
         </div>
     </div>
 
-<!-- 原有代码开始 (完全保留，一行不改) -->
 <script>
     // ===== 长文字通过yes按钮切换显示/隐藏 =====
     const longMsg = document.getElementById('longMessage');
@@ -841,6 +840,108 @@
         });
     });
 
+    // ===== 消息发送与历史记录功能 - 添加localStorage持久化 =====
+    const messageInput = document.getElementById('messageInput');
+    const sendBtn = document.getElementById('sendMsgBtn');
+    const messageHistoryDiv = document.getElementById('messageHistory');
+    const historyToggleBtn = document.getElementById('historyToggleBtn');
+
+    // 从localStorage加载历史消息
+    let messages = [];
+    try {
+        const saved = localStorage.getItem('snx_chat_messages');
+        if (saved) {
+            messages = JSON.parse(saved);
+        }
+    } catch (e) {
+        console.log('加载历史消息失败', e);
+    }
+
+    let historyVisible = false; // 初始隐藏
+
+    // 保存消息到localStorage
+    function saveMessages() {
+        try {
+            localStorage.setItem('snx_chat_messages', JSON.stringify(messages));
+        } catch (e) {
+            console.log('保存历史消息失败', e);
+        }
+    }
+
+    function renderMessages() {
+        messageHistoryDiv.innerHTML = '';
+        messages.forEach(msg => {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'message-item own';
+            msgDiv.innerHTML = `${msg.text} <small>${msg.time}</small>`;
+            messageHistoryDiv.appendChild(msgDiv);
+        });
+        // 滚动到底部
+        const chat = document.getElementById('chat');
+        chat.scrollTop = chat.scrollHeight;
+    }
+
+    function sendMessage() {
+        const text = messageInput.value.trim();
+        if (text === '') return;
+
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString('zh-CN', { hour12: false, hour: '2-digit', minute: '2-digit' });
+
+        messages.push({ text, time: timeStr });
+        
+        // 保存到localStorage
+        saveMessages();
+        
+        renderMessages();
+
+        // 如果历史是隐藏的，发送消息后自动显示
+        if (!historyVisible) {
+            messageHistoryDiv.classList.remove('hidden');
+            historyToggleBtn.textContent = '知道啦';
+            historyVisible = true;
+        }
+
+        messageInput.value = '';
+        
+        // 自动滚动
+        const chat = document.getElementById('chat');
+        chat.scrollTop = chat.scrollHeight;
+    }
+
+    sendBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        sendMessage();
+        playAudio();
+    });
+
+    messageInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            sendMessage();
+            playAudio();
+        }
+    });
+
+    // 独立的历史按钮控制
+    historyToggleBtn.addEventListener('click', function() {
+        if (historyVisible) {
+            messageHistoryDiv.classList.add('hidden');
+            historyToggleBtn.textContent = '看看都说了些啥';
+            historyVisible = false;
+        } else {
+            messageHistoryDiv.classList.remove('hidden');
+            historyToggleBtn.textContent = '知道啦';
+            historyVisible = true;
+            // 显示时滚动到底部
+            const chat = document.getElementById('chat');
+            chat.scrollTop = chat.scrollHeight;
+        }
+    });
+
+    // 如果有历史消息，初始时渲染但不显示（保持隐藏）
+    renderMessages();
+
     // ===== 数独显示/隐藏控制 (每日一练按钮) =====
     const sudokuSection = document.getElementById('sudokuSection');
     const sudokuToggleBtn = document.getElementById('sudokuToggleBtn');
@@ -858,168 +959,6 @@
         }
         playAudio();
     });
-</script>
-<!-- 原有代码结束 -->
-
-<!-- 新增：跨设备同步留言板 (只添加这一块，其他代码没动) -->
-<script src="https://cdn.jsdelivr.net/npm/leancloud-storage@4.17.0/dist/av-min.js"></script>
-<script>
-// ===== 跨设备同步留言板 =====
-(function() {
-    // 1. 初始化 LeanCloud（使用您原有的 App ID 和 Key）
-    AV.init({
-        appId: "B6T0v4Q4tG8gZ3x4L4wWx4XW-gzGzoHsz",
-        appKey: "vY7x7f8kK6dD8sS9aA3zZ0xQ",
-        serverURL: "https://b6t0v4q4.lc-cn-n1-shared.com"
-    });
-
-    // 2. 定义 Message 类
-    const Message = AV.Object.extend('Message');
-
-    // 3. 获取 DOM 元素
-    const messageInput = document.getElementById('messageInput');
-    const sendBtn = document.getElementById('sendMsgBtn');
-    const messageHistoryDiv = document.getElementById('messageHistory');
-    const historyToggleBtn = document.getElementById('historyToggleBtn');
-    
-    if (!messageInput || !sendBtn || !messageHistoryDiv || !historyToggleBtn) {
-        console.warn('留言板元素不存在');
-        return;
-    }
-
-    // 4. 状态管理
-    let historyVisible = false; // 历史面板默认隐藏
-
-    // 5. 加载所有留言（跨设备同步）
-    async function loadAllMessages() {
-        try {
-            const query = new AV.Query('Message');
-            query.ascending('createdAt'); // 按时间正序排列（旧到新）
-            const results = await query.find();
-            
-            messageHistoryDiv.innerHTML = '';
-            
-            if (results.length === 0) {
-                // 空状态提示
-                const emptyMsg = document.createElement('div');
-                emptyMsg.className = 'message-item own';
-                emptyMsg.style.opacity = '0.6';
-                emptyMsg.innerHTML = `💬 还没有留言，说点什么吧 <small>${new Date().toLocaleTimeString()}</small>`;
-                messageHistoryDiv.appendChild(emptyMsg);
-            } else {
-                results.forEach(item => {
-                    const text = item.get('content');
-                    const time = item.createdAt.toLocaleString('zh-CN', {
-                        month: '2-digit',
-                        day: '2-digit',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                    });
-                    
-                    const msgDiv = document.createElement('div');
-                    msgDiv.className = 'message-item own';
-                    msgDiv.innerHTML = `${text} <small>${time}</small>`;
-                    messageHistoryDiv.appendChild(msgDiv);
-                });
-            }
-            
-            // 滚动到底部
-            const chat = document.getElementById('chat');
-            if (chat) {
-                chat.scrollTop = chat.scrollHeight;
-            }
-        } catch (error) {
-            console.error('加载留言失败:', error);
-            messageHistoryDiv.innerHTML = '<div class="message-item own">❌ 加载留言失败，请刷新重试</div>';
-        }
-    }
-
-    // 6. 发送留言到云端
-    async function sendMessageToCloud() {
-        const text = messageInput.value.trim();
-        if (text === '') return;
-        
-        try {
-            // 创建新消息
-            const msg = new Message();
-            msg.set('content', text);
-            await msg.save();
-            
-            // 清空输入框
-            messageInput.value = '';
-            
-            // 重新加载所有留言
-            await loadAllMessages();
-            
-            // 如果历史面板是隐藏的，自动显示
-            if (!historyVisible) {
-                messageHistoryDiv.classList.remove('hidden');
-                historyToggleBtn.textContent = '知道啦';
-                historyVisible = true;
-            }
-            
-            // 调用原有的 playAudio 函数（如果存在）
-            if (typeof playAudio === 'function') {
-                playAudio();
-            }
-        } catch (error) {
-            console.error('发送失败:', error);
-            alert('发送失败，请检查网络');
-        }
-    }
-
-    // 7. 绑定事件
-    sendBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        sendMessageToCloud();
-    });
-
-    messageInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            sendMessageToCloud();
-        }
-    });
-
-    // 8. 历史按钮切换显示/隐藏
-    historyToggleBtn.addEventListener('click', async function() {
-        if (historyVisible) {
-            messageHistoryDiv.classList.add('hidden');
-            historyToggleBtn.textContent = '看看都说了些啥';
-            historyVisible = false;
-        } else {
-            messageHistoryDiv.classList.remove('hidden');
-            historyToggleBtn.textContent = '知道啦';
-            historyVisible = true;
-            
-            // 每次显示时重新加载最新留言（确保跨设备同步）
-            await loadAllMessages();
-            
-            // 滚动到底部
-            const chat = document.getElementById('chat');
-            if (chat) {
-                chat.scrollTop = chat.scrollHeight;
-            }
-        }
-    });
-
-    // 9. 初始加载：先隐藏
-    (async function init() {
-        // 确保初始状态是隐藏的
-        messageHistoryDiv.classList.add('hidden');
-        historyToggleBtn.textContent = '看看都说了些啥';
-        historyVisible = false;
-        
-        // 预加载一次留言（但不显示）
-        try {
-            await loadAllMessages();
-            console.log('✅ 留言板连接成功');
-        } catch (error) {
-            console.warn('留言板连接失败，请检查网络:', error);
-        }
-    })();
-
-})();
 </script>
 
 </body>
