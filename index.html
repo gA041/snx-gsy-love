@@ -847,85 +847,104 @@
     const messageHistoryDiv = document.getElementById('messageHistory');
     const historyToggleBtn = document.getElementById('historyToggleBtn');
 
-    // 从localStorage加载历史消息
-    let messages = [];
-    try {
-        const saved = localStorage.getItem('snx_chat_messages');
-        if (saved) {
-            messages = JSON.parse(saved);
-        }
-    } catch (e) {
-        console.log('加载历史消息失败', e);
-    }
+    
+// ===== 消息发送与历史记录功能 - 云端同步 =====
+    // 初始化 LeanCloud
+    AV.init({
+        appId: "B6T0v4Q4tG8gZ3x4L4wWx4XW-gzGzoHsz",
+        appKey: "vY7x7f8kK6dD8sS9aA3zZ0xQ",
+        serverURL: "https://b6t0v4q4.lc-cn-n1-shared.com"
+    });
+    
+    const Message = AV.Object.extend('Message');
+    const messageInput = document.getElementById('messageInput');
+    const sendBtn = document.getElementById('sendMsgBtn');
+    const messageHistoryDiv = document.getElementById('messageHistory');
+    const historyToggleBtn = document.getElementById('historyToggleBtn');
 
     let historyVisible = false; // 初始隐藏
 
-    // 保存消息到localStorage
-    function saveMessages() {
+    // 加载所有留言（从云端）
+    async function loadAllMessages() {
         try {
-            localStorage.setItem('snx_chat_messages', JSON.stringify(messages));
-        } catch (e) {
-            console.log('保存历史消息失败', e);
+            const query = new AV.Query('Message');
+            query.ascending('createdAt'); // 按时间正序
+            const results = await query.find();
+            
+            messageHistoryDiv.innerHTML = '';
+            
+            if (results.length === 0) {
+                const emptyMsg = document.createElement('div');
+                emptyMsg.className = 'message-item own';
+                emptyMsg.style.opacity = '0.6';
+                emptyMsg.innerHTML = `💬 还没有留言，说点什么吧 <small>${new Date().toLocaleTimeString()}</small>`;
+                messageHistoryDiv.appendChild(emptyMsg);
+            } else {
+                results.forEach(item => {
+                    const text = item.get('content');
+                    const time = item.createdAt.toLocaleString('zh-CN', {
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                    
+                    const msgDiv = document.createElement('div');
+                    msgDiv.className = 'message-item own';
+                    msgDiv.innerHTML = `${text} <small>${time}</small>`;
+                    messageHistoryDiv.appendChild(msgDiv);
+                });
+            }
+            
+            // 滚动到底部
+            const chat = document.getElementById('chat');
+            if (chat) chat.scrollTop = chat.scrollHeight;
+        } catch (error) {
+            console.error('加载留言失败:', error);
         }
     }
 
-    function renderMessages() {
-        messageHistoryDiv.innerHTML = '';
-        messages.forEach(msg => {
-            const msgDiv = document.createElement('div');
-            msgDiv.className = 'message-item own';
-            msgDiv.innerHTML = `${msg.text} <small>${msg.time}</small>`;
-            messageHistoryDiv.appendChild(msgDiv);
-        });
-        // 滚动到底部
-        const chat = document.getElementById('chat');
-        chat.scrollTop = chat.scrollHeight;
-    }
-
-    function sendMessage() {
+    // 发送留言到云端
+    async function sendMessage() {
         const text = messageInput.value.trim();
         if (text === '') return;
-
-        const now = new Date();
-        const timeStr = now.toLocaleTimeString('zh-CN', { hour12: false, hour: '2-digit', minute: '2-digit' });
-
-        messages.push({ text, time: timeStr });
         
-        // 保存到localStorage
-        saveMessages();
-        
-        renderMessages();
-
-        // 如果历史是隐藏的，发送消息后自动显示
-        if (!historyVisible) {
-            messageHistoryDiv.classList.remove('hidden');
-            historyToggleBtn.textContent = '知道啦';
-            historyVisible = true;
+        try {
+            const msg = new Message();
+            msg.set('content', text);
+            await msg.save();
+            
+            messageInput.value = '';
+            await loadAllMessages(); // 重新加载
+            
+            if (!historyVisible) {
+                messageHistoryDiv.classList.remove('hidden');
+                historyToggleBtn.textContent = '知道啦';
+                historyVisible = true;
+            }
+            
+            if (typeof playAudio === 'function') playAudio();
+        } catch (error) {
+            console.error('发送失败:', error);
+            alert('发送失败，请检查网络');
         }
-
-        messageInput.value = '';
-        
-        // 自动滚动
-        const chat = document.getElementById('chat');
-        chat.scrollTop = chat.scrollHeight;
     }
 
-    sendBtn.addEventListener('click', function(e) {
+    // 绑定事件
+    sendBtn.onclick = function(e) {
         e.preventDefault();
         sendMessage();
-        playAudio();
-    });
+    };
 
-    messageInput.addEventListener('keypress', function(e) {
+    messageInput.onkeypress = function(e) {
         if (e.key === 'Enter') {
             e.preventDefault();
             sendMessage();
-            playAudio();
         }
-    });
+    };
 
-    // 独立的历史按钮控制
-    historyToggleBtn.addEventListener('click', function() {
+    // 历史按钮切换
+    historyToggleBtn.onclick = async function() {
         if (historyVisible) {
             messageHistoryDiv.classList.add('hidden');
             historyToggleBtn.textContent = '看看都说了些啥';
@@ -934,16 +953,22 @@
             messageHistoryDiv.classList.remove('hidden');
             historyToggleBtn.textContent = '知道啦';
             historyVisible = true;
-            // 显示时滚动到底部
+            await loadAllMessages(); // 每次显示都加载最新
             const chat = document.getElementById('chat');
-            chat.scrollTop = chat.scrollHeight;
+            if (chat) chat.scrollTop = chat.scrollHeight;
         }
-    });
+    };
 
-    // 如果有历史消息，初始时渲染但不显示（保持隐藏）
-    renderMessages();
+    // 初始状态：隐藏
+    messageHistoryDiv.classList.add('hidden');
+    historyToggleBtn.textContent = '看看都说了些啥';
+    historyVisible = false;
+    
+    // 预加载一次（但不显示）
+    loadAllMessages().catch(() => {});
 
     // ===== 数独显示/隐藏控制 (每日一练按钮) =====
+    // 下面的数独代码完全保留，不要动
     const sudokuSection = document.getElementById('sudokuSection');
     const sudokuToggleBtn = document.getElementById('sudokuToggleBtn');
     let sudokuVisible = false;
