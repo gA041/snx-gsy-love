@@ -961,5 +961,59 @@
     });
 </script>
 
+<!-- ===== 新增：云端留言板（所有人都能看到，不卡顿） ===== -->
+<script src="https://cdn.jsdelivr.net/npm/leancloud-storage@4.17.0/dist/av-min.js"></script>
+<script>
+// 极简云端留言板
+AV.init({ appId: "B6T0v4Q4tG8gZ3x4L4wWx4XW-gzGzoHsz", appKey: "vY7x7f8kK6dD8sS9aA3zZ0xQ" });
+const Msg = AV.Object.extend('Message');
+
+const inp = document.getElementById('messageInput');
+const sBtn = document.getElementById('sendMsgBtn');
+const histDiv = document.getElementById('messageHistory');
+const togBtn = document.getElementById('historyToggleBtn');
+
+let show = false;
+
+async function load() {
+    const q = new AV.Query('Message');
+    q.ascending('createdAt');
+    const msgs = await q.find();
+    histDiv.innerHTML = msgs.map(m => 
+        `<div class="message-item own">${m.get('content')} <small>${m.createdAt.toLocaleTimeString()}</small></div>`
+    ).join('');
+}
+
+sBtn.onclick = async () => {
+    if (!inp.value.trim()) return;
+    const m = new Msg();
+    m.set('content', inp.value);
+    await m.save();
+    inp.value = '';
+    await load();
+    if (!show) {
+        histDiv.classList.remove('hidden');
+        togBtn.textContent = '知道啦';
+        show = true;
+    }
+};
+
+togBtn.onclick = () => {
+    if (show) {
+        histDiv.classList.add('hidden');
+        togBtn.textContent = '看看都说了些啥';
+        show = false;
+    } else {
+        histDiv.classList.remove('hidden');
+        togBtn.textContent = '知道啦';
+        show = true;
+        load();
+    }
+};
+
+histDiv.classList.add('hidden');
+togBtn.textContent = '看看都说了些啥';
+</script>
+
 </body>
 </html>
