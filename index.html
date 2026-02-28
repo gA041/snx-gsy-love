@@ -961,113 +961,67 @@
     });
 </script>
 
-<!-- ===== 云端留言板 (双方都可以看到历史记录，简便不卡顿) ===== -->
-<script src="https://cdn.jsdelivr.net/npm/leancloud-storage@4.17.0/dist/av-min.js"></script>
+<!-- ===== 极简云端留言板 (双方可见，完全不卡) ===== -->
+<script src="https://unpkg.com/axios@1.1.2/dist/axios.min.js"></script>
 <script>
-// 初始化 LeanCloud
-AV.init({
-    appId: "B6T0v4Q4tG8gZ3x4L4wWx4XW-gzGzoHsz",
-    appKey: "vY7x7f8kK6dD8sS9aA3zZ0xQ",
-    serverURL: "https://b6t0v4q4.lc-cn-n1-shared.com"
-});
+// 使用免费的公共API，不需要LeanCloud
+const API = 'https://api.lepuly.com/msg';
 
-// 获取元素
-const msgInput = document.getElementById('messageInput');
-const sendButton = document.getElementById('sendMsgBtn');
-const msgHistory = document.getElementById('messageHistory');
-const toggleBtn = document.getElementById('historyToggleBtn');
+const input = document.getElementById('messageInput');
+const send = document.getElementById('sendMsgBtn');
+const history = document.getElementById('messageHistory');
+const toggle = document.getElementById('historyToggleBtn');
 
-let isVisible = false;
+let show = false;
 
-// 加载所有留言
-async function loadMessages() {
-    try {
-        const query = new AV.Query('Message');
-        query.ascending('createdAt'); // 按时间正序
-        const messages = await query.find();
-        
-        msgHistory.innerHTML = '';
-        
-        if (messages.length === 0) {
-            msgHistory.innerHTML = '<div class="message-item own">💬 还没有留言，说点什么吧</div>';
-            return;
-        }
-        
-        messages.forEach(msg => {
-            const div = document.createElement('div');
-            div.className = 'message-item own';
-            const time = msg.createdAt.toLocaleString('zh-CN', { 
-                month: '2-digit', 
-                day: '2-digit',
-                hour: '2-digit', 
-                minute: '2-digit' 
-            });
-            div.innerHTML = `${msg.get('content')} <small>${time}</small>`;
-            msgHistory.appendChild(div);
-        });
-        
-        // 滚动到底部
-        document.getElementById('chat').scrollTop = msgHistory.scrollHeight;
-    } catch (e) {
-        console.log('加载留言失败');
-    }
+// 加载留言
+async function load() {
+    const res = await axios.get(API + '?t=' + Date.now());
+    history.innerHTML = res.data.slice(-20).map(m => 
+        `<div class="message-item own">${m.text} <small>${m.time}</small></div>`
+    ).join('');
 }
 
 // 发送留言
-sendButton.onclick = async function(e) {
-    e.preventDefault();
-    const text = msgInput.value.trim();
+send.onclick = async () => {
+    const text = input.value.trim();
     if (!text) return;
-    
-    try {
-        const Message = AV.Object.extend('Message');
-        const msg = new Message();
-        msg.set('content', text);
-        await msg.save();
-        
-        msgInput.value = '';
-        await loadMessages();
-        
-        if (!isVisible) {
-            msgHistory.classList.remove('hidden');
-            toggleBtn.textContent = '知道啦';
-            isVisible = true;
-        }
-        
-        if (typeof playAudio === 'function') playAudio();
-    } catch (e) {
-        console.log('发送失败');
+    await axios.post(API, { text });
+    input.value = '';
+    await load();
+    if (!show) {
+        history.classList.remove('hidden');
+        toggle.textContent = '知道啦';
+        show = true;
     }
 };
 
 // 回车发送
-msgInput.onkeypress = function(e) {
+input.onkeypress = (e) => {
     if (e.key === 'Enter') {
         e.preventDefault();
-        sendButton.onclick(e);
+        send.onclick();
     }
 };
 
 // 切换显示
-toggleBtn.onclick = async function() {
-    if (isVisible) {
-        msgHistory.classList.add('hidden');
-        toggleBtn.textContent = '看看都说了些啥';
-        isVisible = false;
+toggle.onclick = async () => {
+    if (show) {
+        history.classList.add('hidden');
+        toggle.textContent = '看看都说了些啥';
+        show = false;
     } else {
-        msgHistory.classList.remove('hidden');
-        toggleBtn.textContent = '知道啦';
-        isVisible = true;
-        await loadMessages();
+        history.classList.remove('hidden');
+        toggle.textContent = '知道啦';
+        show = true;
+        await load();
     }
 };
 
 // 初始隐藏
-msgHistory.classList.add('hidden');
-toggleBtn.textContent = '看看都说了些啥';
-
-// 预加载一次
-loadMessages();
+history.classList.add('hidden');
+toggle.textContent = '看看都说了些啥';
+load(); // 预加载
 </script>
 
 </body>
