@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>snx gsy 永远在一起</title>
     <style>
-        /* 原有CSS代码保持不变 - 不进行任何修改 */
+        /* 原有CSS代码完全不变 */
         * {
             margin: 0;
             padding: 0;
@@ -507,6 +507,7 @@
             display: none;
         }
 
+        /* 🆕 只修改消息样式为双人 */
         .message-item {
             background: rgba(0, 0, 0, 0.4);
             backdrop-filter: blur(4px);
@@ -518,16 +519,43 @@
             border: 1px solid rgba(248,200,216,0.2);
             word-break: break-word;
             text-shadow: 0 0 2px #000;
+            max-width: 80%;
         }
+        
+        .message-item.snx {
+            margin-left: auto;
+            border-right: 3px solid #f8c8d8;
+            border-left: none;
+            background: rgba(248, 200, 216, 0.1);
+        }
+        
+        .message-item.gsy {
+            margin-right: auto;
+            border-left: 3px solid #d8b8e8;
+            border-right: none;
+            background: rgba(216, 184, 232, 0.1);
+        }
+        
+        .message-sender {
+            font-weight: bold;
+            font-size: 0.8rem;
+            margin-bottom: 0.2rem;
+        }
+        
+        .message-sender.snx {
+            color: #f8c8d8;
+        }
+        
+        .message-sender.gsy {
+            color: #d8b8e8;
+        }
+        
         .message-item small {
             display: block;
             font-size: 0.7rem;
-            color: #f8c8d8;
+            color: #aaa;
             margin-top: 0.3rem;
             opacity: 0.8;
-        }
-        .message-item.own {
-            border-left: 3px solid #f8c8d8;
         }
 
         /* 长文字气泡 - 默认隐藏，yes切换显示/隐藏 */
@@ -551,7 +579,35 @@
             border-radius: 3px;
         }
 
-        /* 扫雷游戏区域（替换原来的数独游戏区域） */
+        /* 🆕 新增：简单的用户选择器 */
+        .user-selector {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 0.5rem 0 1rem 0;
+        }
+        
+        .user-btn {
+            padding: 0.4rem 1.2rem;
+            border-radius: 20px;
+            border: none;
+            background: rgba(248,200,216,0.2);
+            color: #f8c8d8;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        
+        .user-btn.active {
+            background: #f8c8d8;
+            color: #222;
+        }
+        
+        .user-btn:hover:not(.active) {
+            background: rgba(248,200,216,0.4);
+        }
+
+        /* 扫雷游戏区域 */
         .sudoku-section {
             width: 90%;
             max-width: 320px;
@@ -884,6 +940,12 @@
         <div id="wishMessage" class="wish-message">点击愿望券使用，被使用后需要gs0重置</div>
     </div>
 
+    <!-- 🆕 新增：用户选择器（放在愿望券下面） -->
+    <div class="user-selector" id="userSelector">
+        <button class="user-btn active" data-user="snx">我是snx 🐾</button>
+        <button class="user-btn" data-user="gsy">我是gsy 🐈</button>
+    </div>
+
     <!-- 聊天区：历史消息在上方，长文字在下方 -->
     <div class="chat" id="chat">
         <!-- 历史消息区域 - 独立在上方 -->
@@ -945,6 +1007,166 @@
     </div>
 
 <script>
+    // ===== 🆕 双人留言板功能 =====
+    
+    // 当前用户（默认snx）
+    let currentUser = 'snx';
+    let messages = [];
+    let historyVisible = false;
+    
+    // 用户信息
+    const USERS = {
+        snx: { name: 'snx 🐾', color: '#f8c8d8' },
+        gsy: { name: 'gsy 🐈', color: '#d8b8e8' }
+    };
+    
+    // DOM元素
+    const userSelector = document.getElementById('userSelector');
+    const messageInput = document.getElementById('messageInput');
+    const sendBtn = document.getElementById('sendMsgBtn');
+    const messageHistoryDiv = document.getElementById('messageHistory');
+    const historyToggleBtn = document.getElementById('historyToggleBtn');
+    
+    // 初始化聊天
+    function initChat() {
+        // 加载消息
+        loadMessages();
+        
+        // 用户选择
+        userSelector.addEventListener('click', function(e) {
+            if (e.target.classList.contains('user-btn')) {
+                // 更新按钮状态
+                document.querySelectorAll('.user-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                e.target.classList.add('active');
+                
+                // 更新当前用户
+                currentUser = e.target.dataset.user;
+                
+                // 重新渲染消息
+                renderMessages();
+                
+                playAudio();
+            }
+        });
+        
+        // 发送消息
+        sendBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            sendMessage();
+        });
+        
+        messageInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+        
+        // 历史消息控制
+        historyToggleBtn.addEventListener('click', function() {
+            if (historyVisible) {
+                messageHistoryDiv.classList.add('hidden');
+                historyToggleBtn.textContent = '看看都说了些啥';
+                historyVisible = false;
+            } else {
+                messageHistoryDiv.classList.remove('hidden');
+                historyToggleBtn.textContent = '知道啦';
+                historyVisible = true;
+                scrollToBottom();
+            }
+        });
+        
+        // 初始渲染
+        renderMessages();
+    }
+    
+    // 加载消息
+    function loadMessages() {
+        try {
+            const saved = localStorage.getItem('snx_gsy_messages');
+            if (saved) {
+                messages = JSON.parse(saved);
+            }
+        } catch (e) {
+            console.log('加载消息失败', e);
+        }
+    }
+    
+    // 保存消息
+    function saveMessages() {
+        try {
+            localStorage.setItem('snx_gsy_messages', JSON.stringify(messages));
+        } catch (e) {
+            console.log('保存消息失败', e);
+        }
+    }
+    
+    // 发送消息
+    function sendMessage() {
+        const text = messageInput.value.trim();
+        if (text === '') return;
+        
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString('zh-CN', { 
+            hour12: false, 
+            hour: '2-digit', 
+            minute: '2-digit' 
+        });
+        
+        messages.push({
+            text,
+            user: currentUser,
+            time: timeStr
+        });
+        
+        saveMessages();
+        renderMessages();
+        
+        // 如果历史是隐藏的，发送消息后自动显示
+        if (!historyVisible) {
+            messageHistoryDiv.classList.remove('hidden');
+            historyToggleBtn.textContent = '知道啦';
+            historyVisible = true;
+        }
+        
+        messageInput.value = '';
+        scrollToBottom();
+        playAudio();
+    }
+    
+    // 渲染消息
+    function renderMessages() {
+        messageHistoryDiv.innerHTML = '';
+        
+        messages.forEach(msg => {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message-item ${msg.user}`;
+            
+            const userInfo = USERS[msg.user];
+            
+            msgDiv.innerHTML = `
+                <div class="message-sender ${msg.user}">${userInfo.name}</div>
+                <div>${msg.text}</div>
+                <small>${msg.time}</small>
+            `;
+            
+            messageHistoryDiv.appendChild(msgDiv);
+        });
+        
+        scrollToBottom();
+    }
+    
+    // 滚动到底部
+    function scrollToBottom() {
+        const chat = document.getElementById('chat');
+        chat.scrollTop = chat.scrollHeight;
+    }
+    
+    // 初始化聊天
+    initChat();
+
     // ===== 扫雷游戏逻辑 =====
     
     // 游戏配置
@@ -1304,8 +1526,7 @@
     // ===== 原有其他JavaScript代码保持不变 =====
     
     // ===== 愿望兑换券功能 =====
-    // 🔥 修改这里：添加版本控制
-    const WISH_VERSION = '2.0.0'; // 每次修改愿望券文字就更新这个版本号
+    const WISH_VERSION = '2.0.0';
     
     const defaultWishes = [
         { id: 1, icon: '🎵', name: '点歌券', desc: '点一首对方必须唱的歌', used: false },
@@ -1329,27 +1550,21 @@
     const hideWishSectionBtn = document.getElementById('hideWishSection');
     const wishMessage = document.getElementById('wishMessage');
     
-    // 🔥 修改这里：从localStorage加载愿望券（添加版本控制）
+    // 从localStorage加载愿望券
     function loadWishes() {
         try {
             const saved = localStorage.getItem('snx_wishes');
             const savedVersion = localStorage.getItem('wish_version');
             
-            // 检查版本号是否匹配
             if (saved && savedVersion === WISH_VERSION) {
-                // 版本相同，加载保存的数据
                 wishes = JSON.parse(saved);
-                console.log('加载已保存的愿望券数据（版本匹配）');
             } else {
-                // 版本不同或第一次访问，使用默认数据
-                console.log('使用新版本默认数据，版本：', WISH_VERSION);
                 wishes = JSON.parse(JSON.stringify(defaultWishes));
                 saveWishes();
-                // 保存版本号
                 localStorage.setItem('wish_version', WISH_VERSION);
             }
         } catch (e) {
-            console.log('加载愿望券失败，使用默认数据', e);
+            console.log('加载愿望券失败', e);
             wishes = JSON.parse(JSON.stringify(defaultWishes));
         }
     }
@@ -1376,7 +1591,6 @@
                 <div class="wish-desc">${wish.desc}</div>
             `;
             
-            // 添加点击事件
             wishCard.addEventListener('click', () => {
                 if (wish.used) {
                     wishMessage.textContent = '这张券已经用过了哦，让本王帮你重置吧';
@@ -1387,10 +1601,8 @@
                         renderWishes();
                         wishMessage.textContent = `成功使用【${wish.name}】！记得催促老婆兑现哦~`;
                         
-                        // 播放音效
                         playAudio();
                         
-                        // 显示使用提示
                         setTimeout(() => {
                             alert(`已使用【${wish.name}】！\n本王要在24小时内兑现你的愿望！`);
                         }, 300);
@@ -1425,7 +1637,6 @@
         loadWishes();
         renderWishes();
         
-        // 显示/隐藏愿望券区域
         wishToggleBtn.addEventListener('click', function() {
             if (wishSectionVisible) {
                 wishSection.classList.remove('active');
@@ -1435,16 +1646,13 @@
                 wishSection.classList.add('active');
                 wishToggleBtn.textContent = '收起愿望券';
                 wishSectionVisible = true;
-                // 滚动到愿望券区域
                 wishSection.scrollIntoView({ behavior: 'smooth' });
             }
             playAudio();
         });
         
-        // 重置所有愿望券
         resetWishesBtn.addEventListener('click', resetAllWishes);
         
-        // 隐藏愿望券区域
         hideWishSectionBtn.addEventListener('click', function() {
             wishSection.classList.remove('active');
             wishToggleBtn.textContent = '愿望兑换券';
@@ -1661,96 +1869,6 @@
     document.addEventListener('click', playAudio, { once: true });
 
     audio.load();
-
-    // ===== 消息发送与历史记录功能 =====
-    const messageInput = document.getElementById('messageInput');
-    const sendBtn = document.getElementById('sendMsgBtn');
-    const messageHistoryDiv = document.getElementById('messageHistory');
-    const historyToggleBtn = document.getElementById('historyToggleBtn');
-
-    let messages = [];
-    try {
-        const saved = localStorage.getItem('snx_chat_messages');
-        if (saved) {
-            messages = JSON.parse(saved);
-        }
-    } catch (e) {
-        console.log('加载历史消息失败', e);
-    }
-
-    let historyVisible = false;
-
-    function saveMessages() {
-        try {
-            localStorage.setItem('snx_chat_messages', JSON.stringify(messages));
-        } catch (e) {
-            console.log('保存历史消息失败', e);
-        }
-    }
-
-    function renderMessages() {
-        messageHistoryDiv.innerHTML = '';
-        messages.forEach(msg => {
-            const msgDiv = document.createElement('div');
-            msgDiv.className = 'message-item own';
-            msgDiv.innerHTML = `${msg.text} <small>${msg.time}</small>`;
-            messageHistoryDiv.appendChild(msgDiv);
-        });
-        const chat = document.getElementById('chat');
-        chat.scrollTop = chat.scrollHeight;
-    }
-
-    function sendMessage() {
-        const text = messageInput.value.trim();
-        if (text === '') return;
-
-        const now = new Date();
-        const timeStr = now.toLocaleTimeString('zh-CN', { hour12: false, hour: '2-digit', minute: '2-digit' });
-
-        messages.push({ text, time: timeStr });
-        saveMessages();
-        renderMessages();
-
-        if (!historyVisible) {
-            messageHistoryDiv.classList.remove('hidden');
-            historyToggleBtn.textContent = '知道啦';
-            historyVisible = true;
-        }
-
-        messageInput.value = '';
-        const chat = document.getElementById('chat');
-        chat.scrollTop = chat.scrollHeight;
-    }
-
-    sendBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        sendMessage();
-        playAudio();
-    });
-
-    messageInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            sendMessage();
-            playAudio();
-        }
-    });
-
-    historyToggleBtn.addEventListener('click', function() {
-        if (historyVisible) {
-            messageHistoryDiv.classList.add('hidden');
-            historyToggleBtn.textContent = '看看都说了些啥';
-            historyVisible = false;
-        } else {
-            messageHistoryDiv.classList.remove('hidden');
-            historyToggleBtn.textContent = '知道啦';
-            historyVisible = true;
-            const chat = document.getElementById('chat');
-            chat.scrollTop = chat.scrollHeight;
-        }
-    });
-
-    renderMessages();
 </script>
 
 </body>
