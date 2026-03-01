@@ -289,6 +289,174 @@
             box-shadow: 0 3px 8px rgba(248, 200, 216, 0.2);
         }
 
+        /* 新增：愿望兑换券按钮 */
+        .wish-btn {
+            padding: 0.4rem 1.2rem;
+            font-size: 0.9rem;
+            border: none;
+            border-radius: 20px;
+            background-color: rgba(248,200,216,0.3);
+            backdrop-filter: blur(5px);
+            border: 1px solid #f8c8d8;
+            color: #fff;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.3s;
+            letter-spacing: 0.5px;
+        }
+        .wish-btn:hover {
+            background-color: #f8c8d8;
+            color: #222;
+            transform: translateY(-1px);
+            box-shadow: 0 3px 8px rgba(248, 200, 216, 0.2);
+        }
+
+        /* 新增：愿望兑换券区域 */
+        .wish-section {
+            width: 90%;
+            max-width: 340px;
+            margin: 1.5rem auto 2rem;
+            background: rgba(10, 10, 20, 0.5);
+            backdrop-filter: blur(8px);
+            border-radius: 22px;
+            padding: 1rem 0.6rem;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+            border: 1px solid rgba(248,200,216,0.3);
+            display: none;
+        }
+        
+        .wish-section.active {
+            display: block;
+        }
+        
+        .wish-title {
+            text-align: center;
+            font-size: 1.2rem;
+            color: #f8c8d8;
+            margin-bottom: 0.3rem;
+            letter-spacing: 1px;
+            font-weight: 300;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            user-select: none;
+        }
+        .wish-title span {
+            font-size: 0.8rem;
+            background: #f8c8d8;
+            color: #222;
+            padding: 0.1rem 0.8rem;
+            border-radius: 30px;
+            font-weight: 500;
+        }
+        
+        /* 愿望券网格布局 */
+        .wish-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.8rem;
+            margin: 1rem 0;
+        }
+        
+        .wish-card {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 0.8rem;
+            border: 1px solid rgba(248,200,216,0.3);
+            text-align: center;
+            cursor: pointer;
+            transition: 0.3s;
+            position: relative;
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .wish-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 12px rgba(248, 200, 216, 0.2);
+            border-color: #f8c8d8;
+        }
+        
+        .wish-card.used {
+            opacity: 0.6;
+            filter: grayscale(0.5);
+        }
+        
+        .wish-card.used::after {
+            content: '已使用';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-15deg);
+            background: rgba(0,0,0,0.7);
+            color: #fff;
+            padding: 0.2rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            z-index: 2;
+        }
+        
+        .wish-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.3rem;
+            color: #f8c8d8;
+        }
+        
+        .wish-name {
+            font-size: 0.8rem;
+            color: #fff;
+            margin-bottom: 0.2rem;
+            font-weight: 500;
+        }
+        
+        .wish-desc {
+            font-size: 0.65rem;
+            color: #d0a8c8;
+            line-height: 1.2;
+        }
+        
+        /* 愿望券控制按钮 */
+        .wish-controls {
+            display: flex;
+            justify-content: center;
+            gap: 0.6rem;
+            margin-top: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .wish-ctrl-btn {
+            background: rgba(248,200,216,0.2);
+            border: 1px solid #f8c8d8;
+            color: #f8c8d8;
+            padding: 0.25rem 1rem;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            backdrop-filter: blur(4px);
+            transition: 0.2s;
+            min-width: 60px;
+        }
+        
+        .wish-ctrl-btn:hover {
+            background: #f8c8d8;
+            color: #222;
+            border-color: #f8c8d8;
+        }
+        
+        .wish-message {
+            text-align: center;
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+            color: #f0c0d0;
+            min-height: 1.4rem;
+        }
+        
         /* 聊天区容器 */
         .chat {
             width: 90%;
@@ -630,9 +798,24 @@
         <button id="noBtn" class="btn-large">no</button>
     </div>
     
-    <!-- 次要按钮区域：每日一练单独一行，居中 -->
+    <!-- 次要按钮区域：添加愿望兑换券按钮 -->
     <div class="secondary-buttons">
-        <button id="sudokuToggleBtn" class="btn-small">🐑给老婆解闷</button>
+        <button id="wishToggleBtn" class="wish-btn">🎫 愿望兑换券</button>
+    </div>
+
+    <!-- 新增：愿望兑换券区域 -->
+    <div class="wish-section" id="wishSection">
+        <div class="wish-title">
+            🎫 愿望兑换券<span>专属特权</span>
+        </div>
+        <div class="wish-grid" id="wishGrid">
+            <!-- 愿望券卡片会动态添加到这里 -->
+        </div>
+        <div class="wish-controls">
+            <button class="wish-ctrl-btn" id="resetWishes">重置所有</button>
+            <button class="wish-ctrl-btn" id="hideWishSection">收起</button>
+        </div>
+        <div id="wishMessage" class="wish-message">点击愿望券使用，被使用后需要对方重置</div>
     </div>
 
     <!-- 聊天区：历史消息在上方，长文字在下方 -->
@@ -677,6 +860,150 @@
     </div>
 
 <script>
+    // ===== 新增：愿望兑换券功能 =====
+    
+    // 愿望券数据
+    const defaultWishes = [
+        { id: 1, icon: '🎵', name: '点歌券', desc: '点一首对方必须唱的歌', used: false },
+        { id: 2, icon: '😠', name: '免生气券', desc: '抵消一次惹对方生气', used: false },
+        { id: 3, icon: '🍔', name: '美食券', desc: '带你吃一顿你想吃的饭', used: false },
+        { id: 4, icon: '🐱', name: '按摩券', desc: '享受10分钟专业按摩', used: false },
+        { id: 5, icon: '🎬', name: '电影券', desc: '指定一部电影一起看', used: false },
+        { id: 6, icon: '🛌', name: '赖床券', desc: '让对方先去洗漱', used: false },
+        { id: 7, icon: '🧹', name: '家务券', desc: '让对方帮你做次家务', used: false },
+        { id: 8, icon: '🎁', name: '惊喜券', desc: '送你一个小礼物', used: false }
+    ];
+    
+    let wishes = [];
+    let wishSectionVisible = false;
+    
+    // DOM元素
+    const wishToggleBtn = document.getElementById('wishToggleBtn');
+    const wishSection = document.getElementById('wishSection');
+    const wishGrid = document.getElementById('wishGrid');
+    const resetWishesBtn = document.getElementById('resetWishes');
+    const hideWishSectionBtn = document.getElementById('hideWishSection');
+    const wishMessage = document.getElementById('wishMessage');
+    
+    // 从localStorage加载愿望券
+    function loadWishes() {
+        try {
+            const saved = localStorage.getItem('snx_wishes');
+            if (saved) {
+                wishes = JSON.parse(saved);
+            } else {
+                // 如果没有保存的数据，使用默认数据
+                wishes = JSON.parse(JSON.stringify(defaultWishes));
+                saveWishes();
+            }
+        } catch (e) {
+            console.log('加载愿望券失败', e);
+            wishes = JSON.parse(JSON.stringify(defaultWishes));
+        }
+    }
+    
+    // 保存愿望券到localStorage
+    function saveWishes() {
+        try {
+            localStorage.setItem('snx_wishes', JSON.stringify(wishes));
+        } catch (e) {
+            console.log('保存愿望券失败', e);
+        }
+    }
+    
+    // 渲染愿望券网格
+    function renderWishes() {
+        wishGrid.innerHTML = '';
+        
+        wishes.forEach(wish => {
+            const wishCard = document.createElement('div');
+            wishCard.className = `wish-card ${wish.used ? 'used' : ''}`;
+            wishCard.innerHTML = `
+                <div class="wish-icon">${wish.icon}</div>
+                <div class="wish-name">${wish.name}</div>
+                <div class="wish-desc">${wish.desc}</div>
+            `;
+            
+            // 添加点击事件
+            wishCard.addEventListener('click', () => {
+                if (wish.used) {
+                    wishMessage.textContent = '这张券已经用过了哦，让她帮你重置吧';
+                } else {
+                    if (confirm(`确定要使用【${wish.name}】吗？\n使用后需要对方帮你重置才能再次使用。`)) {
+                        wish.used = true;
+                        saveWishes();
+                        renderWishes();
+                        wishMessage.textContent = `成功使用【${wish.name}】！记得催促老婆兑现哦~`;
+                        
+                        // 播放音效
+                        playAudio();
+                        
+                        // 显示使用提示
+                        setTimeout(() => {
+                            alert(`已使用【${wish.name}】！\n对方需要在24小时内兑现你的愿望！`);
+                        }, 300);
+                    }
+                }
+            });
+            
+            wishGrid.appendChild(wishCard);
+        });
+    }
+    
+    // 重置所有愿望券
+    function resetAllWishes() {
+        if (wishes.every(wish => !wish.used)) {
+            wishMessage.textContent = '所有愿望券都还没使用呢，不需要重置';
+            return;
+        }
+        
+        if (confirm('确定要重置所有愿望券吗？这会清除所有已使用的记录。')) {
+            wishes.forEach(wish => {
+                wish.used = false;
+            });
+            saveWishes();
+            renderWishes();
+            wishMessage.textContent = '所有愿望券已重置，可以重新使用啦！';
+            playAudio();
+        }
+    }
+    
+    // 初始化愿望券功能
+    function initWishCoupon() {
+        loadWishes();
+        renderWishes();
+        
+        // 显示/隐藏愿望券区域
+        wishToggleBtn.addEventListener('click', function() {
+            if (wishSectionVisible) {
+                wishSection.classList.remove('active');
+                wishToggleBtn.textContent = ' 愿望兑换券';
+                wishSectionVisible = false;
+            } else {
+                wishSection.classList.add('active');
+                wishToggleBtn.textContent = '收起愿望券';
+                wishSectionVisible = true;
+                // 滚动到愿望券区域
+                wishSection.scrollIntoView({ behavior: 'smooth' });
+            }
+            playAudio();
+        });
+        
+        // 重置所有愿望券
+        resetWishesBtn.addEventListener('click', resetAllWishes);
+        
+        // 隐藏愿望券区域
+        hideWishSectionBtn.addEventListener('click', function() {
+            wishSection.classList.remove('active');
+            wishToggleBtn.textContent = '愿望兑换券';
+            wishSectionVisible = false;
+            playAudio();
+        });
+    }
+    
+    // 初始化愿望券
+    initWishCoupon();
+    
     // ===== 新增：恋爱纪念日计算 =====
     function calculateAnniversaryDays() {
         const anniversaryDate = new Date('2026-01-20T00:00:00');
