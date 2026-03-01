@@ -839,8 +839,8 @@
     </div>
 
     <div class="song-info">
-        <div class="song-title">November encounter</div>
-        <div class="song-artist">2025.11.15</div>
+        <div class="song-title">可爱女人</div>
+        <div class="song-artist">周杰伦</div>
     </div>
 
     <div class="extra-title">2021 4ever</div>
@@ -1305,9 +1305,9 @@
         playAudio();
     });
 
-    // ===== 愿望兑换券功能 =====
+    // ===== 愿望兑换券功能（使用 Firebase 同步）=====
     const WISH_VERSION = '2.0.0';
-    
+
     const defaultWishes = [
         { id: 1, icon: '🎵', name: '点歌券', desc: '点一首对方必须唱的歌', used: false },
         { id: 2, icon: '😠', name: '免生气券', desc: '抵消一次惹对方生气', used: false },
@@ -1318,10 +1318,10 @@
         { id: 7, icon: '💍', name: '不平淡券', desc: '你今天对我太平淡了！不可以这样！', used: false },
         { id: 8, icon: '🎁', name: '惊喜券', desc: '送你一个小礼物', used: false }
     ];
-    
+
     let wishes = [];
     let wishSectionVisible = false;
-    
+
     // DOM元素
     const wishToggleBtn = document.getElementById('wishToggleBtn');
     const wishSection = document.getElementById('wishSection');
@@ -1329,35 +1329,24 @@
     const resetWishesBtn = document.getElementById('resetWishes');
     const hideWishSectionBtn = document.getElementById('hideWishSection');
     const wishMessage = document.getElementById('wishMessage');
-    
-    // 从localStorage加载愿望券
-    function loadWishes() {
-        try {
-            const saved = localStorage.getItem('snx_wishes');
-            const savedVersion = localStorage.getItem('wish_version');
-            
-            if (saved && savedVersion === WISH_VERSION) {
-                wishes = JSON.parse(saved);
-            } else {
-                wishes = JSON.parse(JSON.stringify(defaultWishes));
-                saveWishes();
-                localStorage.setItem('wish_version', WISH_VERSION);
-            }
-        } catch (e) {
-            console.log('加载愿望券失败', e);
+
+    // Firebase 引用（使用已有的 database）
+    const wishesRef = database.ref('wishes');
+
+    // 监听愿望券变化（实时同步）
+    wishesRef.on('value', (snapshot) => {
+        const savedWishes = snapshot.val();
+        if (savedWishes) {
+            // 有保存的数据，直接使用
+            wishes = savedWishes;
+        } else {
+            // 第一次使用，初始化默认数据
             wishes = JSON.parse(JSON.stringify(defaultWishes));
+            wishesRef.set(wishes);
         }
-    }
-    
-    // 保存愿望券到localStorage
-    function saveWishes() {
-        try {
-            localStorage.setItem('snx_wishes', JSON.stringify(wishes));
-        } catch (e) {
-            console.log('保存愿望券失败', e);
-        }
-    }
-    
+        renderWishes();
+    });
+
     // 渲染愿望券网格
     function renderWishes() {
         wishGrid.innerHTML = '';
@@ -1375,15 +1364,17 @@
                 if (wish.used) {
                     wishMessage.textContent = '这张券已经用过了哦，让本王帮你重置吧';
                 } else {
-                    if (confirm(`确定要使用【${wish.name}】吗？\n使用后需要本王帮你重置才能再次使用。`)) {
+                    if (confirm(`确定要使用【${wish.name}】吗？`)) {
+                        // 更新本地数组
                         wish.used = true;
-                        saveWishes();
-                        renderWishes();
-                        wishMessage.textContent = `成功使用【${wish.name}】！记得催促老婆兑现哦~`;
-                        playAudio();
-                        setTimeout(() => {
-                            alert(`已使用【${wish.name}】！\n本王要在24小时内兑现你的愿望！`);
-                        }, 300);
+                        // 同步到 Firebase
+                        wishesRef.set(wishes).then(() => {
+                            wishMessage.textContent = `成功使用【${wish.name}】！记得催促老婆兑现哦~`;
+                            playAudio();
+                            setTimeout(() => {
+                                alert(`已使用【${wish.name}】！\n本王要在24小时内兑现你的愿望！`);
+                            }, 300);
+                        });
                     }
                 }
             });
@@ -1391,7 +1382,7 @@
             wishGrid.appendChild(wishCard);
         });
     }
-    
+
     // 重置所有愿望券
     function resetAllWishes() {
         if (wishes.every(wish => !wish.used)) {
@@ -1403,18 +1394,16 @@
             wishes.forEach(wish => {
                 wish.used = false;
             });
-            saveWishes();
-            renderWishes();
-            wishMessage.textContent = '所有愿望券已重置，可以重新使用啦！';
-            playAudio();
+            // 同步到 Firebase
+            wishesRef.set(wishes).then(() => {
+                wishMessage.textContent = '所有愿望券已重置，可以重新使用啦！';
+                playAudio();
+            });
         }
     }
-    
-    // 初始化愿望券功能
+
+    // 初始化愿望券功能（只负责按钮事件）
     function initWishCoupon() {
-        loadWishes();
-        renderWishes();
-        
         wishToggleBtn.addEventListener('click', function() {
             if (wishSectionVisible) {
                 wishSection.classList.remove('active');
@@ -1438,7 +1427,7 @@
             playAudio();
         });
     }
-    
+
     initWishCoupon();
     
     // ===== 恋爱纪念日计算 =====
