@@ -8,7 +8,7 @@
         /* ... 所有原有CSS样式保持不变 ... */
         
         /* 新增：扫雷游戏样式 */
-        .minesweeper-grid {
+        .sudoku-grid {
             display: grid;
             grid-template-columns: repeat(8, 1fr);
             gap: 1px;
@@ -19,7 +19,7 @@
             border: 2px solid #f8c8d8;
         }
         
-        .mine-cell {
+        .sudoku-cell {
             aspect-ratio: 1 / 1;
             background: rgba(30, 30, 40, 0.9);
             display: flex;
@@ -36,35 +36,35 @@
             user-select: none;
         }
         
-        .mine-cell:hover {
+        .sudoku-cell:hover {
             background: rgba(80, 60, 70, 0.9);
         }
         
-        .mine-cell.revealed {
+        .sudoku-cell.revealed {
             background: rgba(60, 40, 50, 0.8);
         }
         
-        .mine-cell.flag {
+        .sudoku-cell.flag {
             background: rgba(248, 100, 150, 0.8);
         }
         
-        .mine-cell.mine {
+        .sudoku-cell.mine {
             background: rgba(255, 50, 50, 0.8);
         }
         
-        .mine-cell.mine.revealed {
+        .sudoku-cell.mine.revealed {
             background: rgba(255, 0, 0, 0.9);
         }
         
         /* 数字颜色 */
-        .mine-cell.num-1 { color: #4287f5; }
-        .mine-cell.num-2 { color: #4CAF50; }
-        .mine-cell.num-3 { color: #FF5722; }
-        .mine-cell.num-4 { color: #9C27B0; }
-        .mine-cell.num-5 { color: #FF9800; }
-        .mine-cell.num-6 { color: #00BCD4; }
-        .mine-cell.num-7 { color: #795548; }
-        .mine-cell.num-8 { color: #607D8B; }
+        .sudoku-cell.num-1 { color: #4287f5; }
+        .sudoku-cell.num-2 { color: #4CAF50; }
+        .sudoku-cell.num-3 { color: #FF5722; }
+        .sudoku-cell.num-4 { color: #9C27B0; }
+        .sudoku-cell.num-5 { color: #FF9800; }
+        .sudoku-cell.num-6 { color: #00BCD4; }
+        .sudoku-cell.num-7 { color: #795548; }
+        .sudoku-cell.num-8 { color: #607D8B; }
         
         /* 扫雷信息栏 */
         .mine-info {
@@ -92,35 +92,6 @@
             transform: scale(1.2);
         }
         
-        /* 调整控制按钮容器 */
-        .mine-controls {
-            display: flex;
-            justify-content: center;
-            gap: 0.6rem;
-            margin-top: 0.5rem;
-            flex-wrap: wrap;
-        }
-        
-        .mine-btn {
-            background: rgba(248,200,216,0.2);
-            border: 1px solid #f8c8d8;
-            color: #f8c8d8;
-            padding: 0.25rem 1rem;
-            border-radius: 30px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            cursor: pointer;
-            backdrop-filter: blur(4px);
-            transition: 0.2s;
-            min-width: 60px;
-        }
-        
-        .mine-btn:hover {
-            background: #f8c8d8;
-            color: #222;
-            border-color: #f8c8d8;
-        }
-        
         /* 难度选择 */
         .difficulty-selector {
             display: flex;
@@ -144,7 +115,7 @@
             color: #222;
         }
         
-        /* 原有的数独样式改为扫雷样式，但保留相同的类名以便兼容 */
+        /* 数独游戏区域 */
         .sudoku-section {
             width: 90%;
             max-width: 320px;
@@ -159,36 +130,6 @@
         }
         .sudoku-section.hidden-sudoku {
             display: none;
-        }
-        
-        .sudoku-title {
-            text-align: center;
-            font-size: 1.2rem;
-            color: #f8c8d8;
-            margin-bottom: 0.3rem;
-            letter-spacing: 1px;
-            font-weight: 300;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            user-select: none;
-        }
-        .sudoku-title span {
-            font-size: 0.8rem;
-            background: #f8c8d8;
-            color: #222;
-            padding: 0.1rem 0.8rem;
-            border-radius: 30px;
-            font-weight: 500;
-        }
-        
-        .sudoku-message {
-            text-align: center;
-            font-size: 0.8rem;
-            margin-top: 0.5rem;
-            color: #f0c0d0;
-            min-height: 1.4rem;
         }
     </style>
 </head>
@@ -207,13 +148,12 @@
         <button id="noBtn" class="btn-large">no</button>
     </div>
     
-    <!-- 次要按钮区域：添加扫雷和愿望券按钮 -->
+    <!-- 次要按钮区域：添加扫雷按钮 -->
     <div class="secondary-buttons" style="display: flex; gap: 1rem;">
         <button id="sudokuToggleBtn" class="btn-small">🐑给老婆解闷</button>
-        <button id="wishToggleBtn" class="wish-btn"> 愿望兑换券</button>
     </div>
 
-    <!-- 扫雷游戏区域 (原数独区域) -->
+    <!-- 扫雷游戏区域 -->
     <div class="sudoku-section hidden-sudoku" id="sudokuSection">
         <div class="sudoku-title">
             🎮 扫雷游戏<span>小心踩雷哦</span>
@@ -227,7 +167,7 @@
         </div>
         
         <!-- 游戏网格 -->
-        <div class="minesweeper-grid" id="minesweeperGrid">
+        <div class="sudoku-grid" id="sudokuGrid">
             <!-- 扫雷格子会动态添加到这里 -->
         </div>
         
@@ -239,33 +179,41 @@
         </div>
         
         <!-- 游戏控制按钮 -->
-        <div class="mine-controls">
-            <button class="mine-btn" id="revealMine">翻开</button>
-            <button class="mine-btn" id="flagMine">标记</button>
-            <button class="mine-btn" id="newMineGame">新游戏</button>
+        <div class="sudoku-controls">
+            <button class="sudoku-btn" id="newSudoku">新游戏</button>
         </div>
         
-        <div id="sudokuMessage" class="sudoku-message">左键翻开格子，右键标记地雷</div>
+        <div id="sudokuMessage" class="sudoku-message">短按翻开格子，长按标记地雷</div>
     </div>
 
-    <!-- 愿望兑换券区域 -->
-    <div class="wish-section" id="wishSection">
-        <div class="wish-title">
-             愿望兑换券<span>专属特权</span>
+    <!-- 聊天区：历史消息在上方，长文字在下方 -->
+    <div class="chat" id="chat">
+        <!-- 历史消息区域 - 独立在上方 -->
+        <div class="history-container">
+            <!-- 独立的历史控制按钮 -->
+            <span id="historyToggleBtn" class="history-toggle-btn">看看都说了些啥</span>
+            <!-- 历史消息列表 -->
+            <div id="messageHistory" class="hidden"></div>
         </div>
-        <div class="wish-grid" id="wishGrid">
-            <!-- 愿望券卡片会动态添加到这里 -->
+        
+        <!-- 长文字气泡 - 默认隐藏，yes切换显示/隐藏 -->
+        <div class="bubble" id="longMessage">
+宝宝 和你在一起的日子总是这么幸福且短暂 和你见面很开心又很难过 每次洗漱完出来看到你都在我睡的那一边放好水 我就拿起手机边看日历边想 还有多少天就又要和你分开 我父母总是告诉我我长大了不可以再那么依赖别人 要独立 也不会怎么和我表达感情 交流也是越来越少 让我一直都认为人是漂泊的候鸟 直到你告诉我我可以去依赖你 信任你 多和你表达感受 我又觉得爱是可以宜居的小岛 有一种 我见众生皆草木 唯独见你是青山的感觉 你也总是很照顾我 虽然我会莫名其妙跟你生一些小气 但你都会说是你的错 包容我 这些都是我从未体验过的 我总说我不信任你 不是你做的不够好 是我怕信任你依赖你之后如果你不喜欢我了我又要变回原来的样子 那我要怎么习惯 但你好像拥有什么魔法 让我可以一点点向你摊呈自己 也让你看到我的脆弱 眼泪 还有一些不完美的那面 但真诚的 谢谢你的存在 有你在我总会很安心  送你去高铁站我想让你快点进去 这样我就不会那么舍不得你 而我现在能给你的又太少 再给我一点时间 以后一定能给你 我发誓 我不是很会表达这些情情话话的东西 但真心希望你好 我们互相加油变成更好的自己
+
+山高路远 一路平安  一个人在国外照顾好自己 虽然每次我说这句话 你都说你已经会很好的照顾自己了 但想到你一个人面对那些  一个人拖行李 落地要从机场坐那么久的车才能到家 也很不容易 我心疼你 做饭的时候小心不要烫到 走路要慢慢走 小心不要磕磕碰碰 多喝热水 要少吃褪黑素  不要着凉不要生病！我爱你 要多多想我 不可以哭哭噢  多笑笑
         </div>
-        <div class="wish-controls">
-            <button class="wish-ctrl-btn" id="resetWishes">重置所有</button>
-            <button class="wish-ctrl-btn" id="hideWishSection">收起</button>
-        </div>
-        <div id="wishMessage" class="wish-message">点击愿望券使用，被使用后需要对方重置</div>
     </div>
 
-    <!-- ... 其他原有HTML结构保持不变 ... -->
+    <div class="input-bar">
+        <input type="text" id="messageInput" placeholder="说点什么...">
+        <div class="icons">
+            <span>yeobo</span>
+            <span>i</span>
+            <span id="sendMsgBtn" style="cursor: pointer;">xin</span>
+        </div>
+    </div>
 
-    <script>
+<script>
     // ===== 扫雷游戏逻辑 =====
     
     // 游戏配置
@@ -284,15 +232,13 @@
     let totalCells = 0;
     
     // DOM 元素
-    const minesweeperGrid = document.getElementById('minesweeperGrid');
+    const sudokuGrid = document.getElementById('sudokuGrid');
     const mineCounter = document.getElementById('mineCounter');
     const flagCounter = document.getElementById('flagCounter');
     const resetMineBtn = document.getElementById('resetMine');
-    const revealMineBtn = document.getElementById('revealMine');
-    const flagMineBtn = document.getElementById('flagMine');
-    const newMineGameBtn = document.getElementById('newMineGame');
+    const newMineGameBtn = document.getElementById('newSudoku');
     const diffButtons = document.querySelectorAll('.diff-btn');
-    const gameMessage = document.getElementById('sudokuMessage');
+    const sudokuMessage = document.getElementById('sudokuMessage');
     
     // 初始化游戏
     function initMinesweeper() {
@@ -307,7 +253,7 @@
         mineCounter.textContent = `💣 ${mineCount}`;
         flagCounter.textContent = `🚩 ${flagCount}`;
         resetMineBtn.textContent = '😊';
-        gameMessage.textContent = '左键翻开格子，右键标记地雷（长按标记，轻点翻开格子）';
+        sudokuMessage.textContent = '短按翻开格子，长按标记地雷';
         
         // 创建游戏板
         createBoard(config.rows, config.cols);
@@ -378,14 +324,14 @@
     // 渲染游戏板
     function renderBoard(rows, cols) {
         // 更新网格样式
-        minesweeperGrid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-        minesweeperGrid.innerHTML = '';
+        sudokuGrid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+        sudokuGrid.innerHTML = '';
         
         for (let r = 0; r < rows; r++) {
             for (let c = 0; c < cols; c++) {
                 const cell = gameBoard[r][c];
                 const cellElement = document.createElement('div');
-                cellElement.className = 'mine-cell';
+                cellElement.className = 'sudoku-cell';
                 cellElement.dataset.row = r;
                 cellElement.dataset.col = c;
                 
@@ -417,6 +363,27 @@
                     e.stopPropagation();
                 });
                 
+                // 手机长按标记地雷
+                let touchTimer;
+                cellElement.addEventListener('touchstart', (e) => {
+                    touchTimer = setTimeout(() => {
+                        e.preventDefault();
+                        if (gameState !== 'playing') return;
+                        if (cell.isRevealed) return;
+                        
+                        toggleFlag(r, c);
+                    }, 500); // 长按500ms触发
+                });
+                
+                cellElement.addEventListener('touchend', () => {
+                    clearTimeout(touchTimer);
+                });
+                
+                cellElement.addEventListener('touchmove', () => {
+                    clearTimeout(touchTimer);
+                });
+                
+                // 右键点击（电脑）
                 cellElement.addEventListener('contextmenu', (e) => {
                     e.preventDefault();
                     if (gameState !== 'playing') return;
@@ -425,7 +392,7 @@
                     toggleFlag(r, c);
                 });
                 
-                minesweeperGrid.appendChild(cellElement);
+                sudokuGrid.appendChild(cellElement);
             }
         }
     }
@@ -445,7 +412,7 @@
             gameState = 'lose';
             revealAllMines();
             resetMineBtn.textContent = '😵';
-            gameMessage.textContent = '踩到地雷了！宝宝别灰心，再来一局';
+            sudokuMessage.textContent = '踩到地雷了！宝宝别灰心，再来一局~';
             playAudio();
             return;
         }
@@ -530,7 +497,7 @@
             if (correctFlags === mineCount) {
                 gameState = 'win';
                 resetMineBtn.textContent = '😎';
-                gameMessage.textContent = '太棒了！宝宝真聪明，通关啦！🎉';
+                sudokuMessage.textContent = '太棒了！宝宝真聪明，通关啦！🎉';
                 playAudio();
             }
         }
@@ -558,16 +525,6 @@
         resetMineBtn.addEventListener('click', () => {
             initMinesweeper();
             playAudio();
-        });
-        
-        // 翻开按钮
-        revealMineBtn.addEventListener('click', () => {
-            gameMessage.textContent = '点击模式：翻开格子（左键功能）';
-        });
-        
-        // 标记按钮
-        flagMineBtn.addEventListener('click', () => {
-            gameMessage.textContent = '点击模式：标记地雷（右键功能）';
         });
         
         // 新游戏按钮
@@ -612,148 +569,6 @@
         }
         playAudio();
     });
-
-    // ===== 愿望兑换券功能 =====
-    const defaultWishes = [
-        { id: 1, icon: '🎵', name: '点歌券', desc: '点一首对方必须唱的歌', used: false },
-        { id: 2, icon: '😠', name: '免生气券', desc: '抵消一次惹对方生气', used: false },
-        { id: 3, icon: '🍔', name: '美食券', desc: '带你你吃顿你想吃的饭', used: false },
-        { id: 4, icon: '🐱', name: '按摩券', desc: '享受10分钟专业按摩', used: false },
-        { id: 5, icon: '🎬', name: '电影券', desc: '指定一部电影一起看', used: false },
-        { id: 6, icon: '🛌', name: '赖床券', desc: '让对方先去洗漱', used: false },
-        { id: 7, icon: '💍', name: '不平淡券', desc: '你今天对我太平淡了！不许这样！', used: false },
-        { id: 8, icon: '🎁', name: '惊喜券', desc: '送你一个小礼物', used: false }
-    ];
-    
-    let wishes = [];
-    let wishSectionVisible = false;
-    
-    // DOM元素
-    const wishToggleBtn = document.getElementById('wishToggleBtn');
-    const wishSection = document.getElementById('wishSection');
-    const wishGrid = document.getElementById('wishGrid');
-    const resetWishesBtn = document.getElementById('resetWishes');
-    const hideWishSectionBtn = document.getElementById('hideWishSection');
-    const wishMessage = document.getElementById('wishMessage');
-    
-    // 从localStorage加载愿望券
-    function loadWishes() {
-        try {
-            const saved = localStorage.getItem('snx_wishes');
-            if (saved) {
-                wishes = JSON.parse(saved);
-            } else {
-                // 如果没有保存的数据，使用默认数据
-                wishes = JSON.parse(JSON.stringify(defaultWishes));
-                saveWishes();
-            }
-        } catch (e) {
-            console.log('加载愿望券失败', e);
-            wishes = JSON.parse(JSON.stringify(defaultWishes));
-        }
-    }
-    
-    // 保存愿望券到localStorage
-    function saveWishes() {
-        try {
-            localStorage.setItem('snx_wishes', JSON.stringify(wishes));
-        } catch (e) {
-            console.log('保存愿望券失败', e);
-        }
-    }
-    
-    // 渲染愿望券网格
-    function renderWishes() {
-        wishGrid.innerHTML = '';
-        
-        wishes.forEach(wish => {
-            const wishCard = document.createElement('div');
-            wishCard.className = `wish-card ${wish.used ? 'used' : ''}`;
-            wishCard.innerHTML = `
-                <div class="wish-icon">${wish.icon}</div>
-                <div class="wish-name">${wish.name}</div>
-                <div class="wish-desc">${wish.desc}</div>
-            `;
-            
-            // 添加点击事件
-            wishCard.addEventListener('click', () => {
-                if (wish.used) {
-                    wishMessage.textContent = '这张券已经用过了哦，提醒本王帮你重置吧';
-                } else {
-                    if (confirm(`确定要使用【${wish.name}】吗？\n使用后需要帮你重置才能再次使用。`)) {
-                        wish.used = true;
-                        saveWishes();
-                        renderWishes();
-                        wishMessage.textContent = `成功使用【${wish.name}】！记得催促老婆兑现哦`;
-                        
-                        // 播放音效
-                        playAudio();
-                        
-                        // 显示使用提示
-                        setTimeout(() => {
-                            alert(`已使用【${wish.name}】！\n本王需要在24小时内兑现你的愿望！`);
-                        }, 300);
-                    }
-                }
-            });
-            
-            wishGrid.appendChild(wishCard);
-        });
-    }
-    
-    // 重置所有愿望券
-    function resetAllWishes() {
-        if (wishes.every(wish => !wish.used)) {
-            wishMessage.textContent = '愿望券都还没使用完呢';
-            return;
-        }
-        
-        if (confirm('确定要重置所有愿望券吗？会清除所有已使用的记录哦')) {
-            wishes.forEach(wish => {
-                wish.used = false;
-            });
-            saveWishes();
-            renderWishes();
-            wishMessage.textContent = '所有愿望券已重置，可以重新使用啦老婆';
-            playAudio();
-        }
-    }
-    
-    // 初始化愿望券功能
-    function initWishCoupon() {
-        loadWishes();
-        renderWishes();
-        
-        // 显示/隐藏愿望券区域
-        wishToggleBtn.addEventListener('click', function() {
-            if (wishSectionVisible) {
-                wishSection.classList.remove('active');
-                wishToggleBtn.textContent = '愿望兑换券';
-                wishSectionVisible = false;
-            } else {
-                wishSection.classList.add('active');
-                wishToggleBtn.textContent = '收起愿望券';
-                wishSectionVisible = true;
-                // 滚动到愿望券区域
-                wishSection.scrollIntoView({ behavior: 'smooth' });
-            }
-            playAudio();
-        });
-        
-        // 重置所有愿望券
-        resetWishesBtn.addEventListener('click', resetAllWishes);
-        
-        // 隐藏愿望券区域
-        hideWishSectionBtn.addEventListener('click', function() {
-            wishSection.classList.remove('active');
-            wishToggleBtn.textContent = '愿望兑换券';
-            wishSectionVisible = false;
-            playAudio();
-        });
-    }
-    
-    // 初始化愿望券
-    initWishCoupon();
 
     // ===== 背景音乐 =====
     const audio = document.getElementById('bgm');
