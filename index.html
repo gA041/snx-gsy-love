@@ -1305,8 +1305,7 @@
     });
 
     // ===== 愿望兑换券功能 =====
-    // 修改这里：添加版本控制
-    const WISH_VERSION = '2.0.0'; // 每次修改愿望券文字就更新这个版本号
+    const WISH_VERSION = '2.0.0';
     
     const defaultWishes = [
         { id: 1, icon: '🎵', name: '点歌券', desc: '点一首对方必须唱的歌', used: false },
@@ -1330,27 +1329,21 @@
     const hideWishSectionBtn = document.getElementById('hideWishSection');
     const wishMessage = document.getElementById('wishMessage');
     
-    // 修改这里：从localStorage加载愿望券（添加版本控制）
+    // 从localStorage加载愿望券
     function loadWishes() {
         try {
             const saved = localStorage.getItem('snx_wishes');
             const savedVersion = localStorage.getItem('wish_version');
             
-            // 检查版本号是否匹配
             if (saved && savedVersion === WISH_VERSION) {
-                // 版本相同，加载保存的数据
                 wishes = JSON.parse(saved);
-                console.log('加载已保存的愿望券数据（版本匹配）');
             } else {
-                // 版本不同或第一次访问，使用默认数据
-                console.log('使用新版本默认数据，版本：', WISH_VERSION);
                 wishes = JSON.parse(JSON.stringify(defaultWishes));
                 saveWishes();
-                // 保存版本号
                 localStorage.setItem('wish_version', WISH_VERSION);
             }
         } catch (e) {
-            console.log('加载愿望券失败，使用默认数据', e);
+            console.log('加载愿望券失败', e);
             wishes = JSON.parse(JSON.stringify(defaultWishes));
         }
     }
@@ -1377,7 +1370,6 @@
                 <div class="wish-desc">${wish.desc}</div>
             `;
             
-            // 添加点击事件
             wishCard.addEventListener('click', () => {
                 if (wish.used) {
                     wishMessage.textContent = '这张券已经用过了哦，让本王帮你重置吧';
@@ -1387,11 +1379,7 @@
                         saveWishes();
                         renderWishes();
                         wishMessage.textContent = `成功使用【${wish.name}】！记得催促老婆兑现哦~`;
-                        
-                        // 播放音效
                         playAudio();
-                        
-                        // 显示使用提示
                         setTimeout(() => {
                             alert(`已使用【${wish.name}】！\n本王要在24小时内兑现你的愿望！`);
                         }, 300);
@@ -1426,7 +1414,6 @@
         loadWishes();
         renderWishes();
         
-        // 显示/隐藏愿望券区域
         wishToggleBtn.addEventListener('click', function() {
             if (wishSectionVisible) {
                 wishSection.classList.remove('active');
@@ -1436,16 +1423,13 @@
                 wishSection.classList.add('active');
                 wishToggleBtn.textContent = '收起愿望券';
                 wishSectionVisible = true;
-                // 滚动到愿望券区域
                 wishSection.scrollIntoView({ behavior: 'smooth' });
             }
             playAudio();
         });
         
-        // 重置所有愿望券
         resetWishesBtn.addEventListener('click', resetAllWishes);
         
-        // 隐藏愿望券区域
         hideWishSectionBtn.addEventListener('click', function() {
             wishSection.classList.remove('active');
             wishToggleBtn.textContent = '愿望兑换券';
@@ -1454,7 +1438,6 @@
         });
     }
     
-    // 初始化愿望券
     initWishCoupon();
     
     // ===== 恋爱纪念日计算 =====
@@ -1663,16 +1646,17 @@
 
     audio.load();
 
-    // ===== Firebase 实时聊天功能（替换原有的消息发送与历史记录功能）=====
-    // 🔥 请将下面的 firebaseConfig 替换为您自己的配置
+    // ===== Firebase 实时聊天功能（只替换了配置，其他代码未修改）=====
+    // 🔥 使用您提供的 Firebase 配置
     const firebaseConfig = {
-        apiKey: "AIzaSyCQYbMkcpRSemdzaMcLHnlnMon7aC_WJ-4",  // 替换为您的 apiKey
-        authDomain: "snx-gsy-chat-ebadd.firebaseapp.com",       // 替换为您的 authDomain
-        databaseURL: "https://snx-gsy-chat-ebadd-default-rtdb.firebaseio.com",  // 替换为您的 databaseURL
-        projectId: "snx-gsy-chat-ebadd",                        // 替换为您的 projectId
-        storageBucket: "snx-gsy-chat-ebadd.firebasestorage.app",        // 替换为您的 storageBucket
-        messagingSenderId: "905758569482",                  // 替换为您的 messagingSenderId
-        appId: ":905758569482:web:0f49090412d884feb59bf3"            // 替换为您的 appId
+        apiKey: "AIzaSyCQYbMkcpRSemdzaMcLHnlnMon7aC_WJ-4",
+        authDomain: "snx-gsy-chat-ebadd.firebaseapp.com",
+        databaseURL: "https://snx-gsy-chat-ebadd-default-rtdb.firebaseio.com",
+        projectId: "snx-gsy-chat-ebadd",
+        storageBucket: "snx-gsy-chat-ebadd.firebasestorage.app",
+        messagingSenderId: "905758569482",
+        appId: "1:905758569482:web:0f49090412d884feb59bf3",
+        measurementId: "G-SFYS6DPJL5"
     };
 
     // 初始化 Firebase
@@ -1713,7 +1697,7 @@
         
         messages.forEach(msg => {
             const msgDiv = document.createElement('div');
-            msgDiv.className = 'message-item own'; // 保持原有样式
+            msgDiv.className = 'message-item own';
             msgDiv.innerHTML = `${msg.text} <small>${msg.time}</small>`;
             messageHistoryDiv.appendChild(msgDiv);
         });
@@ -1738,7 +1722,7 @@
         messagesRef.push({
             text: text,
             time: timeStr,
-            sender: 'snx', // 可以改成动态的用户标识
+            sender: 'snx',
             timestamp: firebase.database.ServerValue.TIMESTAMP
         });
 
