@@ -1301,8 +1301,27 @@
         playAudio();
     });
 
-    // ===== 原有其他JavaScript代码保持不变 =====
-    
+    // ===== 背景音乐自动播放兼容代码 (提前定义，确保愿望券能调用) =====
+    const audio = document.getElementById('bgm');
+    audio.src = "https://music.163.com/song/media/outer/url?id=209397.mp3";
+
+    let played = false;
+    function playAudio() {
+        if (played) return;
+        audio.play()
+            .then(() => {
+                played = true;
+                document.removeEventListener('touchstart', playAudio);
+                document.removeEventListener('click', playAudio);
+            })
+            .catch(() => {});
+    }
+
+    document.addEventListener('touchstart', playAudio, { once: true });
+    document.addEventListener('click', playAudio, { once: true });
+
+    audio.load();
+
     // ===== 愿望兑换券功能 =====
     const defaultWishes = [
         { id: 1, icon: '🎵', name: '点歌券', desc: '点一首对方必须唱的歌', used: false },
@@ -1569,24 +1588,24 @@
     updateAllWeather();
     setInterval(updateAllWeather, 30 * 60 * 1000);
 
-    // ===== 长文字通过yes按钮切换显示/隐藏 =====
+    // ===== 长文字通过yes按钮切换显示/隐藏 (改用addEventListener，避免覆盖) =====
     const longMsg = document.getElementById('longMessage');
     const yesBtn = document.getElementById('yesBtn');
     const noBtn = document.getElementById('noBtn');
 
-    yesBtn.onclick = function() {
+    yesBtn.addEventListener('click', function() {
         if (longMsg.style.display === 'block') {
             longMsg.style.display = 'none';
         } else {
             longMsg.style.display = 'block';
         }
         playAudio();
-    };
+    });
 
-    noBtn.onclick = function() {
+    noBtn.addEventListener('click', function() {
         playAudio();
         showModal('没有选no的机会哦 ♾️', true);
-    };
+    });
 
     function showModal(message, showButtons) {
         const overlay = document.createElement('div');
@@ -1629,27 +1648,6 @@
         document.querySelectorAll('.overlay').forEach(el => el.remove());
         document.querySelectorAll('.modal').forEach(el => el.remove());
     }
-
-    // ===== 背景音乐自动播放兼容代码 =====
-    const audio = document.getElementById('bgm');
-    audio.src = "https://music.163.com/song/media/outer/url?id=209397.mp3";
-
-    let played = false;
-    function playAudio() {
-        if (played) return;
-        audio.play()
-            .then(() => {
-                played = true;
-                document.removeEventListener('touchstart', playAudio);
-                document.removeEventListener('click', playAudio);
-            })
-            .catch(() => {});
-    }
-
-    document.addEventListener('touchstart', playAudio, { once: true });
-    document.addEventListener('click', playAudio, { once: true });
-
-    audio.load();
 
     // ===== 消息发送与历史记录功能 =====
     const messageInput = document.getElementById('messageInput');
