@@ -1646,7 +1646,7 @@
 
     audio.load();
 
-    // ===== Firebase 实时聊天功能（只替换了配置，其他代码未修改）=====
+    // ===== Firebase 实时聊天功能（增加用户区分）=====
     // 🔥 使用您提供的 Firebase 配置
     const firebaseConfig = {
         apiKey: "AIzaSyCQYbMkcpRSemdzaMcLHnlnMon7aC_WJ-4",
@@ -1671,7 +1671,32 @@
     const historyToggleBtn = document.getElementById('historyToggleBtn');
     const chat = document.getElementById('chat');
 
+    // 用户状态
+    let currentUser = 'snx'; // 默认是 snx
     let historyVisible = false;
+
+    // 在底部输入栏添加用户切换按钮（在原有图标后面增加）
+    const iconsDiv = document.querySelector('.icons');
+    // 添加用户切换按钮
+    const userToggleBtn = document.createElement('span');
+    userToggleBtn.id = 'userToggleBtn';
+    userToggleBtn.style.cssText = 'cursor: pointer; margin-left: 0.5rem; padding: 0.2rem 0.5rem; border-radius: 12px; background-color: #f8c8d8; color: #222; font-size: 0.9rem;';
+    userToggleBtn.textContent = '🐈 snx';
+    iconsDiv.appendChild(userToggleBtn);
+
+    // 用户切换功能
+    userToggleBtn.addEventListener('click', function() {
+        if (currentUser === 'snx') {
+            currentUser = 'gsy';
+            userToggleBtn.textContent = '🐾 gsy';
+            userToggleBtn.style.backgroundColor = '#d8b8e8'; // 紫色代表 gsy
+        } else {
+            currentUser = 'snx';
+            userToggleBtn.textContent = '🐈 snx';
+            userToggleBtn.style.backgroundColor = '#f8c8d8'; // 粉色代表 snx
+        }
+        playAudio();
+    });
 
     // 监听新消息
     messagesRef.limitToLast(50).on('value', (snapshot) => {
@@ -1682,7 +1707,7 @@
                 id: childSnapshot.key,
                 text: msg.text,
                 time: msg.time,
-                sender: msg.sender || 'snx'
+                sender: msg.sender || 'snx' // 默认显示 snx
             });
         });
         
@@ -1691,14 +1716,34 @@
         renderMessages(messages);
     });
 
-    // 渲染消息
+    // 渲染消息（增加用户头像标识）
     function renderMessages(messages) {
         messageHistoryDiv.innerHTML = '';
         
         messages.forEach(msg => {
             const msgDiv = document.createElement('div');
-            msgDiv.className = 'message-item own';
-            msgDiv.innerHTML = `${msg.text} <small>${msg.time}</small>`;
+            // 根据发送者添加不同样式
+            if (msg.sender === 'snx') {
+                msgDiv.className = 'message-item own';
+                // 可以添加头像标识
+                msgDiv.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span style="font-size: 1.2rem;">🐈</span>
+                        <span style="flex: 1;">${msg.text}</span>
+                    </div>
+                    <small>${msg.time} · snx</small>
+                `;
+            } else {
+                msgDiv.className = 'message-item'; // 使用不同的样式类
+                msgDiv.style.borderLeft = '3px solid #d8b8e8'; // 紫色边框区分
+                msgDiv.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span style="font-size: 1.2rem;">🐾</span>
+                        <span style="flex: 1;">${msg.text}</span>
+                    </div>
+                    <small>${msg.time} · gsy</small>
+                `;
+            }
             messageHistoryDiv.appendChild(msgDiv);
         });
         
@@ -1718,11 +1763,11 @@
             minute: '2-digit' 
         });
 
-        // 保存到 Firebase
+        // 保存到 Firebase，带上当前用户信息
         messagesRef.push({
             text: text,
             time: timeStr,
-            sender: 'snx',
+            sender: currentUser, // 使用当前选中的用户
             timestamp: firebase.database.ServerValue.TIMESTAMP
         });
 
