@@ -1825,7 +1825,7 @@
 
     initWishCoupon();
 
-   // ===== 新增：侧边悬浮恋爱时间轴（终极加速版） =====
+// ===== 新增：侧边悬浮恋爱时间轴（照片异步加载版） =====
 // 完全独立，不修改任何原有代码
 
 // 创建时间轴HTML结构
@@ -1859,12 +1859,8 @@ const timelineHTML = `
             <!-- 纵向连线 -->
             <div style="position:absolute; left:24px; top:20px; bottom:20px; width:2px; background:rgba(248,200,216,0.2);"></div>
             <div id="timelineItemsContainer"></div>
-            <div id="timelineEmptyTip" style="text-align:center; padding:2rem 1rem; color:#d0a8c8; font-size:0.85rem; border:1px dashed rgba(248,200,216,0.2); border-radius:16px; background:rgba(0,0,0,0.2); display:none;">
+            <div id="timelineEmptyTip" style="text-align:center; padding:2rem 1rem; color:#d0a8c8; font-size:0.85rem; border:1px dashed rgba(248,200,216,0.2); border-radius:16px; background:rgba(0,0,0,0.2);">
                 还没有照片哦小宝宝<br>点击右上角"+"添加第一个
-            </div>
-            <!-- 极速加载提示（默认隐藏） -->
-            <div id="loadingFastTip" style="text-align:center; padding:1rem; color:#f8c8d8; font-size:0.8rem; display:none;">
-                <span style="display:inline-block; width:20px; height:20px; border:2px solid #f8c8d8; border-top-color:transparent; border-radius:50%; animation:spin 0.6s linear infinite;"></span> 加载中...
             </div>
         </div>
         
@@ -1890,18 +1886,13 @@ const timelineHTML = `
 // 将时间轴HTML添加到body末尾
 document.body.insertAdjacentHTML('beforeend', timelineHTML);
 
-// 时间轴样式（极简加速版）
+// 时间轴样式
 const timelineStyle = document.createElement('style');
 timelineStyle.textContent = `
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
     .timeline-item-side {
         position: relative;
-        margin-bottom: 1rem;
+        margin-bottom: 1.2rem;
         padding-left: 1.8rem;
-        opacity: 1;
     }
     .timeline-dot-side {
         position: absolute;
@@ -1940,15 +1931,44 @@ timelineStyle.textContent = `
         padding: 0.1rem 0.4rem;
         border-radius: 30px;
     }
+    .timeline-image-container {
+        position: relative;
+        width: 100%;
+        height: 100px;
+        margin: 0.3rem 0;
+        border-radius: 10px;
+        overflow: hidden;
+        background: rgba(248,200,216,0.1);
+    }
     .timeline-image-side {
         width: 100%;
-        max-height: 100px;
+        height: 100%;
         object-fit: cover;
-        border-radius: 10px;
-        margin: 0.3rem 0;
         border: 1px solid rgba(248,200,216,0.2);
         cursor: pointer;
-        background: rgba(248,200,216,0.1);
+        transition: opacity 0.2s;
+    }
+    .timeline-image-side[data-loaded="false"] {
+        opacity: 0;
+    }
+    .timeline-image-side[data-loaded="true"] {
+        opacity: 1;
+    }
+    .image-loader {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 30px;
+        height: 30px;
+        border: 2px solid #f8c8d8;
+        border-top-color: transparent;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+        0% { transform: translate(-50%, -50%) rotate(0deg); }
+        100% { transform: translate(-50%, -50%) rotate(360deg); }
     }
     .timeline-desc-side {
         font-size: 0.7rem;
@@ -1979,19 +1999,6 @@ timelineStyle.textContent = `
         background: #f8c8d8;
         border-radius: 3px;
     }
-    .image-loader-fast {
-        width: 100%;
-        height: 100px;
-        background: linear-gradient(90deg, rgba(248,200,216,0.1), rgba(248,200,216,0.3), rgba(248,200,216,0.1));
-        background-size: 200% 100%;
-        animation: shimmer 1.5s infinite;
-        border-radius: 10px;
-        margin: 0.3rem 0;
-    }
-    @keyframes shimmer {
-        0% { background-position: -200% 0; }
-        100% { background-position: 200% 0; }
-    }
 `;
 document.head.appendChild(timelineStyle);
 
@@ -2011,7 +2018,6 @@ const sideDesc = document.getElementById('sideDesc');
 const timelineItemsContainer = document.getElementById('timelineItemsContainer');
 const timelineEmptyTip = document.getElementById('timelineEmptyTip');
 const timelineBadge = document.getElementById('timelineBadge');
-const loadingFastTip = document.getElementById('loadingFastTip');
 
 // 设置默认日期为今天
 const todayStr = new Date().toISOString().split('T')[0];
@@ -2020,11 +2026,8 @@ sideDate.value = todayStr;
 // 时间轴数据引用
 const timelineRef = database.ref('timeline');
 
-// 本地缓存
-let localCache = {
-    memories: [],
-    lastUpdate: 0
-};
+// 图片缓存
+const imageCache = new Map();
 
 // 点击悬浮按钮展开/收起
 let panelOpen = false;
@@ -2036,11 +2039,6 @@ timelineFloatBtn.addEventListener('click', function() {
         timelineSidePanel.style.right = '0';
         panelOpen = true;
         sideAddPanel.style.display = 'none';
-        
-        // 如果还没加载过，先显示骨架屏
-        if (timelineItemsContainer.children.length === 0 && localCache.memories.length === 0) {
-            showSkeletonLoader();
-        }
     }
     playAudio();
 });
@@ -2050,31 +2048,6 @@ sideCloseBtn.addEventListener('click', function() {
     panelOpen = false;
     playAudio();
 });
-
-// 显示骨架屏（瞬间显示）
-function showSkeletonLoader() {
-    let skeletonHtml = '';
-    for (let i = 0; i < 3; i++) {
-        skeletonHtml += `
-            <div class="timeline-item-side">
-                <div class="timeline-dot-side"></div>
-                <div class="timeline-card-side">
-                    <div class="timeline-header-side">
-                        <span class="timeline-title-side" style="background:rgba(248,200,216,0.3); width:80px; height:16px; border-radius:4px;"></span>
-                        <span class="timeline-date-side" style="background:rgba(248,200,216,0.2); width:50px; height:14px;"></span>
-                    </div>
-                    <div class="image-loader-fast"></div>
-                    <div class="timeline-desc-side" style="background:rgba(255,255,255,0.1); width:100%; height:14px; margin:0.2rem 0; border-radius:4px;"></div>
-                    <div class="timeline-footer-side">
-                        <span style="background:rgba(248,200,216,0.2); width:30px; height:12px; border-radius:4px;"></span>
-                    </div>
-                </div>
-            </div>
-        `;
-    }
-    timelineItemsContainer.innerHTML = skeletonHtml;
-    timelineEmptyTip.style.display = 'none';
-}
 
 // 显示添加面板
 sideAddBtn.addEventListener('click', function() {
@@ -2097,7 +2070,7 @@ sideImagePreview.addEventListener('click', function() {
 
 let selectedImageDataUrl = null;
 
-// 极速压缩（牺牲一点画质换取速度）
+// 极速压缩
 function fastCompressImage(file, callback) {
     const reader = new FileReader();
     reader.readAsDataURL(file);
@@ -2108,7 +2081,6 @@ function fastCompressImage(file, callback) {
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
             
-            // 限制最大宽度 300px
             let width = img.width;
             let height = img.height;
             if (width > 300) {
@@ -2120,7 +2092,6 @@ function fastCompressImage(file, callback) {
             canvas.height = height;
             ctx.drawImage(img, 0, 0, width, height);
             
-            // 降低画质到 0.5
             const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.5);
             callback(compressedDataUrl);
         };
@@ -2191,7 +2162,7 @@ sideSaveMemory.addEventListener('click', function() {
         });
 });
 
-// 监听时间轴数据（使用缓存）
+// 监听时间轴数据
 timelineRef.on('value', (snapshot) => {
     const memories = [];
     snapshot.forEach(child => {
@@ -2204,40 +2175,58 @@ timelineRef.on('value', (snapshot) => {
     // 按日期倒序
     memories.sort((a, b) => (a.date > b.date ? -1 : 1));
 
-    // 更新缓存
-    localCache.memories = memories;
-    localCache.lastUpdate = Date.now();
-
     // 更新角标
     timelineBadge.textContent = memories.length;
 
     if (memories.length === 0) {
-        if (panelOpen) {
-            timelineEmptyTip.style.display = 'block';
-            timelineItemsContainer.innerHTML = '';
-        }
+        timelineItemsContainer.innerHTML = '';
+        timelineEmptyTip.style.display = 'block';
         return;
     }
 
     timelineEmptyTip.style.display = 'none';
     
-    // 如果面板是打开的，立即渲染
-    if (panelOpen) {
-        renderTimelineFast(memories);
-    }
+    // 渲染列表（文字先显示，图片异步加载）
+    renderTimelineWithAsyncImages(memories);
 });
 
-// 极速渲染（只渲染前5条，剩下的滚动加载）
-function renderTimelineFast(memories) {
-    // 只渲染前5条，瞬间显示
-    const initialCount = Math.min(5, memories.length);
-    const initialMemories = memories.slice(0, initialCount);
+// 异步加载图片
+function loadImageAsync(imageUrl, imgElement, loaderElement) {
+    // 如果缓存中有，直接使用
+    if (imageCache.has(imageUrl)) {
+        imgElement.src = imageUrl;
+        imgElement.setAttribute('data-loaded', 'true');
+        if (loaderElement) loaderElement.style.display = 'none';
+        return;
+    }
     
+    const img = new Image();
+    img.onload = function() {
+        imgElement.src = imageUrl;
+        imgElement.setAttribute('data-loaded', 'true');
+        imageCache.set(imageUrl, true); // 缓存标记
+        if (loaderElement) loaderElement.style.display = 'none';
+    };
+    img.onerror = function() {
+        // 加载失败显示默认图
+        imgElement.src = 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'%3E%3Ccircle cx=\'50\' cy=\'50\' r=\'45\' fill=\'%23f8c8d8\'/%3E%3Ctext x=\'50\' y=\'70\' font-size=\'50\' text-anchor=\'middle\' fill=\'%23ffffff\'%3E❌%3C/text%3E%3C/svg%3E';
+        imgElement.setAttribute('data-loaded', 'true');
+        if (loaderElement) loaderElement.style.display = 'none';
+    };
+    img.src = imageUrl;
+}
+
+// 渲染时间轴（图片异步加载）
+function renderTimelineWithAsyncImages(memories) {
     let html = '';
-    initialMemories.forEach(mem => {
+    
+    memories.forEach((mem, index) => {
         const dateObj = new Date(mem.date);
         const formattedDate = `${dateObj.getFullYear()}.${(dateObj.getMonth()+1).toString().padStart(2,'0')}.${dateObj.getDate().toString().padStart(2,'0')}`;
         const addedByIcon = mem.addedBy === 'snx' ? '🐈' : '🐾';
+        
+        // 给每个图片一个唯一的ID
+        const imageId = `timeline-img-${mem.firebaseId}-${index}`;
         
         html += `
             <div class="timeline-item-side" data-id="${mem.firebaseId}">
@@ -2247,7 +2236,12 @@ function renderTimelineFast(memories) {
                         <span class="timeline-title-side">${escapeHtml(mem.title)}</span>
                         <span class="timeline-date-side">${formattedDate}</span>
                     </div>
-                    ${mem.image ? `<img src="${mem.image}" class="timeline-image-side" onclick="window.showPreview('${mem.image}')" style="background:rgba(248,200,216,0.1);">` : ''}
+                    ${mem.image ? `
+                        <div class="timeline-image-container">
+                            <div class="image-loader" id="loader-${imageId}"></div>
+                            <img id="${imageId}" data-loaded="false" class="timeline-image-side" onclick="window.showPreview('${mem.image}')">
+                        </div>
+                    ` : ''}
                     <div class="timeline-desc-side">${escapeHtml(mem.desc)}</div>
                     <div class="timeline-footer-side">
                         <span style="margin-right:auto;">${addedByIcon}</span>
@@ -2260,59 +2254,26 @@ function renderTimelineFast(memories) {
     
     timelineItemsContainer.innerHTML = html;
     
-    // 如果还有更多，设置滚动加载
-    if (memories.length > initialCount) {
-        setupInfiniteScroll(memories, initialCount);
-    }
-}
-
-// 无限滚动加载剩余
-function setupInfiniteScroll(allMemories, startIndex) {
-    let currentIndex = startIndex;
-    
-    function loadMore() {
-        if (currentIndex >= allMemories.length) return;
-        
-        const nextBatch = allMemories.slice(currentIndex, currentIndex + 3);
-        let batchHtml = '';
-        
-        nextBatch.forEach(mem => {
-            const dateObj = new Date(mem.date);
-            const formattedDate = `${dateObj.getFullYear()}.${(dateObj.getMonth()+1).toString().padStart(2,'0')}.${dateObj.getDate().toString().padStart(2,'0')}`;
-            const addedByIcon = mem.addedBy === 'snx' ? '🐈' : '🐾';
-            
-            batchHtml += `
-                <div class="timeline-item-side" data-id="${mem.firebaseId}">
-                    <div class="timeline-dot-side"></div>
-                    <div class="timeline-card-side">
-                        <div class="timeline-header-side">
-                            <span class="timeline-title-side">${escapeHtml(mem.title)}</span>
-                            <span class="timeline-date-side">${formattedDate}</span>
-                        </div>
-                        ${mem.image ? `<img src="${mem.image}" class="timeline-image-side" onclick="window.showPreview('${mem.image}')">` : ''}
-                        <div class="timeline-desc-side">${escapeHtml(mem.desc)}</div>
-                        <div class="timeline-footer-side">
-                            <span style="margin-right:auto;">${addedByIcon}</span>
-                            <span class="timeline-delete-side" onclick="window.deleteTimelineItem('${mem.firebaseId}')">🗑️ 删除</span>
-                        </div>
-                    </div>
-                </div>
-            `;
-        });
-        
-        timelineItemsContainer.insertAdjacentHTML('beforeend', batchHtml);
-        currentIndex += nextBatch.length;
-    }
-    
-    // 监听滚动
-    const scrollHandler = function() {
-        const container = document.getElementById('sideTimelineList');
-        if (container.scrollTop + container.clientHeight >= container.scrollHeight - 100) {
-            loadMore();
+    // 异步加载所有图片
+    memories.forEach((mem, index) => {
+        if (mem.image) {
+            const imageId = `timeline-img-${mem.firebaseId}-${index}`;
+            const imgElement = document.getElementById(imageId);
+            const loaderElement = document.getElementById(`loader-${imageId}`);
+            if (imgElement) {
+                // 使用requestIdleCallback在浏览器空闲时加载，或者用setTimeout延迟加载
+                if ('requestIdleCallback' in window) {
+                    requestIdleCallback(() => {
+                        loadImageAsync(mem.image, imgElement, loaderElement);
+                    }, { timeout: 1000 });
+                } else {
+                    setTimeout(() => {
+                        loadImageAsync(mem.image, imgElement, loaderElement);
+                    }, index * 100); // 每个图片延迟100ms，避免同时加载
+                }
+            }
         }
-    };
-    
-    document.getElementById('sideTimelineList').addEventListener('scroll', scrollHandler);
+    });
 }
 
 // 删除功能
