@@ -1825,7 +1825,7 @@
 
     initWishCoupon();
 
-// ===== 新增：侧边悬浮恋爱时间轴（照片异步加载版） =====
+// ===== 新增：侧边悬浮恋爱时间轴（照片立即显示版） =====
 // 完全独立，不修改任何原有代码
 
 // 创建时间轴HTML结构
@@ -1946,29 +1946,7 @@ timelineStyle.textContent = `
         object-fit: cover;
         border: 1px solid rgba(248,200,216,0.2);
         cursor: pointer;
-        transition: opacity 0.2s;
-    }
-    .timeline-image-side[data-loaded="false"] {
-        opacity: 0;
-    }
-    .timeline-image-side[data-loaded="true"] {
         opacity: 1;
-    }
-    .image-loader {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 30px;
-        height: 30px;
-        border: 2px solid #f8c8d8;
-        border-top-color: transparent;
-        border-radius: 50%;
-        animation: spin 0.8s linear infinite;
-    }
-    @keyframes spin {
-        0% { transform: translate(-50%, -50%) rotate(0deg); }
-        100% { transform: translate(-50%, -50%) rotate(360deg); }
     }
     .timeline-desc-side {
         font-size: 0.7rem;
@@ -2025,9 +2003,6 @@ sideDate.value = todayStr;
 
 // 时间轴数据引用
 const timelineRef = database.ref('timeline');
-
-// 图片缓存
-const imageCache = new Map();
 
 // 点击悬浮按钮展开/收起
 let panelOpen = false;
@@ -2186,47 +2161,18 @@ timelineRef.on('value', (snapshot) => {
 
     timelineEmptyTip.style.display = 'none';
     
-    // 渲染列表（文字先显示，图片异步加载）
-    renderTimelineWithAsyncImages(memories);
+    // 渲染列表（图片立即显示）
+    renderTimelineInstantly(memories);
 });
 
-// 异步加载图片
-function loadImageAsync(imageUrl, imgElement, loaderElement) {
-    // 如果缓存中有，直接使用
-    if (imageCache.has(imageUrl)) {
-        imgElement.src = imageUrl;
-        imgElement.setAttribute('data-loaded', 'true');
-        if (loaderElement) loaderElement.style.display = 'none';
-        return;
-    }
-    
-    const img = new Image();
-    img.onload = function() {
-        imgElement.src = imageUrl;
-        imgElement.setAttribute('data-loaded', 'true');
-        imageCache.set(imageUrl, true); // 缓存标记
-        if (loaderElement) loaderElement.style.display = 'none';
-    };
-    img.onerror = function() {
-        // 加载失败显示默认图
-        imgElement.src = 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'%3E%3Ccircle cx=\'50\' cy=\'50\' r=\'45\' fill=\'%23f8c8d8\'/%3E%3Ctext x=\'50\' y=\'70\' font-size=\'50\' text-anchor=\'middle\' fill=\'%23ffffff\'%3E❌%3C/text%3E%3C/svg%3E';
-        imgElement.setAttribute('data-loaded', 'true');
-        if (loaderElement) loaderElement.style.display = 'none';
-    };
-    img.src = imageUrl;
-}
-
-// 渲染时间轴（图片异步加载）
-function renderTimelineWithAsyncImages(memories) {
+// 渲染时间轴（图片立即显示）
+function renderTimelineInstantly(memories) {
     let html = '';
     
     memories.forEach((mem, index) => {
         const dateObj = new Date(mem.date);
         const formattedDate = `${dateObj.getFullYear()}.${(dateObj.getMonth()+1).toString().padStart(2,'0')}.${dateObj.getDate().toString().padStart(2,'0')}`;
         const addedByIcon = mem.addedBy === 'snx' ? '🐈' : '🐾';
-        
-        // 给每个图片一个唯一的ID
-        const imageId = `timeline-img-${mem.firebaseId}-${index}`;
         
         html += `
             <div class="timeline-item-side" data-id="${mem.firebaseId}">
@@ -2238,8 +2184,7 @@ function renderTimelineWithAsyncImages(memories) {
                     </div>
                     ${mem.image ? `
                         <div class="timeline-image-container">
-                            <div class="image-loader" id="loader-${imageId}"></div>
-                            <img id="${imageId}" data-loaded="false" class="timeline-image-side" onclick="window.showPreview('${mem.image}')">
+                            <img src="${mem.image.replace(/'/g, "\\'")}" class="timeline-image-side" onclick="window.showPreview('${mem.image.replace(/'/g, "\\'")}')" style="opacity:1;">
                         </div>
                     ` : ''}
                     <div class="timeline-desc-side">${escapeHtml(mem.desc)}</div>
@@ -2253,27 +2198,6 @@ function renderTimelineWithAsyncImages(memories) {
     });
     
     timelineItemsContainer.innerHTML = html;
-    
-    // 异步加载所有图片
-    memories.forEach((mem, index) => {
-        if (mem.image) {
-            const imageId = `timeline-img-${mem.firebaseId}-${index}`;
-            const imgElement = document.getElementById(imageId);
-            const loaderElement = document.getElementById(`loader-${imageId}`);
-            if (imgElement) {
-                // 使用requestIdleCallback在浏览器空闲时加载，或者用setTimeout延迟加载
-                if ('requestIdleCallback' in window) {
-                    requestIdleCallback(() => {
-                        loadImageAsync(mem.image, imgElement, loaderElement);
-                    }, { timeout: 1000 });
-                } else {
-                    setTimeout(() => {
-                        loadImageAsync(mem.image, imgElement, loaderElement);
-                    }, index * 100); // 每个图片延迟100ms，避免同时加载
-                }
-            }
-        }
-    });
 }
 
 // 删除功能
