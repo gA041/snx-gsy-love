@@ -2293,5 +2293,524 @@
     }
 </script>
 
+    <!-- ===== 新增：全局底部导航栏 ===== -->
+    <div style="position:fixed; bottom:70px; left:50%; transform:translateX(-50%); width:80%; max-width:300px; background:rgba(20,20,30,0.8); backdrop-filter:blur(15px); border-radius:40px; padding:0.4rem; border:1px solid rgba(248,200,216,0.3); box-shadow:0 5px 20px rgba(0,0,0,0.5); z-index:1002;">
+        <div style="display:flex; justify-content:space-around; align-items:center;">
+            <button id="navHomeBtn" style="flex:1; background:#f8c8d8; border:none; border-radius:30px; padding:0.5rem; margin:0 0.2rem; color:#222; font-size:0.85rem; font-weight:500; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:0.3rem;">
+                <span>🏠</span> 首页
+            </button>
+            <button id="navStudyBtn" style="flex:1; background:transparent; border:none; border-radius:30px; padding:0.5rem; margin:0 0.2rem; color:#d0a8c8; font-size:0.85rem; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:0.3rem;">
+                <span>📚</span> 学习
+            </button>
+        </div>
+    </div>
+
+    <!-- 学习打卡中心页面 (默认隐藏) -->
+    <div id="studyPage" style="display:none; width:100%; min-height:100vh; padding-bottom:150px;">
+        <!-- 学习打卡中心内容 - 完全按照图片样式 -->
+        <div style="width:90%; max-width:340px; margin:1.5rem auto; background:rgba(10,10,20,0.5); backdrop-filter:blur(8px); border-radius:22px; padding:1rem; border:1px solid rgba(248,200,216,0.3);">
+            <!-- 头部 -->
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                <div style="display:flex; align-items:center; gap:0.5rem;">
+                    <span style="color:#f8c8d8; font-size:1.1rem;">学习打卡💪</span>
+                    <span style="background:#f8c8d8; color:#222; padding:0.2rem 0.6rem; border-radius:30px; font-size:0.65rem;">✌️</span>
+                </div>
+                <div style="display:flex; gap:0.5rem;">
+                    <span id="studySnxTab" style="color:#f8c8d8; cursor:pointer; padding:0.2rem 0.6rem; border-radius:20px; background:rgba(248,200,216,0.2);">🐈 snx</span>
+                    <span id="studyGsyTab" style="color:#d0a8c8; cursor:pointer; padding:0.2rem 0.6rem; border-radius:20px;">🐾 gsy</span>
+                </div>
+            </div>
+
+            <!-- snx 的内容 (TOPIK) -->
+            <div id="studySnxContent" style="display:block;">
+                <!-- 学习模块 -->
+                <div style="background:rgba(248,200,216,0.1); border-radius:16px; padding:0.8rem; margin-bottom:1rem;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.3rem;">
+                        <div style="display:flex; align-items:center; gap:0.5rem;">
+                            <span style="color:#f8c8d8; font-weight:500;">🇰🇷 TOPIK</span>
+                            <span style="color:#d0a8c8; font-size:0.7rem;">snxnb666</span>
+                        </div>
+                        <span style="color:#f8c8d8; font-size:1.2rem; cursor:pointer;">+</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between;">
+                        <span style="color:#f8c8d8; font-size:0.9rem;">TOPIK</span>
+                        <span style="color:#d0a8c8; font-size:0.7rem;">snxnb666</span>
+                        <span style="color:#d0a8c8; cursor:pointer;">🗑️</span>
+                    </div>
+                </div>
+
+                <!-- Discovery 可编辑区域 -->
+                <div style="margin-bottom:1rem;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+                        <div style="display:flex; align-items:center; gap:0.5rem;">
+                            <span style="color:#f8c8d8;">🔍 Discovery</span>
+                            <span id="snxDiscoveryCount" style="color:#d0a8c8; font-size:0.8rem;">3</span>
+                        </div>
+                        <button id="addSnxDiscoveryBtn" style="background:rgba(248,200,216,0.2); border:1px solid #f8c8d8; border-radius:30px; padding:0.1rem 0.6rem; font-size:0.7rem; color:#f8c8d8; cursor:pointer;">+ 添加</button>
+                    </div>
+                    
+                    <div id="snxDiscoveryList">
+                        <!-- 动态添加的Discovery任务会在这里 -->
+                        <div class="snx-discovery-item" style="background:rgba(0,0,0,0.2); border-radius:12px; padding:0.6rem; margin-bottom:0.4rem;">
+                            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                                <div style="display:flex; gap:0.5rem; flex:1;">
+                                    <span class="item-number" style="color:#f8c8d8;">1.</span>
+                                    <div style="flex:1;">
+                                        <div style="display:flex; align-items:center; gap:0.3rem;">
+                                            <input type="text" class="item-title" value="D1 单词学习 30个" style="background:transparent; border:none; color:#fff; font-size:0.85rem; width:120px;">
+                                            <span class="item-points" style="color:#f8c8d8; font-size:0.7rem;">+1</span>
+                                        </div>
+                                        <input type="text" class="item-desc" value="*学习30个新单词并做笔记" style="background:transparent; border:none; color:#d0a8c8; font-size:0.7rem; width:100%; margin-top:0.1rem;">
+                                    </div>
+                                </div>
+                                <div style="display:flex; gap:0.3rem;">
+                                    <span class="edit-btn" style="color:#f8c8d8; font-size:0.8rem; cursor:pointer;">➕</span>
+                                    <span class="delete-btn" style="color:#d0a8c8; font-size:0.8rem; cursor:pointer;">🗑️</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="snx-discovery-item" style="background:rgba(0,0,0,0.2); border-radius:12px; padding:0.6rem; margin-bottom:0.4rem;">
+                            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                                <div style="display:flex; gap:0.5rem; flex:1;">
+                                    <span class="item-number" style="color:#f8c8d8;">2.</span>
+                                    <div style="flex:1;">
+                                        <div style="display:flex; align-items:center; gap:0.3rem;">
+                                            <input type="text" class="item-title" value="D2 听力训练" style="background:transparent; border:none; color:#fff; font-size:0.85rem; width:120px;">
+                                            <span class="item-points" style="color:#f8c8d8; font-size:0.7rem;">+1</span>
+                                        </div>
+                                        <input type="text" class="item-desc" value="*完成一套听力真题并订正" style="background:transparent; border:none; color:#d0a8c8; font-size:0.7rem; width:100%; margin-top:0.1rem;">
+                                    </div>
+                                </div>
+                                <div style="display:flex; gap:0.3rem;">
+                                    <span class="edit-btn" style="color:#f8c8d8; font-size:0.8rem; cursor:pointer;">➕</span>
+                                    <span class="delete-btn" style="color:#d0a8c8; font-size:0.8rem; cursor:pointer;">🗑️</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="snx-discovery-item" style="background:rgba(0,0,0,0.2); border-radius:12px; padding:0.6rem;">
+                            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                                <div style="display:flex; gap:0.5rem; flex:1;">
+                                    <span class="item-number" style="color:#f8c8d8;">3.</span>
+                                    <div style="flex:1;">
+                                        <div style="display:flex; align-items:center; gap:0.3rem;">
+                                            <input type="text" class="item-title" value="D3 语法整理" style="background:transparent; border:none; color:#fff; font-size:0.85rem; width:120px;">
+                                            <span class="item-points" style="color:#f8c8d8; font-size:0.7rem;">+1</span>
+                                        </div>
+                                        <input type="text" class="item-desc" value="*整理5个重点语法并造句" style="background:transparent; border:none; color:#d0a8c8; font-size:0.7rem; width:100%; margin-top:0.1rem;">
+                                    </div>
+                                </div>
+                                <div style="display:flex; gap:0.3rem;">
+                                    <span class="edit-btn" style="color:#f8c8d8; font-size:0.8rem; cursor:pointer;">➕</span>
+                                    <span class="delete-btn" style="color:#d0a8c8; font-size:0.8rem; cursor:pointer;">🗑️</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Creation 可编辑区域 -->
+                <div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+                        <div style="display:flex; align-items:center; gap:0.5rem;">
+                            <span style="color:#f8c8d8;">Creation</span>
+                            <span id="snxCreationCount" style="color:#d0a8c8; font-size:0.8rem;">3</span>
+                        </div>
+                        <button id="addSnxCreationBtn" style="background:rgba(248,200,216,0.2); border:1px solid #f8c8d8; border-radius:30px; padding:0.1rem 0.6rem; font-size:0.7rem; color:#f8c8d8; cursor:pointer;">+ 添加</button>
+                    </div>
+
+                    <div id="snxCreationList">
+                        <!-- 动态添加的Creation任务会在这里 -->
+                        <div class="snx-creation-item" style="background:rgba(0,0,0,0.2); border-radius:12px; padding:0.6rem; margin-bottom:0.4rem;">
+                            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                                <div style="display:flex; gap:0.5rem; flex:1;">
+                                    <span class="item-number" style="color:#f8c8d8;">1.</span>
+                                    <div style="flex:1;">
+                                        <div style="display:flex; align-items:center; gap:0.3rem;">
+                                            <input type="text" class="item-title" value="C1 写一篇小作文" style="background:transparent; border:none; color:#fff; font-size:0.85rem; width:120px;">
+                                            <span class="item-points" style="color:#f8c8d8; font-size:0.7rem;">+2</span>
+                                        </div>
+                                        <input type="text" class="item-desc" value="*用新学的语法写一篇日记" style="background:transparent; border:none; color:#d0a8c8; font-size:0.7rem; width:100%; margin-top:0.1rem;">
+                                    </div>
+                                </div>
+                                <div style="display:flex; gap:0.3rem;">
+                                    <span class="edit-btn" style="color:#f8c8d8; font-size:0.8rem; cursor:pointer;">➕</span>
+                                    <span class="delete-btn" style="color:#d0a8c8; font-size:0.8rem; cursor:pointer;">🗑️</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="snx-creation-item" style="background:rgba(0,0,0,0.2); border-radius:12px; padding:0.6rem; margin-bottom:0.4rem;">
+                            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                                <div style="display:flex; gap:0.5rem; flex:1;">
+                                    <span class="item-number" style="color:#f8c8d8;">2.</span>
+                                    <div style="flex:1;">
+                                        <div style="display:flex; align-items:center; gap:0.3rem;">
+                                            <input type="text" class="item-title" value="C2 模拟考试" style="background:transparent; border:none; color:#fff; font-size:0.85rem; width:120px;">
+                                            <span class="item-points" style="color:#f8c8d8; font-size:0.7rem;">+2</span>
+                                        </div>
+                                        <input type="text" class="item-desc" value="*完成一套TOPIK模拟题" style="background:transparent; border:none; color:#d0a8c8; font-size:0.7rem; width:100%; margin-top:0.1rem;">
+                                    </div>
+                                </div>
+                                <div style="display:flex; gap:0.3rem;">
+                                    <span class="edit-btn" style="color:#f8c8d8; font-size:0.8rem; cursor:pointer;">➕</span>
+                                    <span class="delete-btn" style="color:#d0a8c8; font-size:0.8rem; cursor:pointer;">🗑️</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="snx-creation-item" style="background:rgba(0,0,0,0.2); border-radius:12px; padding:0.6rem;">
+                            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                                <div style="display:flex; gap:0.5rem; flex:1;">
+                                    <span class="item-number" style="color:#f8c8d8;">3.</span>
+                                    <div style="flex:1;">
+                                        <div style="display:flex; align-items:center; gap:0.3rem;">
+                                            <input type="text" class="item-title" value="C3 错题本整理" style="background:transparent; border:none; color:#fff; font-size:0.85rem; width:120px;">
+                                            <span class="item-points" style="color:#f8c8d8; font-size:0.7rem;">+2</span>
+                                        </div>
+                                        <input type="text" class="item-desc" value="*整理本周错题并分析原因" style="background:transparent; border:none; color:#d0a8c8; font-size:0.7rem; width:100%; margin-top:0.1rem;">
+                                    </div>
+                                </div>
+                                <div style="display:flex; gap:0.3rem;">
+                                    <span class="edit-btn" style="color:#f8c8d8; font-size:0.8rem; cursor:pointer;">➕</span>
+                                    <span class="delete-btn" style="color:#d0a8c8; font-size:0.8rem; cursor:pointer;">🗑️</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- gsy 的内容 (计算机) - 默认隐藏 -->
+            <div id="studyGsyContent" style="display:none;">
+                <!-- 学习模块 -->
+                <div style="background:rgba(216,184,232,0.1); border-radius:16px; padding:0.8rem; margin-bottom:1rem;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.3rem;">
+                        <div style="display:flex; align-items:center; gap:0.5rem;">
+                            <span style="color:#d8b8e8; font-weight:500;">💻 计算机</span>
+                            <span style="color:#d0a8c8; font-size:0.7rem;">Vibe-Coding</span>
+                        </div>
+                        <span style="color:#d8b8e8; font-size:1.2rem; cursor:pointer;">+</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between;">
+                        <span style="color:#d8b8e8; font-size:0.9rem;">💻</span>
+                        <span style="color:#d0a8c8; font-size:0.7rem;">gsynb666</span>
+                        <span style="color:#d0a8c8; cursor:pointer;">🗑️</span>
+                    </div>
+                </div>
+
+                <!-- Discovery 可编辑区域 (计算机版) -->
+                <div style="margin-bottom:1rem;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+                        <div style="display:flex; align-items:center; gap:0.5rem;">
+                            <span style="color:#d8b8e8;">🔍 Discovery</span>
+                            <span id="gsyDiscoveryCount" style="color:#d0a8c8; font-size:0.8rem;">3</span>
+                        </div>
+                        <button id="addGsyDiscoveryBtn" style="background:rgba(216,184,232,0.2); border:1px solid #d8b8e8; border-radius:30px; padding:0.1rem 0.6rem; font-size:0.7rem; color:#d8b8e8; cursor:pointer;">+ 添加</button>
+                    </div>
+                    
+                    <div id="gsyDiscoveryList">
+                        <!-- 动态添加的Discovery任务会在这里 -->
+                        <div class="gsy-discovery-item" style="background:rgba(0,0,0,0.2); border-radius:12px; padding:0.6rem; margin-bottom:0.4rem;">
+                            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                                <div style="display:flex; gap:0.5rem; flex:1;">
+                                    <span class="item-number" style="color:#d8b8e8;">1.</span>
+                                    <div style="flex:1;">
+                                        <div style="display:flex; align-items:center; gap:0.3rem;">
+                                            <input type="text" class="item-title" value="D1 算法题 3道" style="background:transparent; border:none; color:#fff; font-size:0.85rem; width:120px;">
+                                            <span class="item-points" style="color:#d8b8e8; font-size:0.7rem;">+1</span>
+                                        </div>
+                                        <input type="text" class="item-desc" value="*完成3道基础算法题" style="background:transparent; border:none; color:#d0a8c8; font-size:0.7rem; width:100%; margin-top:0.1rem;">
+                                    </div>
+                                </div>
+                                <div style="display:flex; gap:0.3rem;">
+                                    <span class="edit-btn" style="color:#d8b8e8; font-size:0.8rem; cursor:pointer;">➕</span>
+                                    <span class="delete-btn" style="color:#d0a8c8; font-size:0.8rem; cursor:pointer;">🗑️</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="gsy-discovery-item" style="background:rgba(0,0,0,0.2); border-radius:12px; padding:0.6rem; margin-bottom:0.4rem;">
+                            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                                <div style="display:flex; gap:0.5rem; flex:1;">
+                                    <span class="item-number" style="color:#d8b8e8;">2.</span>
+                                    <div style="flex:1;">
+                                        <div style="display:flex; align-items:center; gap:0.3rem;">
+                                            <input type="text" class="item-title" value="D2 数据结构复习" style="background:transparent; border:none; color:#fff; font-size:0.85rem; width:120px;">
+                                            <span class="item-points" style="color:#d8b8e8; font-size:0.7rem;">+1</span>
+                                        </div>
+                                        <input type="text" class="item-desc" value="*复习链表/树/图" style="background:transparent; border:none; color:#d0a8c8; font-size:0.7rem; width:100%; margin-top:0.1rem;">
+                                    </div>
+                                </div>
+                                <div style="display:flex; gap:0.3rem;">
+                                    <span class="edit-btn" style="color:#d8b8e8; font-size:0.8rem; cursor:pointer;">➕</span>
+                                    <span class="delete-btn" style="color:#d0a8c8; font-size:0.8rem; cursor:pointer;">🗑️</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="gsy-discovery-item" style="background:rgba(0,0,0,0.2); border-radius:12px; padding:0.6rem;">
+                            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                                <div style="display:flex; gap:0.5rem; flex:1;">
+                                    <span class="item-number" style="color:#d8b8e8;">3.</span>
+                                    <div style="flex:1;">
+                                        <div style="display:flex; align-items:center; gap:0.3rem;">
+                                            <input type="text" class="item-title" value="D3 调试bug练习" style="background:transparent; border:none; color:#fff; font-size:0.85rem; width:120px;">
+                                            <span class="item-points" style="color:#d8b8e8; font-size:0.7rem;">+1</span>
+                                        </div>
+                                        <input type="text" class="item-desc" value="*从错误日志修复3个bug" style="background:transparent; border:none; color:#d0a8c8; font-size:0.7rem; width:100%; margin-top:0.1rem;">
+                                    </div>
+                                </div>
+                                <div style="display:flex; gap:0.3rem;">
+                                    <span class="edit-btn" style="color:#d8b8e8; font-size:0.8rem; cursor:pointer;">➕</span>
+                                    <span class="delete-btn" style="color:#d0a8c8; font-size:0.8rem; cursor:pointer;">🗑️</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Creation 可编辑区域 (计算机版) -->
+                <div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+                        <div style="display:flex; align-items:center; gap:0.5rem;">
+                            <span style="color:#d8b8e8;">Creation</span>
+                            <span id="gsyCreationCount" style="color:#d0a8c8; font-size:0.8rem;">3</span>
+                        </div>
+                        <button id="addGsyCreationBtn" style="background:rgba(216,184,232,0.2); border:1px solid #d8b8e8; border-radius:30px; padding:0.1rem 0.6rem; font-size:0.7rem; color:#d8b8e8; cursor:pointer;">+ 添加</button>
+                    </div>
+
+                    <div id="gsyCreationList">
+                        <!-- 动态添加的Creation任务会在这里 -->
+                        <div class="gsy-creation-item" style="background:rgba(0,0,0,0.2); border-radius:12px; padding:0.6rem; margin-bottom:0.4rem;">
+                            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                                <div style="display:flex; gap:0.5rem; flex:1;">
+                                    <span class="item-number" style="color:#d8b8e8;">1.</span>
+                                    <div style="flex:1;">
+                                        <div style="display:flex; align-items:center; gap:0.3rem;">
+                                            <input type="text" class="item-title" value="C1 写一个小程序" style="background:transparent; border:none; color:#fff; font-size:0.85rem; width:120px;">
+                                            <span class="item-points" style="color:#d8b8e8; font-size:0.7rem;">+2</span>
+                                        </div>
+                                        <input type="text" class="item-desc" value="*实现一个计算器/小游戏" style="background:transparent; border:none; color:#d0a8c8; font-size:0.7rem; width:100%; margin-top:0.1rem;">
+                                    </div>
+                                </div>
+                                <div style="display:flex; gap:0.3rem;">
+                                    <span class="edit-btn" style="color:#d8b8e8; font-size:0.8rem; cursor:pointer;">➕</span>
+                                    <span class="delete-btn" style="color:#d0a8c8; font-size:0.8rem; cursor:pointer;">🗑️</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="gsy-creation-item" style="background:rgba(0,0,0,0.2); border-radius:12px; padding:0.6rem; margin-bottom:0.4rem;">
+                            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                                <div style="display:flex; gap:0.5rem; flex:1;">
+                                    <span class="item-number" style="color:#d8b8e8;">2.</span>
+                                    <div style="flex:1;">
+                                        <div style="display:flex; align-items:center; gap:0.3rem;">
+                                            <input type="text" class="item-title" value="C2 项目优化" style="background:transparent; border:none; color:#fff; font-size:0.85rem; width:120px;">
+                                            <span class="item-points" style="color:#d8b8e8; font-size:0.7rem;">+2</span>
+                                        </div>
+                                        <input type="text" class="item-desc" value="*优化代码结构/性能" style="background:transparent; border:none; color:#d0a8c8; font-size:0.7rem; width:100%; margin-top:0.1rem;">
+                                    </div>
+                                </div>
+                                <div style="display:flex; gap:0.3rem;">
+                                    <span class="edit-btn" style="color:#d8b8e8; font-size:0.8rem; cursor:pointer;">➕</span>
+                                    <span class="delete-btn" style="color:#d0a8c8; font-size:0.8rem; cursor:pointer;">🗑️</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="gsy-creation-item" style="background:rgba(0,0,0,0.2); border-radius:12px; padding:0.6rem;">
+                            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                                <div style="display:flex; gap:0.5rem; flex:1;">
+                                    <span class="item-number" style="color:#d8b8e8;">3.</span>
+                                    <div style="flex:1;">
+                                        <div style="display:flex; align-items:center; gap:0.3rem;">
+                                            <input type="text" class="item-title" value="C3 学习笔记整理" style="background:transparent; border:none; color:#fff; font-size:0.85rem; width:120px;">
+                                            <span class="item-points" style="color:#d8b8e8; font-size:0.7rem;">+2</span>
+                                        </div>
+                                        <input type="text" class="item-desc" value="*整理本周学习内容" style="background:transparent; border:none; color:#d0a8c8; font-size:0.7rem; width:100%; margin-top:0.1rem;">
+                                    </div>
+                                </div>
+                                <div style="display:flex; gap:0.3rem;">
+                                    <span class="edit-btn" style="color:#d8b8e8; font-size:0.8rem; cursor:pointer;">➕</span>
+                                    <span class="delete-btn" style="color:#d0a8c8; font-size:0.8rem; cursor:pointer;">🗑️</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 导航切换功能
+        document.addEventListener('DOMContentLoaded', function() {
+            const navHomeBtn = document.getElementById('navHomeBtn');
+            const navStudyBtn = document.getElementById('navStudyBtn');
+            const studyPage = document.getElementById('studyPage');
+            
+            // 隐藏所有原始内容（除了导航和学习页面）
+            const mainContent = document.querySelectorAll('body > *:not(.input-bar):not(#timelineFloatBtn):not(#timelineSidePanel):not(.study-checkin-section):not(#studyPage):not([style*="position:fixed"]):not(script):not(style)');
+            
+            // 导航点击事件
+            navHomeBtn.addEventListener('click', function() {
+                // 切换按钮样式
+                navHomeBtn.style.background = '#f8c8d8';
+                navHomeBtn.style.color = '#222';
+                navStudyBtn.style.background = 'transparent';
+                navStudyBtn.style.color = '#d0a8c8';
+                
+                // 显示首页内容，隐藏学习页面
+                studyPage.style.display = 'none';
+                document.querySelector('.love-info').style.display = 'flex';
+                document.querySelector('.song-info').style.display = 'block';
+                document.querySelector('.extra-title').style.display = 'block';
+                document.querySelector('.progress').style.display = 'block';
+                document.querySelector('.time').style.display = 'flex';
+                document.querySelector('.listen-together').style.display = 'flex';
+                document.querySelector('.main-buttons').style.display = 'flex';
+                document.querySelector('.secondary-buttons').style.display = 'flex';
+                document.querySelector('.wish-section').style.display = wishSectionVisible ? 'block' : 'none';
+                document.querySelector('.chat').style.display = 'block';
+                document.querySelector('.sudoku-section').style.display = sudokuVisible ? 'block' : 'none';
+            });
+
+            navStudyBtn.addEventListener('click', function() {
+                // 切换按钮样式
+                navStudyBtn.style.background = '#d8b8e8';
+                navStudyBtn.style.color = '#222';
+                navHomeBtn.style.background = 'transparent';
+                navHomeBtn.style.color = '#d0a8c8';
+                
+                // 隐藏首页内容，显示学习页面
+                studyPage.style.display = 'block';
+                document.querySelector('.love-info').style.display = 'none';
+                document.querySelector('.song-info').style.display = 'none';
+                document.querySelector('.extra-title').style.display = 'none';
+                document.querySelector('.progress').style.display = 'none';
+                document.querySelector('.time').style.display = 'none';
+                document.querySelector('.listen-together').style.display = 'none';
+                document.querySelector('.main-buttons').style.display = 'none';
+                document.querySelector('.secondary-buttons').style.display = 'none';
+                document.querySelector('.wish-section').style.display = 'none';
+                document.querySelector('.chat').style.display = 'none';
+                document.querySelector('.sudoku-section').style.display = 'none';
+            });
+
+            // 学习页面内 snx/gsy 切换
+            const studySnxTab = document.getElementById('studySnxTab');
+            const studyGsyTab = document.getElementById('studyGsyTab');
+            const studySnxContent = document.getElementById('studySnxContent');
+            const studyGsyContent = document.getElementById('studyGsyContent');
+
+            studySnxTab.addEventListener('click', function() {
+                studySnxTab.style.background = 'rgba(248,200,216,0.2)';
+                studySnxTab.style.color = '#f8c8d8';
+                studyGsyTab.style.background = 'transparent';
+                studyGsyTab.style.color = '#d0a8c8';
+                studySnxContent.style.display = 'block';
+                studyGsyContent.style.display = 'none';
+            });
+
+            studyGsyTab.addEventListener('click', function() {
+                studyGsyTab.style.background = 'rgba(216,184,232,0.2)';
+                studyGsyTab.style.color = '#d8b8e8';
+                studySnxTab.style.background = 'transparent';
+                studySnxTab.style.color = '#d0a8c8';
+                studyGsyContent.style.display = 'block';
+                studySnxContent.style.display = 'none';
+            });
+
+            // 添加任务功能
+            function addTask(listId, type, user) {
+                const list = document.getElementById(listId);
+                const items = list.getElementsByClassName(`${user}-${type}-item`);
+                const newNumber = items.length + 1;
+                
+                const newItem = document.createElement('div');
+                newItem.className = `${user}-${type}-item`;
+                newItem.style.cssText = 'background:rgba(0,0,0,0.2); border-radius:12px; padding:0.6rem; margin-bottom:0.4rem;';
+                
+                const color = user === 'snx' ? '#f8c8d8' : '#d8b8e8';
+                const points = type === 'discovery' ? '+1' : '+2';
+                const defaultTitle = type === 'discovery' ? `D${newNumber} 新任务` : `C${newNumber} 新任务`;
+                const defaultDesc = type === 'discovery' ? '*新发现任务' : '*新创作任务';
+                
+                newItem.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                        <div style="display:flex; gap:0.5rem; flex:1;">
+                            <span class="item-number" style="color:${color};">${newNumber}.</span>
+                            <div style="flex:1;">
+                                <div style="display:flex; align-items:center; gap:0.3rem;">
+                                    <input type="text" class="item-title" value="${defaultTitle}" style="background:transparent; border:none; color:#fff; font-size:0.85rem; width:120px;">
+                                    <span class="item-points" style="color:${color}; font-size:0.7rem;">${points}</span>
+                                </div>
+                                <input type="text" class="item-desc" value="${defaultDesc}" style="background:transparent; border:none; color:#d0a8c8; font-size:0.7rem; width:100%; margin-top:0.1rem;">
+                            </div>
+                        </div>
+                        <div style="display:flex; gap:0.3rem;">
+                            <span class="edit-btn" style="color:${color}; font-size:0.8rem; cursor:pointer;">➕</span>
+                            <span class="delete-btn" style="color:#d0a8c8; font-size:0.8rem; cursor:pointer;">🗑️</span>
+                        </div>
+                    </div>
+                `;
+                
+                // 添加删除功能
+                const deleteBtn = newItem.querySelector('.delete-btn');
+                deleteBtn.addEventListener('click', function() {
+                    newItem.remove();
+                    updateNumbers(list, type, user);
+                });
+                
+                list.appendChild(newItem);
+                updateNumbers(list, type, user);
+            }
+
+            function updateNumbers(list, type, user) {
+                const items = list.getElementsByClassName(`${user}-${type}-item`);
+                const countSpan = document.getElementById(`${user}${type.charAt(0).toUpperCase() + type.slice(1)}Count`);
+                if (countSpan) countSpan.textContent = items.length;
+                
+                Array.from(items).forEach((item, index) => {
+                    const numberSpan = item.querySelector('.item-number');
+                    if (numberSpan) numberSpan.textContent = `${index + 1}.`;
+                    
+                    const titleInput = item.querySelector('.item-title');
+                    if (titleInput) {
+                        const currentValue = titleInput.value;
+                        const prefix = type === 'discovery' ? 'D' : 'C';
+                        if (currentValue.startsWith('D') || currentValue.startsWith('C')) {
+                            titleInput.value = `${prefix}${index + 1} ${currentValue.substring(2)}`;
+                        }
+                    }
+                });
+            }
+
+            // 绑定添加按钮
+            document.getElementById('addSnxDiscoveryBtn').addEventListener('click', function() {
+                addTask('snxDiscoveryList', 'discovery', 'snx');
+            });
+            
+            document.getElementById('addSnxCreationBtn').addEventListener('click', function() {
+                addTask('snxCreationList', 'creation', 'snx');
+            });
+            
+            document.getElementById('addGsyDiscoveryBtn').addEventListener('click', function() {
+                addTask('gsyDiscoveryList', 'discovery', 'gsy');
+            });
+            
+            document.getElementById('addGsyCreationBtn').addEventListener('click', function() {
+                addTask('gsyCreationList', 'creation', 'gsy');
+            });
+
+            // 为现有删除按钮添加事件
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const item = this.closest('[class*="-item"]');
+                    const parent = item.parentNode;
+                    const type = parent.id.includes('Discovery') ? 'discovery' : 'creation';
+                    const user = parent.id.includes('snx') ? 'snx' : 'gsy';
+                    item.remove();
+                    updateNumbers(parent, type, user);
+                });
+            });
+        });
+    </script>
+
 </body>
 </html>
