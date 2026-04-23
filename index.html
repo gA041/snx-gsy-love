@@ -2372,66 +2372,6 @@ wishToggleBtn.addEventListener('click', maybeHijack);
 if (newSudoku) newSudoku.addEventListener('click', maybeHijack);
 if (resetMine) resetMine.addEventListener('click', maybeHijack);
 
-// ===== 新版：消息下方的“帮我回”按钮 =====
-const quickReplies = [
-    "老婆说得对", "我也想你", "我错了", "爱你老婆",
-    "抱抱", "哈哈哈哈", "真的假的", "好哦", "亲亲",
-    "吊", "没错没错", "想你了", "我也是", "nb"
-];
-
-// 修改消息渲染函数，在每条消息下方加“帮我回”按钮
-const originalRenderMessages = renderMessages;
-window.renderMessages = function(messages) {
-    if (originalRenderMessages) originalRenderMessages(messages);
-    
-    // 为每条消息添加“帮我回”按钮
-    document.querySelectorAll('.message-item').forEach((msgDiv, idx) => {
-        // 避免重复添加
-        if (msgDiv.querySelector('.quick-reply-btn')) return;
-        
-        const replyBtn = document.createElement('div');
-        replyBtn.className = 'quick-reply-btn';
-        replyBtn.textContent = '帮我回';
-        replyBtn.style.cssText = 'display:inline-block; margin-top:0.3rem; font-size:0.65rem; color:#f8c8d8; cursor:pointer; background:rgba(248,200,216,0.15); padding:0.1rem 0.5rem; border-radius:12px; width:fit-content;';
-        
-        // 获取这条消息的文本
-        const textSpan = msgDiv.querySelector('span');
-        const originalText = textSpan ? textSpan.innerText : '';
-        
-        replyBtn.onclick = () => {
-            const randomReply = quickReplies[Math.floor(Math.random() * quickReplies.length)];
-            // 自动填入输入框并发送
-            messageInput.value = randomReply;
-            window.sendMessage();
-            playAudio();
-        };
-        
-        // 找到消息内容区域
-        const contentDiv = msgDiv.querySelector('div:first-child');
-        if (contentDiv) {
-            contentDiv.appendChild(replyBtn);
-        } else {
-            msgDiv.appendChild(replyBtn);
-        }
-    });
-};
-
-// 强制重新渲染一次消息，让按钮出现
-if (typeof messagesRef !== 'undefined') {
-    messagesRef.limitToLast(50).once('value', (snapshot) => {
-        const messages = [];
-        snapshot.forEach((childSnapshot) => {
-            messages.push({
-                id: childSnapshot.key,
-                text: childSnapshot.val().text,
-                time: childSnapshot.val().time,
-                sender: childSnapshot.val().sender || 'snx'
-            });
-        });
-        messages.reverse();
-        window.renderMessages(messages);
-    });
-}
 
 // ----- 4. 离谱选择器（今天怎么对我）-----
 const离谱选项 = [
