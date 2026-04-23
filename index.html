@@ -2291,6 +2291,143 @@
         div.textContent = text;
         return div.innerHTML;
     }
+    // ============================================
+// 四合一趣味功能：验证码 + 弹窗劫持 + 随机嘴替 + 离谱选择器
+// ============================================
+
+// ----- 1. 胡说八道验证码 -----
+// 在发送消息前拦截，随机要求回答一个无厘头问题
+const originalSendMessage = sendMessage;
+window.sendMessage = function() {
+    // 随机决定是否触发验证码（30%概率，避免太烦人）
+    if (Math.random() < 0.5) {
+        const questions = [
+            { q: "请问：我宝宝是不是最萌的？", correct: "是" },
+            { q: "请问：gsy是世界上最好的人吗？", correct: "是" },
+            { q: "请问：今天想我了吗？", correct: "想了" },
+            { q: "请问：谁最漂亮？", correct: "snx" },
+            { q: "请问：现在应该做什么？", correct: "想你" },
+            { q: "验证一下：你是不是最爱我的？", correct: "是" }
+        ];
+        const randomQ = questions[Math.floor(Math.random() * questions.length)];
+        const answer = prompt(randomQ.q);
+        if (answer !== randomQ.correct) {
+            alert("回答错误！再给你一次机会\n（正确答案：" + randomQ.correct + "）");
+            return; // 不发消息
+        }
+        alert("验证通过");
+    }
+    // 调用原始发送函数
+    originalSendMessage();
+};
+
+// 替换全局的 sendMessage 引用
+sendBtn.onclick = function(e) {
+    e.preventDefault();
+    window.sendMessage();
+    playAudio();
+};
+messageInput.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        window.sendMessage();
+        playAudio();
+    }
+});
+
+// ----- 2. 弹窗劫持 -----
+// 点击任何主要按钮时，有概率弹出调皮弹窗
+const buttonsToHijack = ['yesBtn', 'noBtn', 'sudokuToggleBtn', 'wishToggleBtn', 'newSudoku', 'resetMine'];
+const hijackMessages = [
+    "老婆今天也好漂亮",
+    "你想不想我呀",
+    "系统提示：注意用眼",
+    "看看ootd",
+    "休息一下想我5秒钟 🐾",
+    "检测到大量点击，你在干嘛！",
+];
+
+function maybeHijack() {
+    if (Math.random() < 0.45) { // 25%概率触发
+        const msg = hijackMessages[Math.floor(Math.random() * hijackMessages.length)];
+        setTimeout(() => {
+            alert(msg);
+        }, 50);
+    }
+}
+
+// 劫持原有按钮的点击事件
+const originalYes = yesBtn.onclick;
+yesBtn.onclick = function(e) {
+    maybeHijack();
+    if (originalYes) originalYes.call(this, e);
+};
+const originalNo = noBtn.onclick;
+noBtn.onclick = function(e) {
+    maybeHijack();
+    if (originalNo) originalNo.call(this, e);
+};
+sudokuToggleBtn.addEventListener('click', maybeHijack);
+wishToggleBtn.addEventListener('click', maybeHijack);
+if (newSudoku) newSudoku.addEventListener('click', maybeHijack);
+if (resetMine) resetMine.addEventListener('click', maybeHijack);
+
+// ----- 3. 随机嘴替（帮我回）-----
+const randomReplies = [
+    "你说得对",
+    "我也想你",
+    "今天吃什么",
+    "我错了",
+    "宝宝最漂亮",
+    "抱抱",
+    "哈哈哈哈哈哈",
+    "真的假的",
+    "好哦",
+    "爱你"
+];
+
+// 在输入框旁边添加一个“帮我回”按钮
+const parentDiv = messageInput.parentNode;
+const randomReplyBtn = document.createElement('span');
+randomReplyBtn.textContent = "帮我回";
+randomReplyBtn.style.cssText = "background:rgba(248,200,216,0.3); border-radius:20px; padding:0.2rem 0.8rem; font-size:0.8rem; margin-left:0.5rem; cursor:pointer; border:1px solid #f8c8d8; color:#f8c8d8;";
+randomReplyBtn.onclick = function() {
+    const randomReply = randomReplies[Math.floor(Math.random() * randomReplies.length)];
+    messageInput.value = randomReply;
+    playAudio();
+};
+// 放在发送按钮旁边
+const iconsDiv2 = document.querySelector('.icons');
+if (iconsDiv2) {
+    iconsDiv2.insertBefore(randomReplyBtn, iconsDiv2.firstChild);
+}
+
+// ----- 4. 离谱选择器（今天怎么对我）-----
+const离谱选项 = [
+    "夸我",
+    "说我可爱",
+    "发一个表情包",
+    "说一句我想你",
+    "什么都不用做，今天免费",
+    "给我一个抱抱",
+    "叫我一声宝宝",
+    "今天你请喝奶茶"
+];
+
+// 在次要按钮区域添加一个离谱选择器按钮
+const secondaryDiv = document.querySelector('.secondary-buttons');
+if (secondaryDiv) {
+    const离谱Btn = document.createElement('button');
+    离谱Btn.className = 'btn-small';
+    离谱Btn.innerHTML = '今天要怎么对我';
+    离谱Btn.style.marginLeft = '0.5rem';
+    离谱Btn.onclick = function() {
+        const randomOption = 离谱选项[Math.floor(Math.random() * 离谱选项.length)];
+        alert(`🎲 离谱选择器结果：\n\n「 ${randomOption} 」\n\n截图发给gsy让他照做！`);
+        playAudio();
+    };
+    secondaryDiv.appendChild(离谱Btn);
+}
 </script>
 
 </body>
