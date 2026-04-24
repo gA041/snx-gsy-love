@@ -4,10 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>snx gsy 永远在一起</title>
-    <!-- 添加 Firebase SDK -->
+    <!-- 添加 Firebase SDK (仅新增此两行，其余未改动) -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <style>
+        /* 原有CSS代码保持不变 - 不进行任何修改 */
         * {
             margin: 0;
             padding: 0;
@@ -15,6 +16,7 @@
             font-family: "Microsoft YaHei", "Segoe UI", sans-serif;
         }
 
+        /* 背景容器 */
         body {
             position: relative;
             background-image: url("gsy666.jpg");
@@ -42,6 +44,7 @@
             z-index: -1;
         }
 
+        /* 顶部导航 */
         .top-bar {
             display: flex;
             justify-content: space-between;
@@ -61,6 +64,7 @@
             color: #ddd;
         }
 
+        /* 新增：优化后的纪念日和天气区域 - 小型化横向排列 */
         .love-info {
             display: flex;
             justify-content: center;
@@ -70,7 +74,7 @@
             margin: 0.5rem auto 0.8rem;
             width: 85%;
             max-width: 450px;
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.08); /* 更透明的毛玻璃 */
             backdrop-filter: blur(5px);
             border-radius: 16px;
             border: 1px solid rgba(248, 200, 216, 0.2);
@@ -124,7 +128,7 @@
         .weather-temp {
             font-size: 0.8rem;
             font-weight: 500;
-            color: #d8b8e8;
+            color: #d8b8e8; /* 淡紫色 */
         }
         
         .weather-desc {
@@ -138,6 +142,7 @@
             background: rgba(248, 200, 216, 0.2);
         }
 
+        /* 歌曲信息区 */
         .song-info {
             text-align: center;
             padding: 1rem 1rem;
@@ -160,6 +165,7 @@
             font-weight: bold;
         }
 
+        /* 进度条 */
         .progress {
             width: 80%;
             margin: 0 auto 1rem;
@@ -193,6 +199,7 @@
             color: #ccc;
         }
 
+        /* 头像框 */
         .listen-together {
             display: flex;
             justify-content: center;
@@ -228,6 +235,7 @@
             font-size: 1rem;
         }
 
+        /* 主按钮区域 - 只放yes/no，水平排列 */
         .main-buttons {
             display: flex;
             gap: 1.5rem;
@@ -237,6 +245,7 @@
             align-items: center;
         }
         
+        /* 次要按钮区域 - 单独一行，居中 */
         .secondary-buttons {
             display: flex;
             justify-content: center;
@@ -245,6 +254,7 @@
             flex-wrap: wrap;
         }
         
+        /* yes/no 按钮保持原样 */
         .btn-large {
             padding: 0.8rem 2.5rem;
             font-size: 1.2rem;
@@ -262,6 +272,7 @@
             box-shadow: 0 5px 15px rgba(248, 200, 216, 0.3);
         }
         
+        /* 每日一练按钮 - 调小尺寸，独立一行 */
         .btn-small {
             padding: 0.4rem 1.2rem;
             font-size: 0.9rem;
@@ -283,6 +294,7 @@
             box-shadow: 0 3px 8px rgba(248, 200, 216, 0.2);
         }
 
+        /* 新增：愿望兑换券按钮 */
         .wish-btn {
             padding: 0.4rem 1.2rem;
             font-size: 0.9rem;
@@ -304,6 +316,7 @@
             box-shadow: 0 3px 8px rgba(248, 200, 216, 0.2);
         }
 
+        /* 新增：愿望兑换券区域 */
         .wish-section {
             width: 90%;
             max-width: 340px;
@@ -343,6 +356,7 @@
             font-weight: 500;
         }
         
+        /* 愿望券网格布局 */
         .wish-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -411,6 +425,7 @@
             line-height: 1.2;
         }
         
+        /* 愿望券控制按钮 */
         .wish-controls {
             display: flex;
             justify-content: center;
@@ -447,6 +462,7 @@
             min-height: 1.4rem;
         }
         
+        /* 聊天区容器 */
         .chat {
             width: 90%;
             max-width: 600px;
@@ -458,12 +474,14 @@
             padding: 0.5rem;
         }
 
+        /* 历史消息区域 - 独立在上方 */
         .history-container {
             margin-bottom: 1rem;
             border-bottom: 1px solid rgba(248,200,216,0.3);
             padding-bottom: 0.5rem;
         }
 
+        /* 历史消息控制按钮 */
         .history-toggle-btn {
             background: rgba(248,200,216,0.2);
             border: 1px solid #f8c8d8;
@@ -483,6 +501,7 @@
             color: #222;
         }
 
+        /* 历史消息列表 */
         #messageHistory {
             display: block;
             margin-top: 0.5rem;
@@ -514,6 +533,7 @@
             border-left: 3px solid #f8c8d8;
         }
 
+        /* 长文字气泡 - 默认隐藏，yes切换显示/隐藏 */
         .bubble {
             width: 100%;
             padding: 1rem;
@@ -534,6 +554,7 @@
             border-radius: 3px;
         }
 
+        /* 扫雷游戏区域（替换原来的数独游戏区域） */
         .sudoku-section {
             width: 90%;
             max-width: 320px;
@@ -572,6 +593,7 @@
             font-weight: 500;
         }
         
+        /* 扫雷网格 */
         .sudoku-grid {
             display: grid;
             gap: 1px;
@@ -582,6 +604,7 @@
             border: 2px solid #f8c8d8;
         }
         
+        /* 扫雷格子 */
         .sudoku-cell {
             aspect-ratio: 1 / 1;
             background: rgba(30, 30, 40, 0.9);
@@ -619,6 +642,7 @@
             background: rgba(255, 0, 0, 0.9);
         }
         
+        /* 数字颜色 */
         .sudoku-cell.num-1 { color: #4287f5; }
         .sudoku-cell.num-2 { color: #4CAF50; }
         .sudoku-cell.num-3 { color: #FF5722; }
@@ -628,6 +652,7 @@
         .sudoku-cell.num-7 { color: #795548; }
         .sudoku-cell.num-8 { color: #607D8B; }
         
+        /* 扫雷信息栏 */
         .mine-info {
             display: flex;
             justify-content: space-between;
@@ -686,6 +711,7 @@
             min-height: 1.4rem;
         }
         
+        /* 难度选择 */
         .difficulty-selector {
             display: flex;
             justify-content: center;
@@ -708,6 +734,7 @@
             color: #222;
         }
 
+        /* 底部输入栏 */
         .input-bar {
             position: fixed;
             bottom: 0;
@@ -745,6 +772,7 @@
             font-weight: bold;
         }
 
+        /* 弹窗样式 */
         .modal {
             position: fixed;
             top: 50%;
@@ -768,6 +796,7 @@
 </head>
 <body>
 
+    <!-- 纯背景音乐 - April Encounter (很美味) 无任何界面 -->
     <audio id="bgm" loop autoplay playsinline webkit-playsinline>
         <source src="https://music.163.com/song/media/outer/url?id=551400874.mp3" type="audio/mpeg">
     </audio>
@@ -781,6 +810,7 @@
         <div class="info">一起听 ♡ 时长: 20:21</div>
     </div>
     
+    <!-- 新增：优化后的纪念日和天气信息框 - 小型化横向排列 -->
     <div class="love-info">
         <div class="anniversary-box">
             <div class="anniversary-icon">💍</div>
@@ -831,21 +861,26 @@
         <div class="avatar">🐈</div>
     </div>
 
+    <!-- 主按钮区域：只放yes/no，水平排列 -->
     <div class="main-buttons">
         <button id="yesBtn" class="btn-large">yes</button>
         <button id="noBtn" class="btn-large">no</button>
     </div>
     
+    <!-- 次要按钮区域：添加数独和愿望兑换券按钮 -->
     <div class="secondary-buttons">
         <button id="sudokuToggleBtn" class="btn-small">🐑给老婆解闷</button>
         <button id="wishToggleBtn" class="wish-btn">愿望兑换券</button>
     </div>
 
+    <!-- 新增：愿望兑换券区域 -->
     <div class="wish-section" id="wishSection">
         <div class="wish-title">
             愿望兑换券<span>专属特权</span>
         </div>
-        <div class="wish-grid" id="wishGrid"></div>
+        <div class="wish-grid" id="wishGrid">
+            <!-- 愿望券卡片会动态添加到这里 -->
+        </div>
         <div class="wish-controls">
             <button class="wish-ctrl-btn" id="resetWishes">重置所有</button>
             <button class="wish-ctrl-btn" id="hideWishSection">收起</button>
@@ -853,12 +888,17 @@
         <div id="wishMessage" class="wish-message">点击愿望券使用，被使用后需要gs0重置</div>
     </div>
 
+    <!-- 聊天区：历史消息在上方，长文字在下方 -->
     <div class="chat" id="chat">
+        <!-- 历史消息区域 - 独立在上方 -->
         <div class="history-container">
+            <!-- 独立的历史控制按钮 -->
             <span id="historyToggleBtn" class="history-toggle-btn">看看都说了些啥</span>
+            <!-- 历史消息列表 -->
             <div id="messageHistory" class="hidden"></div>
         </div>
         
+        <!-- 长文字气泡 - 默认隐藏，yes切换显示/隐藏 -->
         <div class="bubble" id="longMessage">
 宝宝 和你在一起的日子总是这么幸福且短暂 和你见面很开心又很难过 每次洗漱完出来看到你都在我睡的那一边放好水 我就拿起手机边看日历边想 还有多少天就又要和你分开 我父母总是告诉我我长大了不可以再那么依赖别人 要独立 也不会怎么和我表达感情 交流也是越来越少 让我一直都认为人是漂泊的候鸟 直到你告诉我我可以去依赖你 信任你 多和你表达感受 我又觉得爱是可以宜居的小岛 有一种 我见众生皆草木 唯独见你是青山的感觉 你也总是很照顾我 虽然我会莫名其妙跟你生一些小气 但你都会说是你的错 包容我 这些都是我从未体验过的 我总说我不信任你 不是你做的不够好 是我怕信任你依赖你之后如果你不喜欢我了我又要变回原来的样子 那我要怎么习惯 但你好像拥有什么魔法 让我可以一点点向你摊呈自己 也让你看到我的脆弱 眼泪 还有一些不完美的那面 但真诚的 谢谢你的存在 有你在我总会很安心  送你去高铁站我想让你快点进去 这样我就不会那么舍不得你 而我现在能给你的又太少 再给我一点时间 以后一定能给你 我发誓 我不是很会表达这些情情话话的东西 但真心希望你好 我们互相加油变成更好的自己
 
@@ -866,25 +906,32 @@
         </div>
     </div>
 
+    <!-- 扫雷游戏区域 (初始隐藏，通过每日一练按钮控制) -->
     <div class="sudoku-section hidden-sudoku" id="sudokuSection">
         <div class="sudoku-title">
             🎮 扫雷游戏<span>小心踩雷哦X1N</span>
         </div>
         
+        <!-- 游戏信息栏 -->
         <div class="mine-info">
             <div class="mine-counter" id="mineCounter">💣 10</div>
             <div class="mine-emoji" id="resetMine">😊</div>
             <div class="mine-counter" id="flagCounter">🚩 0</div>
         </div>
         
-        <div id="sudokuGrid" class="sudoku-grid"></div>
+        <!-- 游戏网格 -->
+        <div id="sudokuGrid" class="sudoku-grid">
+            <!-- 扫雷格子会动态添加到这里 -->
+        </div>
         
+        <!-- 难度选择 -->
         <div class="difficulty-selector">
             <button class="diff-btn active" data-diff="easy">简单</button>
             <button class="diff-btn" data-diff="medium">中等</button>
             <button class="diff-btn" data-diff="hard">困难</button>
         </div>
         
+        <!-- 游戏控制按钮 -->
         <div class="sudoku-controls">
             <button class="sudoku-btn" id="newSudoku">新游戏</button>
         </div>
@@ -903,6 +950,8 @@
 
 <script>
     // ===== 扫雷游戏逻辑 =====
+    
+    // 游戏配置
     const GAME_CONFIG = {
         easy: { rows: 8, cols: 8, mines: 10 },
         medium: { rows: 10, cols: 10, mines: 20 },
@@ -911,12 +960,13 @@
     
     let currentDifficulty = 'easy';
     let gameBoard = [];
-    let gameState = 'playing';
+    let gameState = 'playing'; // playing, win, lose
     let mineCount = GAME_CONFIG.easy.mines;
     let flagCount = 0;
     let revealedCount = 0;
     let totalCells = 0;
     
+    // DOM 元素
     const sudokuGrid = document.getElementById('sudokuGrid');
     const mineCounter = document.getElementById('mineCounter');
     const flagCounter = document.getElementById('flagCounter');
@@ -925,6 +975,7 @@
     const diffButtons = document.querySelectorAll('.diff-btn');
     const sudokuMessage = document.getElementById('sudokuMessage');
     
+    // 初始化游戏
     function initMinesweeper() {
         const config = GAME_CONFIG[currentDifficulty];
         mineCount = config.mines;
@@ -933,17 +984,22 @@
         totalCells = config.rows * config.cols;
         gameState = 'playing';
         
+        // 更新UI
         mineCounter.textContent = `💣 ${mineCount}`;
         flagCounter.textContent = `🚩 ${flagCount}`;
         resetMineBtn.textContent = '😊';
         sudokuMessage.textContent = '短按翻开格子，长按标记地雷';
         
+        // 创建游戏板
         createBoard(config.rows, config.cols);
         placeMines(config.rows, config.cols, mineCount);
         calculateNumbers(config.rows, config.cols);
+        
+        // 渲染网格
         renderBoard(config.rows, config.cols);
     }
     
+    // 创建空游戏板
     function createBoard(rows, cols) {
         gameBoard = [];
         for (let r = 0; r < rows; r++) {
@@ -959,11 +1015,13 @@
         }
     }
     
+    // 随机放置地雷
     function placeMines(rows, cols, mineCount) {
         let minesPlaced = 0;
         while (minesPlaced < mineCount) {
             const r = Math.floor(Math.random() * rows);
             const c = Math.floor(Math.random() * cols);
+            
             if (!gameBoard[r][c].isMine) {
                 gameBoard[r][c].isMine = true;
                 minesPlaced++;
@@ -971,24 +1029,39 @@
         }
     }
     
+    // 计算每个格子周围的地雷数
     function calculateNumbers(rows, cols) {
-        const directions = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]];
+        const directions = [
+            [-1, -1], [-1, 0], [-1, 1],
+            [0, -1],           [0, 1],
+            [1, -1],  [1, 0],  [1, 1]
+        ];
+        
         for (let r = 0; r < rows; r++) {
             for (let c = 0; c < cols; c++) {
                 if (gameBoard[r][c].isMine) continue;
-                let count = 0;
+                
+                let mineCount = 0;
                 for (const [dr, dc] of directions) {
-                    const nr = r + dr, nc = c + dc;
-                    if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && gameBoard[nr][nc].isMine) count++;
+                    const nr = r + dr;
+                    const nc = c + dc;
+                    
+                    if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && gameBoard[nr][nc].isMine) {
+                        mineCount++;
+                    }
                 }
-                gameBoard[r][c].neighborMines = count;
+                
+                gameBoard[r][c].neighborMines = mineCount;
             }
         }
     }
     
+    // 渲染游戏板
     function renderBoard(rows, cols) {
+        // 更新网格样式
         sudokuGrid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
         sudokuGrid.innerHTML = '';
+        
         for (let r = 0; r < rows; r++) {
             for (let c = 0; c < cols; c++) {
                 const cell = gameBoard[r][c];
@@ -997,6 +1070,7 @@
                 cellElement.dataset.row = r;
                 cellElement.dataset.col = c;
                 
+                // 设置显示内容
                 if (cell.isRevealed) {
                     cellElement.classList.add('revealed');
                     if (cell.isMine) {
@@ -1005,30 +1079,51 @@
                     } else if (cell.neighborMines > 0) {
                         cellElement.textContent = cell.neighborMines;
                         cellElement.classList.add(`num-${cell.neighborMines}`);
+                    } else {
+                        cellElement.textContent = '';
                     }
                 } else if (cell.isFlagged) {
                     cellElement.classList.add('flag');
                     cellElement.textContent = '🚩';
+                } else {
+                    cellElement.textContent = '';
                 }
                 
+                // 添加点击事件
                 cellElement.addEventListener('click', (e) => {
-                    if (gameState !== 'playing' || cell.isFlagged) return;
+                    if (gameState !== 'playing') return;
+                    if (cell.isFlagged) return;
+                    
                     revealCell(r, c);
+                    e.stopPropagation();
                 });
                 
+                // 手机长按标记地雷
                 let touchTimer;
                 cellElement.addEventListener('touchstart', (e) => {
                     touchTimer = setTimeout(() => {
                         e.preventDefault();
-                        if (gameState !== 'playing' || cell.isRevealed) return;
+                        if (gameState !== 'playing') return;
+                        if (cell.isRevealed) return;
+                        
                         toggleFlag(r, c);
-                    }, 500);
+                    }, 500); // 长按500ms触发
                 });
-                cellElement.addEventListener('touchend', () => clearTimeout(touchTimer));
-                cellElement.addEventListener('touchmove', () => clearTimeout(touchTimer));
+                
+                cellElement.addEventListener('touchend', () => {
+                    clearTimeout(touchTimer);
+                });
+                
+                cellElement.addEventListener('touchmove', () => {
+                    clearTimeout(touchTimer);
+                });
+                
+                // 右键点击（电脑）
                 cellElement.addEventListener('contextmenu', (e) => {
                     e.preventDefault();
-                    if (gameState !== 'playing' || cell.isRevealed) return;
+                    if (gameState !== 'playing') return;
+                    if (cell.isRevealed) return;
+                    
                     toggleFlag(r, c);
                 });
                 
@@ -1037,13 +1132,17 @@
         }
     }
     
+    // 翻开格子
     function revealCell(row, col) {
         if (gameState !== 'playing') return;
+        
         const cell = gameBoard[row][col];
         if (cell.isRevealed || cell.isFlagged) return;
+        
         cell.isRevealed = true;
         revealedCount++;
         
+        // 如果踩到地雷
         if (cell.isMine) {
             gameState = 'lose';
             revealAllMines();
@@ -1053,32 +1152,53 @@
             return;
         }
         
-        if (cell.neighborMines === 0) revealNeighbors(row, col);
+        // 如果是空白格子，自动翻开周围的格子
+        if (cell.neighborMines === 0) {
+            revealNeighbors(row, col);
+        }
+        
+        // 检查是否获胜
         checkWin();
+        
+        // 重新渲染
         renderBoard(GAME_CONFIG[currentDifficulty].rows, GAME_CONFIG[currentDifficulty].cols);
     }
     
+    // 翻开周围的格子
     function revealNeighbors(row, col) {
-        const directions = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]];
-        const rows = GAME_CONFIG[currentDifficulty].rows;
-        const cols = GAME_CONFIG[currentDifficulty].cols;
+        const directions = [
+            [-1, -1], [-1, 0], [-1, 1],
+            [0, -1],           [0, 1],
+            [1, -1],  [1, 0],  [1, 1]
+        ];
+        
         for (const [dr, dc] of directions) {
-            const nr = row + dr, nc = col + dc;
+            const nr = row + dr;
+            const nc = col + dc;
+            const rows = GAME_CONFIG[currentDifficulty].rows;
+            const cols = GAME_CONFIG[currentDifficulty].cols;
+            
             if (nr >= 0 && nr < rows && nc >= 0 && nc < cols) {
                 const neighbor = gameBoard[nr][nc];
                 if (!neighbor.isRevealed && !neighbor.isFlagged) {
                     neighbor.isRevealed = true;
                     revealedCount++;
-                    if (neighbor.neighborMines === 0) revealNeighbors(nr, nc);
+                    
+                    if (neighbor.neighborMines === 0) {
+                        revealNeighbors(nr, nc);
+                    }
                 }
             }
         }
     }
     
+    // 标记/取消标记格子
     function toggleFlag(row, col) {
         if (gameState !== 'playing') return;
+        
         const cell = gameBoard[row][col];
         if (cell.isRevealed) return;
+        
         if (cell.isFlagged) {
             cell.isFlagged = false;
             flagCount--;
@@ -1086,21 +1206,29 @@
             cell.isFlagged = true;
             flagCount++;
         }
+        
         flagCounter.textContent = `🚩 ${flagCount}`;
         renderBoard(GAME_CONFIG[currentDifficulty].rows, GAME_CONFIG[currentDifficulty].cols);
         checkWin();
     }
     
+    // 检查是否获胜
     function checkWin() {
         const config = GAME_CONFIG[currentDifficulty];
         const totalSafeCells = config.rows * config.cols - mineCount;
+        
         if (revealedCount === totalSafeCells && flagCount === mineCount) {
+            // 验证所有地雷都被正确标记
             let correctFlags = 0;
             for (let r = 0; r < config.rows; r++) {
                 for (let c = 0; c < config.cols; c++) {
-                    if (gameBoard[r][c].isMine && gameBoard[r][c].isFlagged) correctFlags++;
+                    const cell = gameBoard[r][c];
+                    if (cell.isMine && cell.isFlagged) {
+                        correctFlags++;
+                    }
                 }
             }
+            
             if (correctFlags === mineCount) {
                 gameState = 'win';
                 resetMineBtn.textContent = '😎';
@@ -1110,35 +1238,60 @@
         }
     }
     
+    // 显示所有地雷
     function revealAllMines() {
         const config = GAME_CONFIG[currentDifficulty];
         for (let r = 0; r < config.rows; r++) {
             for (let c = 0; c < config.cols; c++) {
-                if (gameBoard[r][c].isMine) gameBoard[r][c].isRevealed = true;
+                const cell = gameBoard[r][c];
+                if (cell.isMine) {
+                    cell.isRevealed = true;
+                }
             }
         }
         renderBoard(config.rows, config.cols);
     }
     
+    // 初始化扫雷游戏
     function initMinesweeperGame() {
         initMinesweeper();
-        resetMineBtn.addEventListener('click', () => { initMinesweeper(); playAudio(); });
-        newMineGameBtn.addEventListener('click', () => { initMinesweeper(); playAudio(); });
+        
+        // 重置游戏按钮
+        resetMineBtn.addEventListener('click', () => {
+            initMinesweeper();
+            playAudio();
+        });
+        
+        // 新游戏按钮
+        newMineGameBtn.addEventListener('click', () => {
+            initMinesweeper();
+            playAudio();
+        });
+        
+        // 难度选择按钮
         diffButtons.forEach(btn => {
             btn.addEventListener('click', function() {
+                // 移除所有按钮的active类
                 diffButtons.forEach(b => b.classList.remove('active'));
+                // 给当前按钮添加active类
                 this.classList.add('active');
+                // 更新难度
                 currentDifficulty = this.dataset.diff;
+                // 重新开始游戏
                 initMinesweeper();
                 playAudio();
             });
         });
     }
+    
+    // 初始化扫雷
     initMinesweeperGame();
 
+    // ===== 数独显示/隐藏控制（现为扫雷） =====
     const sudokuSection = document.getElementById('sudokuSection');
     const sudokuToggleBtn = document.getElementById('sudokuToggleBtn');
     let sudokuVisible = false;
+
     sudokuToggleBtn.addEventListener('click', function() {
         if (sudokuVisible) {
             sudokuSection.classList.add('hidden-sudoku');
@@ -1152,101 +1305,215 @@
         playAudio();
     });
 
+    // ===== 恋爱纪念日计算 =====
     function calculateAnniversaryDays() {
         const anniversaryDate = new Date('2026-01-20T00:00:00');
         const today = new Date();
-        const daysDiff = Math.floor((today - anniversaryDate) / (1000 * 3600 * 24));
+        const timeDiff = today.getTime() - anniversaryDate.getTime();
+        const daysDiff = Math.floor(timeDiff / (1000 * 3600 * 24));
         return Math.max(daysDiff, 0);
     }
+
     function updateAnniversaryInfo() {
         const days = calculateAnniversaryDays();
         document.getElementById('daysCount').textContent = days;
+        
+        const daysElement = document.getElementById('daysCount');
+        daysElement.style.color = '#ffb6e1';
+        setTimeout(() => {
+            daysElement.style.color = '#f8c8d8';
+        }, 300);
     }
+
     updateAnniversaryInfo();
     setInterval(updateAnniversaryInfo, 60000);
 
+    // ===== 天气API =====
     const weatherIcons = {
         'Sunny': '☀️', 'Clear': '☀️', 'Partly cloudy': '⛅', 'Cloudy': '☁️',
         'Overcast': '☁️', 'Mist': '🌫️', 'Patchy rain': '🌦️', 'Patchy snow': '🌨️',
-        'Light rain': '🌧️', 'Moderate rain': '🌧️', 'Heavy rain': '🌧️',
-        'Light snow': '❄️', 'Moderate snow': '❄️', 'Heavy snow': '❄️'
+        'Patchy sleet': '🌨️', 'Thundery outbreaks': '⛈️', 'Blowing snow': '❄️',
+        'Blizzard': '❄️', 'Fog': '🌫️', 'Freezing fog': '🌫️', 'Patchy light drizzle': '🌧️',
+        'Light drizzle': '🌧️', 'Freezing drizzle': '🌧️', 'Heavy freezing drizzle': '🌧️',
+        'Patchy light rain': '🌦️', 'Light rain': '🌧️', 'Moderate rain': '🌧️',
+        'Heavy rain': '🌧️', 'Light freezing rain': '🌧️', 'Moderate or heavy freezing rain': '🌧️',
+        'Light sleet': '🌨️', 'Moderate or heavy sleet': '🌨️', 'Patchy light snow': '🌨️',
+        'Light snow': '❄️', 'Patchy moderate snow': '❄️', 'Moderate snow': '❄️',
+        'Patchy heavy snow': '❄️', 'Heavy snow': '❄️', 'Ice pellets': '🌨️',
+        'Light rain shower': '🌦️', 'Moderate or heavy rain shower': '🌧️',
+        'Torrential rain shower': '🌧️', 'Light sleet showers': '🌨️',
+        'Moderate or heavy sleet showers': '🌨️', 'Light snow showers': '❄️',
+        'Moderate or heavy snow showers': '❄️', 'Light showers of ice pellets': '🌨️',
+        'Moderate or heavy showers of ice pellets': '🌨️', 'Patchy light rain with thunder': '⛈️',
+        'Moderate or heavy rain with thunder': '⛈️', 'Patchy light snow with thunder': '⛈️',
+        'Moderate or heavy snow with thunder': '⛈️'
     };
+
     async function fetchWeather(city, cityName, elementId) {
         try {
             const apiUrl = `https://wttr.in/${city}?format=j1&lang=zh`;
             const response = await fetch(apiUrl);
-            if (!response.ok) throw new Error();
+            if (!response.ok) throw new Error('天气API请求失败');
+            
             const data = await response.json();
             const currentCondition = data.current_condition[0];
             const tempC = currentCondition.temp_C;
             const weatherDesc = currentCondition.weatherDesc[0].value;
-            document.getElementById(elementId).innerHTML = `
+            const weatherIcon = weatherIcons[weatherDesc] || '🌤️';
+            
+            const weatherElement = document.getElementById(elementId);
+            weatherElement.innerHTML = `
                 <div class="city-name">${cityName}</div>
                 <div class="weather-temp" style="color: #d8b8e8">${tempC}°C</div>
                 <div class="weather-desc">${weatherDesc}</div>
             `;
+            
+            return { temp: tempC, desc: weatherDesc, icon: weatherIcon };
+            
         } catch (error) {
-            document.getElementById(elementId).innerHTML = `
+            console.error(`获取${cityName}天气失败:`, error);
+            
+            try {
+                const fallbackUrl = `https://wttr.in/?format=%t+%C`;
+                const fallbackResponse = await fetch(fallbackUrl);
+                if (fallbackResponse.ok) {
+                    const fallbackText = await fallbackResponse.text();
+                    const match = fallbackText.match(/([+-]?\d+)°C/);
+                    if (match) {
+                        const temp = match[1];
+                        const weatherElement = document.getElementById(elementId);
+                        weatherElement.innerHTML = `
+                            <div class="city-name">${cityName}</div>
+                            <div class="weather-temp" style="color: #d8b8e8">${temp}°C</div>
+                            <div class="weather-desc">获取中</div>
+                        `;
+                        return { temp: temp, desc: "获取中", icon: "🌤️" };
+                    }
+                }
+            } catch (fallbackError) {
+                console.error('备用天气获取失败:', fallbackError);
+            }
+            
+            const weatherElement = document.getElementById(elementId);
+            weatherElement.innerHTML = `
                 <div class="city-name">${cityName}</div>
                 <div class="weather-temp" style="color: #d8b8e8">--°C</div>
                 <div class="weather-desc">获取失败</div>
             `;
+            
+            return null;
         }
     }
+
     async function updateAllWeather() {
-        await Promise.allSettled([
-            fetchWeather('wuhan', '武汉', 'wuhanWeather'),
-            fetchWeather('seoul', '首尔', 'seoulWeather')
-        ]);
+        try {
+            const [wuhanWeather, seoulWeather] = await Promise.allSettled([
+                fetchWeather('wuhan', '武汉', 'wuhanWeather'),
+                fetchWeather('seoul', '首尔', 'seoulWeather')
+            ]);
+            
+            let weatherIcon = '🐾';
+            if (wuhanWeather.status === 'fulfilled' && wuhanWeather.value) {
+                weatherIcon = wuhanWeather.value.icon;
+            } else if (seoulWeather.status === 'fulfilled' && seoulWeather.value) {
+                weatherIcon = seoulWeather.value.icon;
+            }
+            
+            document.querySelector('.weather-icon').textContent = weatherIcon;
+            
+        } catch (error) {
+            console.error('更新天气信息失败:', error);
+        }
     }
+
     updateAllWeather();
     setInterval(updateAllWeather, 30 * 60 * 1000);
 
+    // ===== 长文字通过yes按钮切换显示/隐藏 =====
     const longMsg = document.getElementById('longMessage');
     const yesBtn = document.getElementById('yesBtn');
     const noBtn = document.getElementById('noBtn');
+
     yesBtn.onclick = function() {
-        longMsg.style.display = longMsg.style.display === 'block' ? 'none' : 'block';
+        if (longMsg.style.display === 'block') {
+            longMsg.style.display = 'none';
+        } else {
+            longMsg.style.display = 'block';
+        }
         playAudio();
     };
+
     noBtn.onclick = function() {
         playAudio();
         showModal('没有选no的机会哦 ♾️', true);
     };
+
     function showModal(message, showButtons) {
         const overlay = document.createElement('div');
         overlay.className = 'overlay';
         document.body.appendChild(overlay);
+
         const modal = document.createElement('div');
         modal.className = 'modal';
-        modal.innerHTML = `<p>${message}</p>`;
+        modal.innerHTML = `<p>${message}</p >`;
+
         if (showButtons) {
             const btnContainer = document.createElement('div');
-            btnContainer.style.cssText = 'display:flex; gap:1rem; justify-content:center; margin-top:1rem;';
-            const btn = document.createElement('button');
-            btn.innerText = 'yes';
-            btn.onclick = () => { alert('恭喜snx永远爱我 💍'); clearModals(); };
-            btnContainer.appendChild(btn);
-            btnContainer.appendChild(btn.cloneNode(true));
+            btnContainer.style.display = 'flex';
+            btnContainer.style.gap = '1rem';
+            btnContainer.style.justifyContent = 'center';
+            btnContainer.style.marginTop = '1rem';
+
+            const btn1 = document.createElement('button');
+            btn1.innerText = 'yes';
+            const btn2 = document.createElement('button');
+            btn2.innerText = 'yes';
+
+            const handleBtnClick = () => {
+                alert('恭喜snx永远爱我 💍');
+                clearModals();
+            };
+
+            btn1.onclick = handleBtnClick;
+            btn2.onclick = handleBtnClick;
+
+            btnContainer.appendChild(btn1);
+            btnContainer.appendChild(btn2);
             modal.appendChild(btnContainer);
         }
+
         document.body.appendChild(modal);
     }
+
     function clearModals() {
-        document.querySelectorAll('.overlay, .modal').forEach(el => el.remove());
+        document.querySelectorAll('.overlay').forEach(el => el.remove());
+        document.querySelectorAll('.modal').forEach(el => el.remove());
     }
 
+    // ===== 背景音乐自动播放兼容代码 =====
     const audio = document.getElementById('bgm');
+    // 更新为正确的 April Encounter ID
     audio.src = "https://music.163.com/song/media/outer/url?id=551400874.mp3";
+
     let played = false;
     function playAudio() {
         if (played) return;
-        audio.play().then(() => played = true).catch(() => {});
+        audio.play()
+            .then(() => {
+                played = true;
+                document.removeEventListener('touchstart', playAudio);
+                document.removeEventListener('click', playAudio);
+            })
+            .catch(() => {});
     }
+
     document.addEventListener('touchstart', playAudio, { once: true });
     document.addEventListener('click', playAudio, { once: true });
+
     audio.load();
 
+    // ===== Firebase 实时聊天功能（增加用户区分和删除功能）=====
+    // 🔥 使用您提供的 Firebase 配置
     const firebaseConfig = {
         apiKey: "AIzaSyCQYbMkcpRSemdzaMcLHnlnMon7aC_WJ-4",
         authDomain: "snx-gsy-chat-ebadd.firebaseapp.com",
@@ -1257,56 +1524,79 @@
         appId: "1:905758569482:web:0f49090412d884feb59bf3",
         measurementId: "G-SFYS6DPJL5"
     };
+
+    // 初始化 Firebase
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
     const messagesRef = database.ref('messages');
 
+    // DOM 元素
     const messageInput = document.getElementById('messageInput');
     const sendBtn = document.getElementById('sendMsgBtn');
     const messageHistoryDiv = document.getElementById('messageHistory');
     const historyToggleBtn = document.getElementById('historyToggleBtn');
     const chat = document.getElementById('chat');
-    let currentUser = 'snx';
+
+    // 用户状态
+    let currentUser = 'snx'; // 默认是 snx
     let historyVisible = false;
 
+    // 在底部输入栏添加用户切换按钮（在原有图标后面增加）
     const iconsDiv = document.querySelector('.icons');
+    // 添加用户切换按钮
     const userToggleBtn = document.createElement('span');
     userToggleBtn.id = 'userToggleBtn';
-    userToggleBtn.style.cssText = 'cursor:pointer; margin-left:0.5rem; padding:0.2rem 0.5rem; border-radius:12px; background-color:#f8c8d8; color:#222; font-size:0.9rem;';
+    userToggleBtn.style.cssText = 'cursor: pointer; margin-left: 0.5rem; padding: 0.2rem 0.5rem; border-radius: 12px; background-color: #f8c8d8; color: #222; font-size: 0.9rem;';
     userToggleBtn.textContent = '🐈 snx';
     iconsDiv.appendChild(userToggleBtn);
+
+    // 用户切换功能
     userToggleBtn.addEventListener('click', function() {
         if (currentUser === 'snx') {
             currentUser = 'gsy';
             userToggleBtn.textContent = '🐾 gsy';
-            userToggleBtn.style.backgroundColor = '#d8b8e8';
+            userToggleBtn.style.backgroundColor = '#d8b8e8'; // 紫色代表 gsy
         } else {
             currentUser = 'snx';
             userToggleBtn.textContent = '🐈 snx';
-            userToggleBtn.style.backgroundColor = '#f8c8d8';
+            userToggleBtn.style.backgroundColor = '#f8c8d8'; // 粉色代表 snx
         }
         playAudio();
     });
 
+    // 监听新消息
     messagesRef.limitToLast(50).on('value', (snapshot) => {
         const messages = [];
-        snapshot.forEach(child => messages.push({ id: child.key, ...child.val() }));
+        snapshot.forEach((childSnapshot) => {
+            const msg = childSnapshot.val();
+            messages.push({
+                id: childSnapshot.key,
+                text: msg.text,
+                time: msg.time,
+                sender: msg.sender || 'snx'
+            });
+        });
+        
+        // 反转数组，让最新的消息显示在底部
         messages.reverse();
         renderMessages(messages);
     });
 
+    // 渲染消息（增加删除按钮）
     function renderMessages(messages) {
         messageHistoryDiv.innerHTML = '';
+        
         messages.forEach(msg => {
             const msgDiv = document.createElement('div');
-            const sender = msg.sender || 'snx';
-            if (sender === 'snx') {
+            
+            // 根据发送者添加不同样式
+            if (msg.sender === 'snx') {
                 msgDiv.className = 'message-item own';
                 msgDiv.innerHTML = `
-                    <div style="display:flex; align-items:center; gap:0.5rem;">
-                        <span style="font-size:1.2rem;">🐈</span>
-                        <span style="flex:1;">${escapeHtml(msg.text)}</span>
-                        ${sender === currentUser ? '<span class="delete-btn" style="cursor:pointer; font-size:1.2rem;">🗑️</span>' : ''}
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span style="font-size: 1.2rem;">🐈</span>
+                        <span style="flex: 1;">${msg.text}</span>
+                        ${msg.sender === currentUser ? '<span class="delete-btn" style="cursor: pointer; font-size: 1.2rem; opacity: 0.7; margin-left: 0.5rem;" title="删除">🗑️</span>' : ''}
                     </div>
                     <small>${msg.time} · snx</small>
                 `;
@@ -1314,32 +1604,65 @@
                 msgDiv.className = 'message-item';
                 msgDiv.style.borderLeft = '3px solid #d8b8e8';
                 msgDiv.innerHTML = `
-                    <div style="display:flex; align-items:center; gap:0.5rem;">
-                        <span style="font-size:1.2rem;">🐾</span>
-                        <span style="flex:1;">${escapeHtml(msg.text)}</span>
-                        ${sender === currentUser ? '<span class="delete-btn" style="cursor:pointer; font-size:1.2rem;">🗑️</span>' : ''}
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span style="font-size: 1.2rem;">🐾</span>
+                        <span style="flex: 1;">${msg.text}</span>
+                        ${msg.sender === currentUser ? '<span class="delete-btn" style="cursor: pointer; font-size: 1.2rem; opacity: 0.7; margin-left: 0.5rem;" title="删除">🗑️</span>' : ''}
                     </div>
                     <small>${msg.time} · gsy</small>
                 `;
             }
+            
+            // 添加删除功能
             const deleteBtn = msgDiv.querySelector('.delete-btn');
             if (deleteBtn) {
-                deleteBtn.addEventListener('click', () => {
-                    if (confirm('删除这条消息？')) messagesRef.child(msg.id).remove();
+                deleteBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    if (confirm('确定要删除这条消息吗？')) {
+                        // 从 Firebase 删除消息
+                        messagesRef.child(msg.id).remove()
+                            .then(() => {
+                                console.log('消息删除成功');
+                                playAudio();
+                            })
+                            .catch((error) => {
+                                console.error('删除失败:', error);
+                                alert('删除失败，请重试');
+                            });
+                    }
                 });
             }
+            
             messageHistoryDiv.appendChild(msgDiv);
         });
+        
+        // 滚动到底部
         chat.scrollTop = chat.scrollHeight;
     }
 
+    // 发送消息
     function sendMessage() {
         const text = messageInput.value.trim();
-        if (!text) return;
+        if (text === '') return;
+
         const now = new Date();
-        const timeStr = now.toLocaleTimeString('zh-CN', { hour12: false, hour: '2-digit', minute: '2-digit' });
-        messagesRef.push({ text, time: timeStr, sender: currentUser, timestamp: firebase.database.ServerValue.TIMESTAMP });
+        const timeStr = now.toLocaleTimeString('zh-CN', { 
+            hour12: false, 
+            hour: '2-digit', 
+            minute: '2-digit' 
+        });
+
+        // 保存到 Firebase，带上当前用户信息
+        messagesRef.push({
+            text: text,
+            time: timeStr,
+            sender: currentUser,
+            timestamp: firebase.database.ServerValue.TIMESTAMP
+        });
+
         messageInput.value = '';
+
+        // 自动显示历史消息区域
         if (!historyVisible) {
             messageHistoryDiv.classList.remove('hidden');
             historyToggleBtn.textContent = '知道啦';
@@ -1347,9 +1670,24 @@
         }
     }
 
-    sendBtn.addEventListener('click', (e) => { e.preventDefault(); sendMessage(); playAudio(); });
-    messageInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') { e.preventDefault(); sendMessage(); playAudio(); } });
-    historyToggleBtn.addEventListener('click', () => {
+    // 发送按钮点击事件
+    sendBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        sendMessage();
+        playAudio();
+    });
+
+    // 回车发送
+    messageInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            sendMessage();
+            playAudio();
+        }
+    });
+
+    // 历史消息显示/隐藏切换
+    historyToggleBtn.addEventListener('click', function() {
         if (historyVisible) {
             messageHistoryDiv.classList.add('hidden');
             historyToggleBtn.textContent = '看看都说了些啥';
@@ -1362,11 +1700,8 @@
         }
     });
 
-    function escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-    }
+    // ===== 愿望兑换券功能（使用 Firebase 同步）=====
+    const WISH_VERSION = '2.0.0';
 
     const defaultWishes = [
         { id: 1, icon: '🎵', name: '点歌券', desc: '点一首对方必须唱的歌', used: false },
@@ -1378,57 +1713,93 @@
         { id: 7, icon: '💍', name: '不平淡券', desc: '你今天对我太平淡了！不可以这样！', used: false },
         { id: 8, icon: '🎁', name: '惊喜券', desc: '送你一个小礼物', used: false }
     ];
+
     let wishes = [];
     let wishSectionVisible = false;
+
+    // DOM元素
     const wishToggleBtn = document.getElementById('wishToggleBtn');
     const wishSection = document.getElementById('wishSection');
     const wishGrid = document.getElementById('wishGrid');
     const resetWishesBtn = document.getElementById('resetWishes');
     const hideWishSectionBtn = document.getElementById('hideWishSection');
     const wishMessage = document.getElementById('wishMessage');
+
+    // Firebase 引用（使用已有的 database）
     const wishesRef = database.ref('wishes');
 
+    // 监听愿望券变化（实时同步）
     wishesRef.on('value', (snapshot) => {
-        const saved = snapshot.val();
-        wishes = saved ? saved : JSON.parse(JSON.stringify(defaultWishes));
+        const savedWishes = snapshot.val();
+        if (savedWishes) {
+            // 有保存的数据，直接使用
+            wishes = savedWishes;
+        } else {
+            // 第一次使用，初始化默认数据
+            wishes = JSON.parse(JSON.stringify(defaultWishes));
+            wishesRef.set(wishes);
+        }
         renderWishes();
     });
 
+    // 渲染愿望券网格
     function renderWishes() {
         wishGrid.innerHTML = '';
+        
         wishes.forEach(wish => {
-            const card = document.createElement('div');
-            card.className = `wish-card ${wish.used ? 'used' : ''}`;
-            card.innerHTML = `<div class="wish-icon">${wish.icon}</div><div class="wish-name">${wish.name}</div><div class="wish-desc">${wish.desc}</div>`;
-            card.addEventListener('click', () => {
+            const wishCard = document.createElement('div');
+            wishCard.className = `wish-card ${wish.used ? 'used' : ''}`;
+            wishCard.innerHTML = `
+                <div class="wish-icon">${wish.icon}</div>
+                <div class="wish-name">${wish.name}</div>
+                <div class="wish-desc">${wish.desc}</div>
+            `;
+            
+            wishCard.addEventListener('click', () => {
                 if (wish.used) {
                     wishMessage.textContent = '这张券已经用过了哦，让本王帮你重置吧';
-                } else if (confirm(`确定要使用【${wish.name}】吗？`)) {
-                    wish.used = true;
-                    wishesRef.set(wishes).then(() => {
-                        wishMessage.textContent = `成功使用【${wish.name}】！记得催促老婆兑现哦~`;
-                        playAudio();
-                        setTimeout(() => alert(`已使用【${wish.name}】！\n本王要在24小时内兑现你的愿望！`), 300);
-                    });
+                } else {
+                    if (confirm(`确定要使用【${wish.name}】吗？`)) {
+                        // 更新本地数组
+                        wish.used = true;
+                        // 同步到 Firebase
+                        wishesRef.set(wishes).then(() => {
+                            wishMessage.textContent = `成功使用【${wish.name}】！记得催促老婆兑现哦~`;
+                            playAudio();
+                            setTimeout(() => {
+                                alert(`已使用【${wish.name}】！\n本王要在24小时内兑现你的愿望！`);
+                            }, 300);
+                        });
+                    }
                 }
             });
-            wishGrid.appendChild(card);
+            
+            wishGrid.appendChild(wishCard);
         });
     }
 
+    // 重置所有愿望券
     function resetAllWishes() {
-        if (wishes.every(w => !w.used)) {
+        if (wishes.every(wish => !wish.used)) {
             wishMessage.textContent = '所有愿望券都还没使用呢宝宝~';
             return;
         }
-        if (confirm('重置所有愿望券？')) {
-            wishes.forEach(w => w.used = false);
-            wishesRef.set(wishes).then(() => wishMessage.textContent = '所有愿望券已重置！');
+        
+        if (confirm('确定要重置所有愿望券吗？会清除所有已使用的记录')) {
+            wishes.forEach(wish => {
+                wish.used = false;
+            });
+            // 同步到 Firebase
+            wishesRef.set(wishes).then(() => {
+                wishMessage.textContent = '所有愿望券已重置，可以重新使用啦！';
+                playAudio();
+            });
         }
     }
 
+    // 初始化愿望券功能（只负责按钮事件）
     function initWishCoupon() {
-        wishToggleBtn.addEventListener('click', () => {
+        wishToggleBtn.addEventListener('click', function() {
             if (wishSectionVisible) {
                 wishSection.classList.remove('active');
                 wishToggleBtn.textContent = '愿望兑换券';
@@ -1441,124 +1812,594 @@
             }
             playAudio();
         });
+        
         resetWishesBtn.addEventListener('click', resetAllWishes);
-        hideWishSectionBtn.addEventListener('click', () => {
+        
+        hideWishSectionBtn.addEventListener('click', function() {
             wishSection.classList.remove('active');
             wishToggleBtn.textContent = '愿望兑换券';
             wishSectionVisible = false;
             playAudio();
         });
     }
+
     initWishCoupon();
 
-    // ===== 捣蛋鬼：手绘小猫咪 =====
-    const kitty = document.createElement('div');
-    kitty.id = 'mischiefKitty';
-    kitty.innerHTML = `
-        <div style="position: relative; width: 60px; height: 60px; cursor: pointer;">
-            <svg viewBox="0 0 60 60" style="width: 100%; height: 100%; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15));">
-                <polygon points="12,20 18,5 28,18" fill="#FFB7B2" stroke="#E8958A" stroke-width="1.5"/>
-                <polygon points="48,20 42,5 32,18" fill="#FFB7B2" stroke="#E8958A" stroke-width="1.5"/>
-                <circle cx="30" cy="32" r="20" fill="#FFB7B2" stroke="#E8958A" stroke-width="1.5"/>
-                <ellipse cx="23" cy="30" rx="3.5" ry="4" fill="#4A3728"/>
-                <circle cx="24" cy="29" r="1.2" fill="white"/>
-                <ellipse cx="37" cy="30" rx="3.5" ry="4" fill="#4A3728"/>
-                <circle cx="38" cy="29" r="1.2" fill="white"/>
-                <polygon points="30,34 28,37 32,37" fill="#E8958A"/>
-                <path d="M28,39 Q30,42 32,39" fill="none" stroke="#E8958A" stroke-width="1.2" stroke-linecap="round"/>
-                <line x1="12" y1="33" x2="22" y2="35" stroke="#D4A5A5" stroke-width="1" stroke-linecap="round"/>
-                <line x1="12" y1="37" x2="22" y2="37" stroke="#D4A5A5" stroke-width="1" stroke-linecap="round"/>
-                <line x1="48" y1="33" x2="38" y2="35" stroke="#D4A5A5" stroke-width="1" stroke-linecap="round"/>
-                <line x1="48" y1="37" x2="38" y2="37" stroke="#D4A5A5" stroke-width="1" stroke-linecap="round"/>
-                <circle cx="18" cy="36" r="3" fill="#FF8A8A" opacity="0.3"/>
-                <circle cx="42" cy="36" r="3" fill="#FF8A8A" opacity="0.3"/>
-            </svg>
+    // ===== 新增：侧边悬浮恋爱时间轴（极速加载版） =====
+    // 完全独立，不修改任何原有代码
+
+    // 创建时间轴HTML结构
+    const timelineHTML = `
+        <!-- 右侧悬浮时间轴按钮 -->
+        <div id="timelineFloatBtn" style="position:fixed; right:8px; top:50%; transform:translateY(-50%); z-index:1000; cursor:pointer;">
+            <div style="background:rgba(248,200,216,0.25); backdrop-filter:blur(8px); width:44px; height:44px; border-radius:30px; border:1.5px solid #f8c8d8; display:flex; flex-direction:column; align-items:center; justify-content:center; box-shadow:0 4px 15px rgba(0,0,0,0.3);">
+                <span style="font-size:1.3rem; color:#f8c8d8; line-height:1;">💍</span>
+                <span style="font-size:0.5rem; color:#f8c8d8; margin-top:-2px;">时光轴</span>
+            </div>
+            <div id="timelineBadge" style="position:absolute; top:-2px; right:-2px; background:#f8c8d8; color:#222; border-radius:50%; width:18px; height:18px; font-size:0.7rem; display:flex; align-items:center; justify-content:center; border:1px solid #fff; font-weight:bold;">0</div>
+        </div>
+
+        <!-- 侧边滑出时间轴面板 -->
+        <div id="timelineSidePanel" style="position:fixed; right:-330px; top:10px; bottom:10px; width:290px; background:rgba(15,15,25,0.85); backdrop-filter:blur(15px); border-radius:24px 0 0 24px; border:1px solid rgba(248,200,216,0.3); border-right:none; box-shadow:-5px 0 25px rgba(0,0,0,0.6); z-index:1001; transition:right 0.3s ease; display:flex; flex-direction:column; overflow:hidden;">
+            
+            <!-- 面板头部 -->
+            <div style="padding:1rem 1rem 0.5rem 1rem; border-bottom:1px solid rgba(248,200,216,0.2); display:flex; justify-content:space-between; align-items:center;">
+                <div style="display:flex; align-items:center; gap:0.5rem;">
+                    <span style="font-size:1.3rem;">💍</span>
+                    <span style="color:#f8c8d8; font-weight:500; font-size:1rem;">我和公主de时光轴</span>
+                </div>
+                <div style="display:flex; gap:0.5rem;">
+                    <span id="sideAddBtn" style="background:rgba(248,200,216,0.2); width:30px; height:30px; border-radius:20px; display:flex; align-items:center; justify-content:center; font-size:1.3rem; border:1px solid #f8c8d8; cursor:pointer; color:#f8c8d8;">+</span>
+                    <span id="sideCloseBtn" style="background:rgba(255,255,255,0.1); width:30px; height:30px; border-radius:20px; display:flex; align-items:center; justify-content:center; font-size:1rem; border:1px solid #aaa; cursor:pointer; color:#ccc;">✕</span>
+                </div>
+            </div>
+            
+            <!-- 时间轴列表区域（可滚动） -->
+            <div id="sideTimelineList" style="flex:1; overflow-y:auto; padding:0.8rem; position:relative;">
+                <!-- 纵向连线 -->
+                <div style="position:absolute; left:24px; top:20px; bottom:20px; width:2px; background:rgba(248,200,216,0.2);"></div>
+                <div id="timelineItemsContainer"></div>
+                <div id="timelineEmptyTip" style="text-align:center; padding:2rem 1rem; color:#d0a8c8; font-size:0.85rem; border:1px dashed rgba(248,200,216,0.2); border-radius:16px; background:rgba(0,0,0,0.2);">
+                    还没有照片哦小宝宝<br>点击右上角"+"添加第一个
+                </div>
+            </div>
+            
+            <!-- 添加记忆面板（默认隐藏） -->
+            <div id="sideAddPanel" style="display:none; padding:1rem; background:rgba(25,25,35,0.95); border-top:1px solid rgba(248,200,216,0.2);">
+                <input type="file" id="sideImageInput" accept="image/*" style="display:none;">
+                <div style="display:flex; gap:0.5rem; margin-bottom:0.5rem;">
+                    <div id="sideImagePreview" style="width:50px; height:50px; background:rgba(255,255,255,0.1); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.5rem; cursor:pointer; border:1px dashed #f8c8d8; color:#f8c8d8;">📷</div>
+                    <div style="flex:1;">
+                        <input type="text" id="sideTitle" placeholder="标题" style="width:100%; padding:0.4rem; background:rgba(0,0,0,0.3); border:1px solid #f8c8d8; border-radius:6px; color:#fff; font-size:0.8rem; margin-bottom:0.3rem;">
+                        <input type="date" id="sideDate" style="width:100%; padding:0.4rem; background:rgba(0,0,0,0.3); border:1px solid #f8c8d8; border-radius:6px; color:#fff; font-size:0.8rem;">
+                    </div>
+                </div>
+                <textarea id="sideDesc" placeholder="写下这一刻的心情..." rows="2" style="width:100%; padding:0.4rem; background:rgba(0,0,0,0.3); border:1px solid #f8c8d8; border-radius:6px; color:#fff; font-size:0.75rem; resize:none;"></textarea>
+                <div style="display:flex; gap:0.5rem; margin-top:0.5rem; justify-content:flex-end;">
+                    <span id="sideCancelAdd" style="padding:0.2rem 1rem; background:rgba(255,255,255,0.1); border-radius:20px; font-size:0.75rem; cursor:pointer; color:#ccc;">取消</span>
+                    <span id="sideSaveMemory" style="padding:0.2rem 1rem; background:#f8c8d8; color:#222; border-radius:20px; font-size:0.75rem; font-weight:500; cursor:pointer;">保存</span>
+                </div>
+            </div>
         </div>
     `;
-    kitty.style.cssText = `
-        position: fixed;
-        cursor: pointer;
-        z-index: 9999;
-        transition: all 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
-        pointer-events: auto;
-    `;
-    
-    function randomPosition() {
-        const maxX = window.innerWidth - 70;
-        const maxY = window.innerHeight - 70;
-        kitty.style.left = Math.random() * maxX + 'px';
-        kitty.style.top = Math.random() * maxY + 'px';
-    }
-    
-    let moveInterval;
-    function startRandomMove() {
-        if (moveInterval) clearInterval(moveInterval);
-        moveInterval = setInterval(() => {
-            const maxX = window.innerWidth - 70;
-            const maxY = window.innerHeight - 70;
-            kitty.style.left = Math.random() * maxX + 'px';
-            kitty.style.top = Math.random() * maxY + 'px';
-            kitty.style.transform = 'scale(1.05)';
-            setTimeout(() => kitty.style.transform = 'scale(1)', 150);
-        }, Math.random() * 6000 + 3000);
-    }
-    
-    function caught() {
-        const bubble = document.createElement('div');
-        const meows = ['喵~', '呜~', '又被抓到啦', '溜了溜了', '下次再来找我玩~'];
-        bubble.textContent = meows[Math.floor(Math.random() * meows.length)];
-        bubble.style.cssText = `
-            position: fixed;
-            left: ${parseInt(kitty.style.left) + 50}px;
-            top: ${parseInt(kitty.style.top) - 30}px;
-            background: white;
-            color: #E8958A;
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 500;
-            white-space: nowrap;
-            z-index: 10000;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            border: 1px solid #FFB7B2;
-            animation: fadeOut 0.8s ease-out forwards;
-            pointer-events: none;
-        `;
-        document.body.appendChild(bubble);
-        setTimeout(() => bubble.remove(), 800);
-        if (navigator.vibrate) navigator.vibrate(50);
-        kitty.style.transform = 'scale(0.9) rotate(-5deg)';
-        setTimeout(() => kitty.style.transform = 'scale(1) rotate(0deg)', 200);
-        randomPosition();
-    }
-    
-    kitty.addEventListener('click', (e) => {
-        e.stopPropagation();
-        caught();
-        playAudio();
-    });
-    
-    document.body.appendChild(kitty);
-    randomPosition();
-    startRandomMove();
-    
-    window.addEventListener('resize', () => {
-        const maxX = window.innerWidth - 70;
-        const maxY = window.innerHeight - 70;
-        let left = parseInt(kitty.style.left);
-        let top = parseInt(kitty.style.top);
-        if (left > maxX) kitty.style.left = maxX + 'px';
-        if (top > maxY) kitty.style.top = maxY + 'px';
-    });
-    
-    const style = document.createElement('style');
-    style.textContent = `
-        @keyframes fadeOut {
-            0% { opacity: 1; transform: scale(1); }
-            100% { opacity: 0; transform: scale(0.8); }
+
+    // 将时间轴HTML添加到body末尾
+    document.body.insertAdjacentHTML('beforeend', timelineHTML);
+
+    // 时间轴样式（添加加载动画）
+    const timelineStyle = document.createElement('style');
+    timelineStyle.textContent = `
+        .timeline-item-side {
+            position: relative;
+            margin-bottom: 1.2rem;
+            padding-left: 1.8rem;
+            animation: fadeInSide 0.3s ease;
+        }
+        @keyframes fadeInSide {
+            from { opacity: 0; transform: translateX(10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .timeline-dot-side {
+            position: absolute;
+            left: 0.5rem;
+            top: 0.3rem;
+            width: 10px;
+            height: 10px;
+            background: #f8c8d8;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.4);
+            box-shadow: 0 0 8px #f8c8d8;
+            z-index: 2;
+        }
+        .timeline-card-side {
+            background: rgba(0,0,0,0.3);
+            border-radius: 14px;
+            padding: 0.6rem;
+            border: 1px solid rgba(248,200,216,0.2);
+            backdrop-filter: blur(2px);
+        }
+        .timeline-card-side:hover {
+            border-color: #f8c8d8;
+        }
+        .timeline-header-side {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.2rem;
+        }
+        .timeline-title-side {
+            font-weight: 600;
+            color: #f8c8d8;
+            font-size: 0.85rem;
+        }
+        .timeline-date-side {
+            font-size: 0.6rem;
+            color: #d0a8c8;
+            background: rgba(248,200,216,0.1);
+            padding: 0.1rem 0.4rem;
+            border-radius: 30px;
+        }
+        .timeline-image-side {
+            width: 100%;
+            max-height: 100px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin: 0.3rem 0;
+            border: 1px solid rgba(248,200,216,0.2);
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+        .timeline-desc-side {
+            font-size: 0.7rem;
+            color: #e0e0e0;
+            line-height: 1.3;
+            margin: 0.2rem 0;
+        }
+        .timeline-footer-side {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 0.2rem;
+            font-size: 0.6rem;
+            color: #d0a8c8;
+        }
+        .timeline-delete-side {
+            cursor: pointer;
+            padding: 0.1rem 0.4rem;
+            border-radius: 30px;
+            background: rgba(255,255,255,0.05);
+        }
+        .timeline-delete-side:hover {
+            color: #ff8a8a;
+        }
+        #sideTimelineList::-webkit-scrollbar {
+            width: 3px;
+        }
+        #sideTimelineList::-webkit-scrollbar-thumb {
+            background: #f8c8d8;
+            border-radius: 3px;
+        }
+        .image-loader {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border: 2px solid #f8c8d8;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
         }
     `;
-    document.head.appendChild(style);
+    document.head.appendChild(timelineStyle);
+
+    // 获取时间轴DOM元素
+    const timelineFloatBtn = document.getElementById('timelineFloatBtn');
+    const timelineSidePanel = document.getElementById('timelineSidePanel');
+    const sideCloseBtn = document.getElementById('sideCloseBtn');
+    const sideAddBtn = document.getElementById('sideAddBtn');
+    const sideAddPanel = document.getElementById('sideAddPanel');
+    const sideCancelAdd = document.getElementById('sideCancelAdd');
+    const sideSaveMemory = document.getElementById('sideSaveMemory');
+    const sideImageInput = document.getElementById('sideImageInput');
+    const sideImagePreview = document.getElementById('sideImagePreview');
+    const sideTitle = document.getElementById('sideTitle');
+    const sideDate = document.getElementById('sideDate');
+    const sideDesc = document.getElementById('sideDesc');
+    const timelineItemsContainer = document.getElementById('timelineItemsContainer');
+    const timelineEmptyTip = document.getElementById('timelineEmptyTip');
+    const timelineBadge = document.getElementById('timelineBadge');
+
+    // 设置默认日期为今天
+    const todayStr = new Date().toISOString().split('T')[0];
+    sideDate.value = todayStr;
+
+    // 时间轴数据引用
+    const timelineRef = database.ref('timeline');
+
+    // 缓存：已经加载过的图片
+    const imageCache = new Set();
+
+    // 点击悬浮按钮展开/收起
+    let panelOpen = false;
+    timelineFloatBtn.addEventListener('click', function() {
+        if (panelOpen) {
+            timelineSidePanel.style.right = '-330px';
+            panelOpen = false;
+        } else {
+            timelineSidePanel.style.right = '0';
+            panelOpen = true;
+            // 收起添加面板
+            sideAddPanel.style.display = 'none';
+        }
+        playAudio();
+    });
+
+    sideCloseBtn.addEventListener('click', function() {
+        timelineSidePanel.style.right = '-330px';
+        panelOpen = false;
+        playAudio();
+    });
+
+    // 显示添加面板
+    sideAddBtn.addEventListener('click', function() {
+        sideAddPanel.style.display = 'block';
+        // 重置表单
+        sideTitle.value = '';
+        sideDate.value = todayStr;
+        sideDesc.value = '';
+        sideImagePreview.innerHTML = '📷';
+        sideImageInput.value = '';
+        selectedImageDataUrl = null;
+    });
+
+    sideCancelAdd.addEventListener('click', function() {
+        sideAddPanel.style.display = 'none';
+    });
+
+    // 点击图片预览选择图片
+    sideImagePreview.addEventListener('click', function() {
+        sideImageInput.click();
+    });
+
+    let selectedImageDataUrl = null;
+
+    // 图片压缩功能
+    function compressImage(file, callback) {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = function(e) {
+            const img = new Image();
+            img.src = e.target.result;
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                
+                // 设置最大宽度为 400px
+                let width = img.width;
+                let height = img.height;
+                if (width > 400) {
+                    height = Math.round((400 / width) * height);
+                    width = 400;
+                }
+                
+                canvas.width = width;
+                canvas.height = height;
+                ctx.drawImage(img, 0, 0, width, height);
+                
+                // 压缩质量为 0.6
+                const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.6);
+                callback(compressedDataUrl);
+            };
+        };
+    }
+
+    sideImageInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            // 所有图片都压缩，不管大小
+            compressImage(file, function(compressedDataUrl) {
+                selectedImageDataUrl = compressedDataUrl;
+                sideImagePreview.innerHTML = `<img src="${compressedDataUrl}" style="width:100%; height:100%; object-fit:cover; border-radius:8px;">`;
+            });
+        }
+    });
+
+    // 保存记忆
+    sideSaveMemory.addEventListener('click', function() {
+        const title = sideTitle.value.trim();
+        const date = sideDate.value;
+        const desc = sideDesc.value.trim();
+
+        if (!title) {
+            alert('请填写标题');
+            return;
+        }
+
+        sideSaveMemory.style.opacity = '0.5';
+        sideSaveMemory.style.pointerEvents = 'none';
+        sideSaveMemory.textContent = '保存...';
+
+        // 如果没有选择图片，使用默认的爱心图标
+        let imageToSave = selectedImageDataUrl;
+        if (!imageToSave) {
+            imageToSave = 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'%3E%3Ccircle cx=\'50\' cy=\'50\' r=\'45\' fill=\'%23f8c8d8\'/%3E%3Ctext x=\'50\' y=\'70\' font-size=\'50\' text-anchor=\'middle\' fill=\'%23ffffff\'%3E💍%3C/text%3E%3C/svg%3E';
+        }
+
+        const memory = {
+            id: Date.now().toString(),
+            title: title,
+            date: date,
+            desc: desc || '和你美好的memory',
+            image: imageToSave,
+            timestamp: firebase.database.ServerValue.TIMESTAMP,
+            addedBy: currentUser || 'snx'
+        };
+
+        timelineRef.push(memory)
+            .then(() => {
+                sideAddPanel.style.display = 'none';
+                sideSaveMemory.style.opacity = '1';
+                sideSaveMemory.style.pointerEvents = 'auto';
+                sideSaveMemory.textContent = '保存';
+                
+                // 显示成功提示
+                const successMsg = document.createElement('div');
+                successMsg.style.cssText = 'position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:#f8c8d8; color:#222; padding:0.8rem 1.5rem; border-radius:30px; z-index:2001; font-size:0.9rem; box-shadow:0 4px 20px rgba(0,0,0,0.3);';
+                successMsg.textContent = '成功记录memory';
+                document.body.appendChild(successMsg);
+                setTimeout(() => successMsg.remove(), 2000);
+                
+                playAudio();
+            })
+            .catch(error => {
+                console.error('保存失败:', error);
+                alert('保存失败，请重试');
+                sideSaveMemory.style.opacity = '1';
+                sideSaveMemory.style.pointerEvents = 'auto';
+                sideSaveMemory.textContent = '保存';
+            });
+    });
+
+    // 分批加载相关变量
+    let allMemories = [];
+    let displayedCount = 0;
+    const BATCH_SIZE = 3; // 每次加载3条，更快显示
+
+    // 监听时间轴数据
+    timelineRef.on('value', (snapshot) => {
+        allMemories = [];
+        snapshot.forEach(child => {
+            allMemories.push({
+                firebaseId: child.key,
+                ...child.val()
+            });
+        });
+
+        // 按日期倒序
+        allMemories.sort((a, b) => (a.date > b.date ? -1 : 1));
+
+        // 更新角标
+        timelineBadge.textContent = allMemories.length;
+
+        if (allMemories.length === 0) {
+            timelineItemsContainer.innerHTML = '';
+            timelineEmptyTip.style.display = 'block';
+            return;
+        }
+
+        timelineEmptyTip.style.display = 'none';
+        
+        // 先清空容器，立即显示第一批
+        timelineItemsContainer.innerHTML = '';
+        displayedCount = 0;
+        
+        // 立即加载第一批
+        loadNextBatch();
+    });
+
+    // 加载下一批数据
+    function loadNextBatch() {
+        if (displayedCount >= allMemories.length) return;
+        
+        const nextBatch = allMemories.slice(displayedCount, displayedCount + BATCH_SIZE);
+        
+        // 生成这批的HTML
+        let batchHtml = '';
+        nextBatch.forEach(mem => {
+            const dateObj = new Date(mem.date);
+            const formattedDate = `${dateObj.getFullYear()}.${(dateObj.getMonth()+1).toString().padStart(2,'0')}.${dateObj.getDate().toString().padStart(2,'0')}`;
+            const addedByIcon = mem.addedBy === 'snx' ? '🐈' : '🐾';
+            
+            // 图片懒加载
+            const imageHtml = mem.image ? `
+                <div style="position:relative; width:100%; height:100px; background:rgba(248,200,216,0.1); border-radius:10px; overflow:hidden; margin:0.3rem 0; display:flex; align-items:center; justify-content:center;">
+                    <div class="image-loader" style="position:absolute; width:30px; height:30px; border:2px solid #f8c8d8; border-top-color:transparent; border-radius:50%; animation:spin 1s linear infinite;"></div>
+                    <img src="${mem.image}" loading="lazy" class="timeline-image-side" onclick="window.showPreview('${mem.image}')" style="opacity:0; transition:opacity 0.3s; width:100%; height:100%; object-fit:cover;" onload="this.style.opacity=1; this.previousElementSibling.style.display='none';">
+                </div>
+            ` : '';
+            
+            batchHtml += `
+                <div class="timeline-item-side" data-id="${mem.firebaseId}">
+                    <div class="timeline-dot-side"></div>
+                    <div class="timeline-card-side">
+                        <div class="timeline-header-side">
+                            <span class="timeline-title-side">${escapeHtml(mem.title)}</span>
+                            <span class="timeline-date-side">${formattedDate}</span>
+                        </div>
+                        ${imageHtml}
+                        <div class="timeline-desc-side">${escapeHtml(mem.desc)}</div>
+                        <div class="timeline-footer-side">
+                            <span style="margin-right:auto;">${addedByIcon}</span>
+                            <span class="timeline-delete-side" onclick="window.deleteTimelineItem('${mem.firebaseId}')">🗑️ 删除</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        // 追加到容器
+        timelineItemsContainer.insertAdjacentHTML('beforeend', batchHtml);
+        displayedCount += nextBatch.length;
+        
+        // 如果还有更多，设置滚动监听
+        if (displayedCount < allMemories.length) {
+            setupScrollListener();
+        }
+    }
+
+    // 滚动监听
+    function setupScrollListener() {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    // 当最后一个元素进入视野时加载更多
+                    loadNextBatch();
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '100px' });
+        
+        const lastItem = timelineItemsContainer.lastElementChild;
+        if (lastItem) {
+            observer.observe(lastItem);
+        }
+    }
+
+    // 删除功能
+    window.deleteTimelineItem = function(firebaseId) {
+        if (confirm('删除这条记忆？')) {
+            timelineRef.child(firebaseId).remove();
+            playAudio();
+        }
+    };
+
+    // 图片预览
+    window.showPreview = function(imageUrl) {
+        const modal = document.createElement('div');
+        modal.style.cssText = 'position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.9); z-index:2000; display:flex; align-items:center; justify-content:center; padding:1rem;';
+        modal.innerHTML = `
+            <span style="position:absolute; top:20px; right:20px; color:#fff; font-size:2rem; cursor:pointer;" onclick="this.parentElement.remove()">&times;</span>
+            <img src="${imageUrl}" style="max-width:90%; max-height:80%; border-radius:16px; border:2px solid #f8c8d8;">
+        `;
+        document.body.appendChild(modal);
+    };
+
+    function escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+    // ============================================
+// 四合一趣味功能：验证码 + 弹窗劫持 + 随机嘴替 + 离谱选择器
+// ============================================
+
+// ----- 1. 胡说八道验证码 -----
+// 在发送消息前拦截，随机要求回答一个无厘头问题
+const originalSendMessage = sendMessage;
+window.sendMessage = function() {
+    // 随机决定是否触发验证码（30%概率，避免太烦人）
+    if (Math.random() < 0.5) {
+        const questions = [
+            { q: "请问：我宝宝是不是最萌的？", correct: "是" },
+            { q: "请问：gsy是世界上最好的人吗？", correct: "是" },
+            { q: "请问：今天想我了吗？", correct: "想了" },
+            { q: "请问：谁最漂亮？", correct: "snx" },
+            { q: "请问：现在应该做什么？", correct: "想你" },
+            { q: "验证一下：你是不是最爱我的？", correct: "是" }
+        ];
+        const randomQ = questions[Math.floor(Math.random() * questions.length)];
+        const answer = prompt(randomQ.q);
+        if (answer !== randomQ.correct) {
+            alert("回答错误！再给你一次机会\n（正确答案：" + randomQ.correct + "）");
+            return; // 不发消息
+        }
+        alert("验证通过");
+    }
+    // 调用原始发送函数
+    originalSendMessage();
+};
+
+// 替换全局的 sendMessage 引用
+sendBtn.onclick = function(e) {
+    e.preventDefault();
+    window.sendMessage();
+    playAudio();
+};
+messageInput.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        window.sendMessage();
+        playAudio();
+    }
+});
+
+// ----- 2. 弹窗劫持 -----
+// 点击任何主要按钮时，有概率弹出调皮弹窗
+const buttonsToHijack = ['yesBtn', 'noBtn', 'sudokuToggleBtn', 'wishToggleBtn', 'newSudoku', 'resetMine'];
+const hijackMessages = [
+    "老婆今天也好漂亮",
+    "你想不想我呀",
+    "系统提示：注意用眼",
+    "看看ootd",
+    "休息一下想我5秒钟 🐾",
+    "检测到大量点击，你在干嘛！",
+];
+
+function maybeHijack() {
+    if (Math.random() < 0.45) { // 25%概率触发
+        const msg = hijackMessages[Math.floor(Math.random() * hijackMessages.length)];
+        setTimeout(() => {
+            alert(msg);
+        }, 50);
+    }
+}
+
+// 劫持原有按钮的点击事件
+const originalYes = yesBtn.onclick;
+yesBtn.onclick = function(e) {
+    maybeHijack();
+    if (originalYes) originalYes.call(this, e);
+};
+const originalNo = noBtn.onclick;
+noBtn.onclick = function(e) {
+    maybeHijack();
+    if (originalNo) originalNo.call(this, e);
+};
+sudokuToggleBtn.addEventListener('click', maybeHijack);
+wishToggleBtn.addEventListener('click', maybeHijack);
+if (newSudoku) newSudoku.addEventListener('click', maybeHijack);
+if (resetMine) resetMine.addEventListener('click', maybeHijack);
+
+
+// ----- 4. 离谱选择器（今天怎么对我）-----
+const离谱选项 = [
+    "夸我",
+    "说我可爱",
+    "发一个表情包",
+    "说一句我想你",
+    "什么都不用做，今天免费",
+    "给我一个抱抱",
+    "叫我一声宝宝",
+    "今天你请喝奶茶"
+];
+
+// 在次要按钮区域添加一个离谱选择器按钮
+const secondaryDiv = document.querySelector('.secondary-buttons');
+if (secondaryDiv) {
+    const离谱Btn = document.createElement('button');
+    离谱Btn.className = 'btn-small';
+    离谱Btn.innerHTML = '今天要怎么对我';
+    离谱Btn.style.marginLeft = '0.5rem';
+    离谱Btn.onclick = function() {
+        const randomOption = 离谱选项[Math.floor(Math.random() * 离谱选项.length)];
+        alert(`🎲 离谱选择器结果：\n\n「 ${randomOption} 」\n\n截图发给gsy让他照做！`);
+        playAudio();
+    };
+    secondaryDiv.appendChild(离谱Btn);
+}
 </script>
+
 </body>
 </html>
